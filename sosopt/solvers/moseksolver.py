@@ -96,13 +96,11 @@ class MosekSolver(SolverMixin):
 
             task.optimize()
 
-            # print(np.array(task.getxx(mosek.soltype.itr)))
-
             solver_result = MosekSolverResult(
                 solution=np.array(task.getxx(mosek.soltype.itr)),
                 status=task.getsolsta(mosek.soltype.itr),
                 iterations=task.getintinf(mosek.iinfitem.intpnt_iter),
-                cost=task.getdouinf(mosek.dinfitem.obj_val_primal)
+                cost=task.getprimalobj(mosek.soltype.itr)
             )
 
         return solver_result
