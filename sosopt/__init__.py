@@ -26,7 +26,7 @@ mosek_solver = MosekSolver()
 
 define_variable = _define_variable
 define_multiplier = _define_multiplier
-define_polynomial_variable = _init_polynomial_variable
+define_polynomial = _init_polynomial_variable
 
 to_gram_matrix = _to_gram_matrix
 

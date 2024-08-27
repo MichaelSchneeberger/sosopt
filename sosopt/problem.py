@@ -19,13 +19,13 @@ from sosopt.constraints.constraintprimitives.positivepolynomialconstraintprimiti
     PositivePolynomialConstraintPrimitive,
 )
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
-from sosopt.solvers.solvermixin import SolveInfo, SolverMixin
-from sosopt.solvers.solverresult import SolverResult
+from sosopt.solvers.solvermixin import SolveArgs, SolverMixin
+from sosopt.solvers.solverdata import SolverData
 
 
 @dataclass(frozen=True)
 class SOSResultMapping:
-    solver_result: SolverResult
+    solver_data: SolverData
     symbol_values: dict[DecisionVariableSymbol, tuple[float, ...]]
 
 
@@ -130,8 +130,8 @@ class SOSProblem:
                         )
                     )
 
-            solver_result = self.solver.solve(
-                SolveInfo(
+            solver_data = self.solver.solve(
+                SolveArgs(
                     lin_cost=lin_cost,
                     quad_cost=quad_cost,
                     l_data=l_data,
@@ -139,7 +139,7 @@ class SOSProblem:
                     s_data=s_data,
                 )
             )
-            solution = solver_result.solution
+            solution = solver_data.solution
 
             def gen_symbol_values():
                 for variable, index_range in variable_index_ranges:
@@ -154,7 +154,7 @@ class SOSProblem:
             symbol_values = dict(gen_symbol_values())
 
             sos_result_mapping = SOSResultMapping(
-                solver_result=solver_result, 
+                solver_data=solver_data, 
                 symbol_values=symbol_values,
             )
 

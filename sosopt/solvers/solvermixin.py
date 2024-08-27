@@ -2,10 +2,10 @@ from abc import abstractmethod
 from typing import NamedTuple
 
 from polymat.typing import ArrayRepr
-from sosopt.solvers.solverresult import SolverResult
+from sosopt.solvers.solverdata import SolverData
 
 
-class SolveInfo(NamedTuple):
+class SolveArgs(NamedTuple):
     lin_cost: ArrayRepr
     quad_cost: ArrayRepr | None
     l_data: tuple[ArrayRepr, ...]
@@ -15,4 +15,4 @@ class SolveInfo(NamedTuple):
 
 class SolverMixin:
     @abstractmethod
-    def solve(self, info: SolveInfo) -> SolverResult: ...
+    def solve(self, info: SolveArgs) -> SolverData: ...

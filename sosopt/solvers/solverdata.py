@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 
-class SolverResult(ABC):
+class SolverData(ABC):
     @property
     @abstractmethod
     def cost(self) -> float: ...

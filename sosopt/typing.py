@@ -4,10 +4,10 @@ from sosopt.polymat.abc import (
     PolynomialRowVectorVariable as _PolynomialRowVectorVariable,
     PolynomialVariable as _PolynomialVariable,
 )
-from sosopt.solvers.solverresult import SolverResult as _SolverResult
+from sosopt.solvers.solverdata import SolverData as _SolverData
 
 
-SolverResult = _SolverResult
+SolverData = _SolverData
 
 PolynomialMatrixVariable = _PolynomialMatrixVariable
 PolynomialVectorVariable = _PolynomialVectorVariable

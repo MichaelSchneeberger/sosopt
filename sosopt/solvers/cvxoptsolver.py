@@ -6,12 +6,12 @@ from dataclassabc import dataclassabc
 
 from polymat.typing import ArrayRepr
 
-from sosopt.solvers.solverresult import SolverResult
-from sosopt.solvers.solvermixin import SolveInfo, SolverMixin
+from sosopt.solvers.solverdata import SolverData
+from sosopt.solvers.solvermixin import SolveArgs, SolverMixin
 
 
 @dataclassabc(frozen=True)
-class CVXOptSolverResult(SolverResult):
+class CVXOptSolverResult(SolverData):
     x: np.ndarray
     y: np.ndarray
     s: np.ndarray
@@ -37,7 +37,7 @@ class CVXOptSolverResult(SolverResult):
 
 
 class CVXOPTSolver(SolverMixin):
-    def solve(self, info: SolveInfo):
+    def solve(self, info: SolveArgs):
         def get_dim_s(array: ArrayRepr) -> int:
             dim = np.sqrt(array.n_eq)
             assert math.isclose(int(dim), dim), f'{dim=}'

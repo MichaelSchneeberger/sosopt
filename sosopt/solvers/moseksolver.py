@@ -3,12 +3,12 @@ import numpy as np
 
 from dataclassabc import dataclassabc
 
-from sosopt.solvers.solverresult import SolverResult
-from sosopt.solvers.solvermixin import SolveInfo, SolverMixin
+from sosopt.solvers.solverdata import SolverData
+from sosopt.solvers.solvermixin import SolveArgs, SolverMixin
 
 
 @dataclassabc(frozen=True)
-class MosekSolverResult(SolverResult):
+class MosekSolverResult(SolverData):
     solution: np.ndarray
     status: str
     iterations: int
@@ -16,7 +16,7 @@ class MosekSolverResult(SolverResult):
 
 
 class MosekSolver(SolverMixin):
-    def solve(self, info: SolveInfo):
+    def solve(self, info: SolveArgs):
         def get_col_indices(n_col):
             n_var = int(np.sqrt(n_col))
 
