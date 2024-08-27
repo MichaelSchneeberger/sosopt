@@ -20,6 +20,13 @@ from sosopt.constraints.constraintprimitives.positivepolynomialconstraintprimiti
 )
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.solvers.solvermixin import SolveInfo, SolverMixin
+from sosopt.solvers.solverresult import SolverResult
+
+
+@dataclass(frozen=True)
+class SOSResultMapping:
+    solver_result: SolverResult
+    symbol_values: dict[DecisionVariableSymbol, tuple[float, ...]]
 
 
 @dataclass(frozen=True)
@@ -66,7 +73,7 @@ class SOSProblem:
         primitives = tuple(evaluate_primitives())
         return self.copy(nested_constraint_primitives=primitives)
 
-    def solve(self) -> StateMonad[State, dict[Symbol, tuple[float, ...]]]:
+    def solve(self) -> StateMonad[State, SOSResultMapping]:
         @do()
         def solve_sdp():
 
@@ -123,7 +130,7 @@ class SOSProblem:
                         )
                     )
 
-            solver_data = self.solver.solve(
+            solver_result = self.solver.solve(
                 SolveInfo(
                     lin_cost=lin_cost,
                     quad_cost=quad_cost,
@@ -132,10 +139,9 @@ class SOSProblem:
                     s_data=s_data,
                 )
             )
-            solution = solver_data.solution
+            solution = solver_result.solution
 
-            def gen_variable_value_pairs():
-
+            def gen_symbol_values():
                 for variable, index_range in variable_index_ranges:
 
                     def gen_value_indices():
@@ -145,8 +151,13 @@ class SOSProblem:
                     # convert numpy.float to float
                     yield variable, tuple(float(v) for v in solution[list(gen_value_indices())])
 
-            symbol_data_dict = dict(gen_variable_value_pairs())
+            symbol_values = dict(gen_symbol_values())
 
-            return statemonad.from_((solver_data, symbol_data_dict))
+            sos_result_mapping = SOSResultMapping(
+                solver_result=solver_result, 
+                symbol_values=symbol_values,
+            )
+
+            return statemonad.from_(sos_result_mapping)
 
         return solve_sdp()

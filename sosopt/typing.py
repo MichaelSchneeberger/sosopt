@@ -4,7 +4,7 @@ from sosopt.polymat.abc import (
     PolynomialRowVectorVariable as _PolynomialRowVectorVariable,
     PolynomialVariable as _PolynomialVariable,
 )
-from sosopt.solvers.solverdata import SolverResult as _SolverResult
+from sosopt.solvers.solverresult import SolverResult as _SolverResult
 
 
 SolverResult = _SolverResult

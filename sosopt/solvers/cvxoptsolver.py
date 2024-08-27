@@ -6,7 +6,7 @@ from dataclassabc import dataclassabc
 
 from polymat.typing import ArrayRepr
 
-from sosopt.solvers.solverdata import SolverResult
+from sosopt.solvers.solverresult import SolverResult
 from sosopt.solvers.solvermixin import SolveInfo, SolverMixin
 
 

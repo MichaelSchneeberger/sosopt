@@ -3,7 +3,7 @@ import numpy as np
 
 from dataclassabc import dataclassabc
 
-from sosopt.solvers.solverdata import SolverResult
+from sosopt.solvers.solverresult import SolverResult
 from sosopt.solvers.solvermixin import SolveInfo, SolverMixin
 
 

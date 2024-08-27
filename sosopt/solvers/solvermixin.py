@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import NamedTuple
 
 from polymat.typing import ArrayRepr
-from sosopt.solvers.solverdata import SolverResult
+from sosopt.solvers.solverresult import SolverResult
 
 
 class SolveInfo(NamedTuple):
