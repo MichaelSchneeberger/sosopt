@@ -94,3 +94,9 @@ print(f'{sos_result.solver_data.iterations}')  # Expected output: 6
 print(f'{sos_result.solver_data.cost}')        # Expected output: -1.2523582776230828
 print(f'{sos_result.solver_data.solution}')    # Expected output: array([ 5.44293046e-01, ...])
 ```
+
+## Reference
+
+Below are some references related to this project:
+
+* [Advanced safety filter](https://github.com/MichaelSchneeberger/advanced-safety-filter)
