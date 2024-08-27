@@ -31,11 +31,19 @@ class PolynomialVariableImpl(PolynomialVariable):
 
 def init_polynomial_variable(
     name: str,
-    monomials: MonomialVectorExpression,
-    polynomial_variables: VariableVectorExpression,
-    n_row=1,
-    n_col=1,
+    monomials: MonomialVectorExpression | None = None,
+    polynomial_variables: VariableVectorExpression | None = None,
+    n_row: int = 1,
+    n_col: int = 1,
 ):
+    match (monomials, polynomial_variables):
+        case (None, None):
+            # empty variable vector
+            polynomial_variables = polymat.from_variable_indices(tuple())
+            monomials = polymat.from_(1).to_monomial_vector()
+        case (None, _) | (_, None):
+            raise Exception('Both `monomials` and `polynomial_variables` must either be provided or set to None otherwise.')
+
     def gen_rows():
         for row in range(n_row):
 
