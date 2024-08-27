@@ -76,7 +76,6 @@ class SOSProblem:
     def solve(self) -> StateMonad[State, SOSResultMapping]:
         @do()
         def solve_sdp():
-
             state = yield from statemonad.get[State]()
 
             def gen_variable_index_ranges():
@@ -86,21 +85,19 @@ class SOSProblem:
                     yield variable, index_range
 
             variable_index_ranges = tuple(gen_variable_index_ranges())
-            indices = tuple(i for _, index_range in variable_index_ranges for i in index_range)
+            indices = tuple(
+                i for _, index_range in variable_index_ranges for i in index_range
+            )
 
             # vector_sympy = yield from polymat.to_sympy(self.decision_variable_vector)
             # print(f'{vector_sympy}')
 
-            lin_cost = yield from polymat.to_array(
-                self.lin_cost, indices
-            )
+            lin_cost = yield from polymat.to_array(self.lin_cost, indices)
 
             if self.quad_cost is None:
                 quad_cost = None
             else:
-                quad_cost = yield from polymat.to_array(
-                    self.quad_cost, indices
-                )
+                quad_cost = yield from polymat.to_array(self.quad_cost, indices)
 
             s_data = yield from statemonad.zip(
                 (
@@ -120,15 +117,19 @@ class SOSProblem:
                 # maximum degree of cost function must be 2
                 assert quad_cost.degree <= 1, f"{quad_cost.degree=}"
 
-            # maximum degree of constraint must be 1
-            for array in l_data + q_data + s_data:
-                if 1 < array.degree:                   
-                    raise AssertionError(
-                        (
-                            "The degree of the polynomial in the decision variables used to encode the optimization problem constraints "
-                            "must not exceed 1."
+            # maximum degree of constraint must not be greater than 1
+            # the assertion is defined inside a function because the do-notation forbits for loops
+            def assert_degree_of_constraints():
+                for array in l_data + q_data + s_data:
+                    if 1 < array.degree:
+                        raise AssertionError(
+                            (
+                                "The degree of the polynomial in the decision variables used to encode the optimization problem constraints "
+                                "must not exceed 1."
+                            )
                         )
-                    )
+
+            assert_degree_of_constraints()
 
             solver_data = self.solver.solve(
                 SolveArgs(
@@ -149,12 +150,15 @@ class SOSProblem:
                             yield indices.index(index)
 
                     # convert numpy.float to float
-                    yield variable, tuple(float(v) for v in solution[list(gen_value_indices())])
+                    yield (
+                        variable,
+                        tuple(float(v) for v in solution[list(gen_value_indices())]),
+                    )
 
             symbol_values = dict(gen_symbol_values())
 
             sos_result_mapping = SOSResultMapping(
-                solver_data=solver_data, 
+                solver_data=solver_data,
                 symbol_values=symbol_values,
             )
 
