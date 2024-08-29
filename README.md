@@ -1,6 +1,6 @@
 # SOSOpt
 
-SOSOpt is a Python library designed for solving a sums-of-squares (SOS) optimization problems.
+SOSOpt is a Python library designed for solving sums-of-squares (SOS) optimization problems.
 
 ## Installation
 
