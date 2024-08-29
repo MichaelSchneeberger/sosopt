@@ -3,8 +3,9 @@ import numpy as np
 
 from dataclassabc import dataclassabc
 
+from sosopt.solvers.solveargs import SolveArgs
 from sosopt.solvers.solverdata import SolverData
-from sosopt.solvers.solvermixin import SolveArgs, SolverMixin
+from sosopt.solvers.solvermixin import SolverMixin
 
 
 @dataclassabc(frozen=True)
@@ -46,11 +47,7 @@ class MosekSolver(SolverMixin):
 
         afeidx, varidx, f_val = get_triplet(G)
 
-        # if cost.degree == 2:
-
         if info.quad_cost is not None:
-            # nP = int(np.sqrt(cost[2].shape[1]))
-            # P = np.sqrt(np.diag(cost[2].reshape(nP, nP).toarray())).reshape(1, -1)
             P = info.quad_cost[1]
 
             _, varidx_, f_val_ = get_triplet(P)
@@ -59,8 +56,6 @@ class MosekSolver(SolverMixin):
             n_quad_eq = len(varidx_) + 1
             for row in range(n_quad_eq):
                 afeidx += (n_eq + row,)
-
-            # print(len(afeidx), len(varidx), len(f_val))
 
             n_eq = n_eq + n_quad_eq
             n_var = n_var + 1

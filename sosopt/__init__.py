@@ -4,6 +4,7 @@ from polymat.typing import PolynomialExpression, VectorExpression
 
 from sosopt.solvers.cvxoptsolver import CVXOPTSolver
 from sosopt.solvers.moseksolver import MosekSolver
+from sosopt.solvers.solveargs import get_solve_args as _get_solve_args
 from sosopt.utils.grammatrix import to_gram_matrix as _to_gram_matrix
 from sosopt.constraints.constraint import Constraint
 from sosopt.constraints.putinarpsatzconstraint import (
@@ -29,6 +30,8 @@ define_multiplier = _define_multiplier
 define_polynomial = _init_polynomial_variable
 
 to_gram_matrix = _to_gram_matrix
+
+solve_args = _get_solve_args
 
 def sos_constraint(
     name: str,

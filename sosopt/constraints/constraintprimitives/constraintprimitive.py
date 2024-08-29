@@ -2,11 +2,8 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from collections.abc import Iterator
-from itertools import filterfalse
 
-from statemonad.typing import StateMonad
-
-from polymat.typing import State, ArrayRepr, MatrixExpression, VariableVectorExpression
+from polymat.typing import MatrixExpression, VectorExpression
 
 from sosopt.constraints.decisionvariablesmixin import DecisionVariablesMixin
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
@@ -75,6 +72,4 @@ class ConstraintPrimitive(DecisionVariablesMixin):
             )
 
     @abstractmethod
-    def to_array(
-        self, variables: VariableVectorExpression
-    ) -> StateMonad[State, tuple[ArrayRepr, ...]]: ...
+    def to_constraint_vector() -> VectorExpression: ...

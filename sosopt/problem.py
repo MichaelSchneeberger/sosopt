@@ -9,7 +9,7 @@ import statemonad
 from statemonad.typing import StateMonad
 
 import polymat
-from polymat.typing import PolynomialExpression, VectorExpression, State, Symbol
+from polymat.typing import PolynomialExpression, VectorExpression, State
 
 from sosopt.constraints.constraint import Constraint
 from sosopt.constraints.constraintprimitives.constraintprimitive import (
@@ -19,7 +19,8 @@ from sosopt.constraints.constraintprimitives.positivepolynomialconstraintprimiti
     PositivePolynomialConstraintPrimitive,
 )
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
-from sosopt.solvers.solvermixin import SolveArgs, SolverMixin
+from sosopt.solvers.solveargs import get_solve_args
+from sosopt.solvers.solvermixin import SolverMixin
 from sosopt.solvers.solverdata import SolverData
 
 
@@ -89,57 +90,23 @@ class SOSProblem:
                 i for _, index_range in variable_index_ranges for i in index_range
             )
 
-            # vector_sympy = yield from polymat.to_sympy(self.decision_variable_vector)
-            # print(f'{vector_sympy}')
-
-            lin_cost = yield from polymat.to_array(self.lin_cost, indices)
-
-            if self.quad_cost is None:
-                quad_cost = None
-            else:
-                quad_cost = yield from polymat.to_array(self.quad_cost, indices)
-
-            s_data = yield from statemonad.zip(
-                (
-                    primitive.to_array(indices)
-                    for primitive in self.constraint_primitives
-                    if isinstance(primitive, PositivePolynomialConstraintPrimitive)
-                )
+            # filter positive polynomial constraints
+            s_data = tuple(
+                primitive.to_constraint_vector()
+                for primitive in self.constraint_primitives
+                if isinstance(primitive, PositivePolynomialConstraintPrimitive)
             )
 
-            l_data = tuple()
-            q_data = tuple()
-
-            # maximum degree of cost function must be 2
-            assert lin_cost.degree <= 1, f"{lin_cost.degree=}"
-
-            if quad_cost is not None:
-                # maximum degree of cost function must be 2
-                assert quad_cost.degree <= 1, f"{quad_cost.degree=}"
-
-            # maximum degree of constraint must not be greater than 1
-            # the assertion is defined inside a function because the do-notation forbits for loops
-            def assert_degree_of_constraints():
-                for array in l_data + q_data + s_data:
-                    if 1 < array.degree:
-                        raise AssertionError(
-                            (
-                                "The degree of the polynomial in the decision variables used to encode the optimization problem constraints "
-                                "must not exceed 1."
-                            )
-                        )
-
-            assert_degree_of_constraints()
-
-            solver_data = self.solver.solve(
-                SolveArgs(
-                    lin_cost=lin_cost,
-                    quad_cost=quad_cost,
-                    l_data=l_data,
-                    q_data=q_data,
-                    s_data=s_data,
-                )
+            solver_args = yield from get_solve_args(
+                indices=indices,
+                lin_cost=self.lin_cost,
+                quad_cost=self.quad_cost,
+                s_data=s_data,
+                q_data=tuple(),
+                l_data=tuple(),
             )
+
+            solver_data = self.solver.solve(solver_args)
             solution = solver_data.solution
 
             def gen_symbol_values():
