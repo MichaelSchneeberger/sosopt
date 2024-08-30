@@ -79,13 +79,12 @@ state, constraint = sosopt.sos_constraint_putinar(
     ),
 ).apply(state)
 
-# Minimize the volume surrogate of the zero sublevel set of r
-rQ_diag = sosopt.to_gram_matrix(r, x).diag()
+# Minimize the volume surrogate of the zero-sublevel set of r
+Qr_trace = sosopt.to_gram_matrix(r, x).trace()
 
 # Define the SOS problem
 problem = sosopt.sos_problem(
-    lin_cost=-rQ_diag.sum(),
-    quad_cost=rQ_diag,
+    lin_cost=-Qr_trace,
     constraints=(constraint,),
     solver=sosopt.cvx_opt_solver,   # choose solver
     # solver=sosopt.mosek_solver,
