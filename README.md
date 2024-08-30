@@ -24,7 +24,7 @@ $$r(x) := Z(x)^T Q_r Z(x)$$
 
 where $Z(x)$ is a vector of monomials in $x$.
 
-The SOS optimization problem is formulated to find $r(x)$ that maximizes a surrogate for the volume of the sublevel set of $r(x)$. The problem is defined as:
+The SOS optimization problem is formulated to find $r(x)$ that maximizes a surrogate for the volume of the zero-sublevel set of $r(x)$. The problem is defined as:
 
 $$\begin{array}{ll}
     \text{find} & Q_r \in \mathbb R^{m \times m} \\
@@ -58,16 +58,16 @@ r_var = sosopt.define_polynomial(
     monomials=x.combinations(degrees=(1, 2)),
     polynomial_variables=x,
 )
-# Fix the constant part of the polynomial to 1 to ensure numerical stability
+# Fix the constant part of the polynomial to -1 to ensure numerical stability
 r = r_var - 1
 
 # Prints the symbol representation of the polynomial:
-# roi = roi_0*x_1 + roi_1*x_2 + ... + roi_8*x_3**2 - 1
+# r = r_0*x_1 + r_1*x_2 + ... + r_8*x_3**2 - 1
 state, sympy_repr = polymat.to_sympy(r).apply(state)
 print(f'r={sympy_repr}')
 
 # Apply Putinar's Positivstellensatz to ensure the cylindrical constraints (w1 and w2) 
-# are contained within the zero sublevel set of roi.
+# are contained within the zero sublevel set of r.
 state, constraint = sosopt.sos_constraint_putinar(
     name="rlevel",
     less_than_zero=r,
@@ -79,7 +79,7 @@ state, constraint = sosopt.sos_constraint_putinar(
     ),
 ).apply(state)
 
-# Minimize the volume surrogate of the zero sublevel set of roi
+# Minimize the volume surrogate of the zero sublevel set of r
 rQ_diag = sosopt.to_gram_matrix(r, x).diag()
 
 # Define the SOS problem
