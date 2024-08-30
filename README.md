@@ -24,7 +24,7 @@ $$r(x) := Z(x)^T Q_r Z(x)$$
 
 where $Z(x)$ is a vector of monomials in $x$.
 
-The SOS optimization problem is formulated to find $r(x)$ that minimizes a surrogate for the volume of the sublevel set of $r(x)$. The problem is defined as:
+The SOS optimization problem is formulated to find $r(x)$ that maximizes a surrogate for the volume of the sublevel set of $r(x)$. The problem is defined as:
 
 $$\begin{array}{ll}
     \text{find} & Q_r \in \mathbb R^{m \times m} \\
@@ -32,7 +32,7 @@ $$\begin{array}{ll}
     \text{subject to} & r(x) < 0 \quad \forall x \in \mathcal X_\text{Box} \\
 \end{array}$$
 
-This formulation seeks to minimizes the trace of $Q_r$ while ensuring that $r(x)$ is negative within the defined box constraint.
+This formulation seeks to minimize the trace of $Q_r$ while ensuring that $r(x)$ is negative within the defined box constraint.
 
 ``` python
 import polymat
