@@ -15,8 +15,6 @@ pip install sosopt
 This example demonstrates how to define and solve a simple SOS optimization problem using SOSOpt:
 
 ``` python
-from donotation import do
-import statemonad
 import polymat
 import sosopt
 
@@ -48,38 +46,30 @@ roi = roi_poly_var - 1
 state, sympy_repr = polymat.to_sympy(roi).apply(state)
 print(f'roi={sympy_repr}')
 
-# Define the SOS problem using the do notation, to simplify state passing
-@do()
-def define_sos_problem():
+# Apply Putinar's Positivstellensatz to ensure the cylindrical constraints (w1 and w2) 
+# are contained within the zero sublevel set of roi.
+state, constraint = sosopt.sos_constraint_putinar(
+    name="roi",
+    less_than_zero=roi,
+    domain=sosopt.set_(
+        less_than_zero={
+            "w1": w1,
+            "w2": w2,
+        },
+    ),
+).apply(state)
 
-    # Apply Putinar's Positivstellensatz to ensure the cylindrical constraints (w1 and w2) 
-    # are contained within the zero sublevel set of roi.
-    constraint = yield from sosopt.sos_constraint_putinar(
-        name="roi",
-        less_than_zero=roi,
-        domain=sosopt.set_(
-            less_than_zero={
-                "w1": w1,
-                "w2": w2,
-            },
-        ),
-    )
-
-    # Minimize the volume surrogate of the zero sublevel set of roi
-    roi_diag = sosopt.to_gram_matrix(roi, x).diag()
-
-    problem = sosopt.sos_problem(
-        lin_cost=-roi_diag.sum(),
-        quad_cost=roi_diag,
-        constraints=(constraint,),
-        solver=sosopt.cvx_opt_solver,   # choose solver
-        # solver=sosopt.mosek_solver,
-    )
-
-    return statemonad.from_(problem)
+# Minimize the volume surrogate of the zero sublevel set of roi
+roi_diag = sosopt.to_gram_matrix(roi, x).diag()
 
 # Define the SOS problem
-state, problem = define_sos_problem().apply(state)
+problem = sosopt.sos_problem(
+    lin_cost=-roi_diag.sum(),
+    quad_cost=roi_diag,
+    constraints=(constraint,),
+    solver=sosopt.cvx_opt_solver,   # choose solver
+    # solver=sosopt.mosek_solver,
+)
 
 # Solve the SOS problem
 state, sos_result = problem.solve().apply(state)
