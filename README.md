@@ -16,7 +16,7 @@ This example illustrates how to define and solve a simple SOS optimization probl
 
 In this example, we aim to compute a polynomial $r(x)$ whose zero-sublevel set contains a box constraint defined by polynomials $w_1(x)$ and $w_2(x)$:
 
-$$\mathcal X_\text{Box} := \{ x \mid w_1(x) \leq 0, w_2(x) \leq 0 \}$$
+$$\mathcal X_\text{Box} := \lbrace x \mid w_1(x) \leq 0, w_2(x) \leq 0 \rbrace$$
 
 The polynomial $r(x)$ is parameterized by the symmetric matrix $Q_r$, and is expressed as:
 
