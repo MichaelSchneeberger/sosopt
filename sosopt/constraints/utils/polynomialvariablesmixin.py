@@ -24,13 +24,14 @@ class PolynomialVariablesMixin(ABC):
 def to_polynomial_variables(
     condition: PolynomialExpression,
 ) -> StateMonad[State, VariableVectorExpression]:
-    """ Assume everything that is not a decision variable to be a polynomial variable """
+    """Assume everything that is not a decision variable to be a polynomial variable"""
 
     @do()
     def _to_polynomial_variables():
-
         # get indices in the same order as they appear in the variable vector
-        variable_indices = yield from polymat.to_variable_indices(condition.to_variable_vector())
+        variable_indices = yield from polymat.to_variable_indices(
+            condition.to_variable_vector()
+        )
 
         state = yield from statemonad.get[State]()
 
@@ -44,9 +45,6 @@ def to_polynomial_variables(
         polynomial_indices = tuple(gen_polynomial_indices())
 
         vector = polymat.from_variable_indices(polynomial_indices).cache()
-
-        # value = yield from polymat.to_sympy(vector)
-        # print(f'{value=}')
 
         return statemonad.from_[State](vector)
 

@@ -7,8 +7,8 @@ import statemonad
 
 from polymat.typing import PolynomialExpression, VariableVectorExpression, State
 
-from sosopt.constraints.decisionvariablesmixin import to_decision_variable_symbols
-from sosopt.constraints.polynomialvariablesmixin import to_polynomial_variables
+from sosopt.constraints.utils.decisionvariablesmixin import to_decision_variable_symbols
+from sosopt.constraints.utils.polynomialvariablesmixin import to_polynomial_variables
 from sosopt.constraints.positivepolynomialconstraint import PositivePolynomialConstraint
 from sosopt.constraints.putinarpsatzconstraint import (
     PutinarsPsatzConstraint,
@@ -36,7 +36,7 @@ class PositivePolynomialConstraintImpl(PositivePolynomialConstraint):
 def to_positive_polynomial_constraint(
     name: str,
     condition: PolynomialExpression,
-):  # -> StateMonad[State, PositivePolynomialConstraintImpl]:
+):
     """
     Given the polynomial,
     """
@@ -75,30 +75,25 @@ def to_putinar_psatz_constraint(
     name: str,
     condition: PolynomialExpression,
     domain: SemialgebraicSet,
-):  # -> StateMonad[State, PutinarPsatzConstraintImpl]:
+):
     @do()
     def init_putinar_psatz_constraint():
-        # print('to polynomial variable')
         polynomial_variables = yield from to_polynomial_variables(condition)
 
-        # value = yield from polymat.to_sympy(polynomial_variables)
-        # print(f'{value=}')
-
-        # print('get multipliers')
         multipliers = yield from define_multipliers(
             name=name,
             condition=condition,
             domain=domain,
             variables=polynomial_variables,
         )
-        # print('define sos polynomial')
         sos_polynomial = get_sos_polynomial(
             condition=condition,
             domain=domain,
             multipliers=multipliers,
         )
-        # print('get decision variables')
-        decision_variable_symbols = yield from to_decision_variable_symbols(sos_polynomial)
+        decision_variable_symbols = yield from to_decision_variable_symbols(
+            sos_polynomial
+        )
 
         constraint = PutinarPsatzConstraintImpl(
             name=name,

@@ -5,7 +5,7 @@ from collections.abc import Iterator
 
 from polymat.typing import MatrixExpression, VectorExpression
 
-from sosopt.constraints.decisionvariablesmixin import DecisionVariablesMixin
+from sosopt.constraints.utils.decisionvariablesmixin import DecisionVariablesMixin
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 
 
@@ -42,17 +42,17 @@ class ConstraintPrimitive(DecisionVariablesMixin):
     def eval(
         self, substitutions: dict[DecisionVariableSymbol, tuple[float, ...]]
     ) -> ConstraintPrimitive | None:
-        
         def not_in_substitutions(p: DecisionVariableSymbol):
             return p not in substitutions
 
         # find symbols that are not getting substituted
-        decision_variable_symbols = tuple(filter(not_in_substitutions, self.decision_variable_symbols))
-        # print(f'{self.name=}, {self.decision_variable_symbols=}, {decision_variable_symbols=}')
+        decision_variable_symbols = tuple(
+            filter(not_in_substitutions, self.decision_variable_symbols)
+        )
 
         def not_volatile(p: DecisionVariableSymbol):
             return p not in self.volatile_symbols
-        
+
         non_volatile = tuple(filter(not_volatile, decision_variable_symbols))
 
         # remove constraint primitive if not depending on decision variables

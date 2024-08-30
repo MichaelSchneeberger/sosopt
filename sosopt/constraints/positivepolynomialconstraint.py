@@ -11,13 +11,10 @@ from sosopt.constraints.constraintprimitives.constraintprimitive import (
 from sosopt.constraints.constraintprimitives.init import (
     init_positive_polynomial_constraint_primitive,
 )
-from sosopt.constraints.polynomialvariablesmixin import PolynomialVariablesMixin
+from sosopt.constraints.utils.polynomialvariablesmixin import PolynomialVariablesMixin
 
 
 class PositivePolynomialConstraint(PolynomialVariablesMixin, Constraint):
-    # a constraint is a dataclass with information that the user provided, some helper functions,
-    # and a function that
-
     @property
     @abstractmethod
     def condition(self) -> PolynomialExpression: ...

@@ -19,7 +19,7 @@ from polymat.typing import (
 from sosopt.constraints.constraintprimitives.constraintprimitive import (
     ConstraintPrimitive,
 )
-from sosopt.constraints.polynomialvariablesmixin import PolynomialVariablesMixin
+from sosopt.constraints.utils.polynomialvariablesmixin import PolynomialVariablesMixin
 from sosopt.polymat.abc import PolynomialVariable
 from sosopt.polymat.init import init_polynomial_variable
 from sosopt.semialgebraicset import SemialgebraicSet
@@ -30,9 +30,6 @@ from sosopt.constraints.constraint import Constraint
 
 
 class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
-    # a constraint is a dataclass with information that the user provided, some helper functions,
-    # and a function that
-
     # abstract properties
     #####################
 
@@ -130,9 +127,7 @@ def define_multiplier(
         )
         max_degree_multiplicand = int(max(multiplicand_degrees))
         degrees = max_degree - max_degree_multiplicand
-        # print(f'{name=}, {max_degree=}, {max_degree_multiplicand=}')
         degree_range = tuple(range(int(degrees) + 1))
-        # print(f'{name=}, {degree_range=}')
         expr = init_polynomial_variable(
             name=name,
             monomials=variables.combinations(degree_range).cache(),
@@ -162,7 +157,6 @@ def define_multipliers(
 
         vector = polymat.v_stack(gen_vector()).to_vector()
         max_degree = yield from polymat.to_degree(vector, variables=variables)
-        # max_degree = yield from polymat.to_degree(condition, variables=variables)
         max_degree = int(np.max(max_degree))
 
         def gen_multipliers():

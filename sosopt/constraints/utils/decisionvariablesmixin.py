@@ -19,8 +19,6 @@ class DecisionVariablesMixin(ABC):
 def to_decision_variable_symbols(expr: MatrixExpression):
     @do()
     def _to_decision_variable_symbols():
-        # variables = yield from polymat.to_variables(expr)
-
         variable_indices = yield from polymat.to_variable_indices(expr)
 
         state = yield from statemonad.get[State]()

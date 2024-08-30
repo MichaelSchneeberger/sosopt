@@ -11,7 +11,7 @@ from polymat.typing import (
 from sosopt.constraints.constraintprimitives.constraintprimitive import (
     ConstraintPrimitive,
 )
-from sosopt.constraints.polynomialvariablesmixin import PolynomialVariablesMixin
+from sosopt.constraints.utils.polynomialvariablesmixin import PolynomialVariablesMixin
 from sosopt.utils.grammatrix import to_gram_matrix
 
 

@@ -5,7 +5,7 @@ from abc import abstractmethod
 from sosopt.constraints.constraintprimitives.constraintprimitive import (
     ConstraintPrimitive,
 )
-from sosopt.constraints.decisionvariablesmixin import DecisionVariablesMixin
+from sosopt.constraints.utils.decisionvariablesmixin import DecisionVariablesMixin
 
 
 class Constraint(DecisionVariablesMixin):
