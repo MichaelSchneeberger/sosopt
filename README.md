@@ -28,11 +28,11 @@ The SOS optimization problem is formulated to find $r(x)$ that minimizes a surro
 
 $$\begin{array}{ll}
     \text{find} & Q_r \in \mathbb R^{m \times m} \\
-    \text{maximize} & \text{tr}( Q_r ) \\
+    \text{minimize} & \text{tr}( Q_r ) \\
     \text{subject to} & r(x) < 0 \quad \forall x \in \mathcal X_\text{Box} \\
 \end{array}$$
 
-This formulation seeks to maximize the trace of $Q_r$ while ensuring that $r(x)$ is negative within the defined box constraint.
+This formulation seeks to minimizes the trace of $Q_r$ while ensuring that $r(x)$ is negative within the defined box constraint.
 
 ``` python
 import polymat
