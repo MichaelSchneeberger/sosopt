@@ -108,5 +108,5 @@ print(f'{sos_result.solver_data.solution}')    # Expected output: array([ 5.4429
 
 Below are some references related to this project:
 
-* [PolyMat](https://github.com/MichaelSchneeberger/sosmap) is a Python library designed for the representation and manipulation of multivariate polynomial matrices.
+* [PolyMat](https://github.com/MichaelSchneeberger/polymat) is a Python library designed for the representation and manipulation of multivariate polynomial matrices.
 * [Advanced safety filter](https://github.com/MichaelSchneeberger/advanced-safety-filter) includes Jupyter notebooks that model and simulate the concept of an advanced safety filter using SOSOpt.
