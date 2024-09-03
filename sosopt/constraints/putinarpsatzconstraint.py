@@ -20,11 +20,11 @@ from sosopt.constraints.constraintprimitives.constraintprimitive import (
     ConstraintPrimitive,
 )
 from sosopt.constraints.utils.polynomialvariablesmixin import PolynomialVariablesMixin
-from sosopt.polymat.abc import PolynomialVariable
+from sosopt.polymat.polynomialvariable import PolynomialVariable
 from sosopt.polymat.init import init_polynomial_variable
 from sosopt.semialgebraicset import SemialgebraicSet
 from sosopt.constraints.constraintprimitives.init import (
-    init_positive_polynomial_constraint_primitive,
+    init_positive_polynomial_primitive,
 )
 from sosopt.constraints.constraint import Constraint
 
@@ -54,16 +54,15 @@ class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
     # class method
     ##############
 
-    @property
     @override
-    def constraint_primitives(
+    def get_constraint_primitives(
         self,
     ) -> tuple[ConstraintPrimitive, ...]:
         """create 1 positive polynomial primitive for the condition and for each multiplier"""
 
         def gen_children():
             for multiplier in self.multipliers.values():
-                yield init_positive_polynomial_constraint_primitive(
+                yield init_positive_polynomial_primitive(
                     name=self.name,
                     children=tuple(),  # no children
                     condition=multiplier,
@@ -80,7 +79,7 @@ class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
 
         volatile_symbols = tuple(gen_volatile_symbols())
 
-        primitive = init_positive_polynomial_constraint_primitive(
+        primitive = init_positive_polynomial_primitive(
             name=self.name,
             children=children,
             condition=self.sos_polynomial,

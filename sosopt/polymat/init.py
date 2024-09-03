@@ -4,23 +4,41 @@ from dataclassabc import dataclassabc
 
 import polymat
 from polymat.typing import (
-    ExpressionTreeMixin,
+    ExpressionNode,
     VariableExpression,
     MonomialVectorExpression,
     VariableVectorExpression,
 )
 
+from sosopt.polymat.decisionvariableexpression import DecisionVariableExpression
+from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.polymat.from_ import define_variable
 from sosopt.polymat.polynomialvariable import PolynomialVariable
 
 
 @dataclassabc(frozen=True)
+class DecisionVariableExpressionImpl(DecisionVariableExpression):
+    child: ExpressionNode
+    symbol: DecisionVariableSymbol
+
+    @override
+    def copy(self, /, **changes):
+        return replace(self, **changes)
+
+
+def init_decision_variable_expression(child: ExpressionNode, symbol: DecisionVariableSymbol):
+    return DecisionVariableExpressionImpl(
+        child=child,
+        symbol=symbol,
+    )
+
+
+@dataclassabc(frozen=True)
 class PolynomialVariableImpl(PolynomialVariable):
-    child: ExpressionTreeMixin
-    coefficients: tuple[tuple[VariableExpression]]
-    n_row: int
-    n_col: int
     name: str
+    child: ExpressionNode
+    coefficients: tuple[tuple[VariableExpression]]
+    shape: tuple[int, int]
     monomials: MonomialVectorExpression
     polynomial_variables: VariableVectorExpression
 
@@ -29,56 +47,38 @@ class PolynomialVariableImpl(PolynomialVariable):
         return replace(self, **changes)
 
 
-def init_polynomial_variable(
+def init_symmetric_matrix_variable(
     name: str,
-    monomials: MonomialVectorExpression | None = None,
-    polynomial_variables: VariableVectorExpression | None = None,
-    n_row: int = 1,
-    n_col: int = 1,
+    monomials: MonomialVectorExpression,
+    polynomial_variables: VariableVectorExpression,
+    size: int,
 ):
-    match (monomials, polynomial_variables):
-        case (None, None):
-            # empty variable vector
-            polynomial_variables = polymat.from_variable_indices(tuple())
-            monomials = polymat.from_(1).to_monomial_vector()
-        case (None, _) | (_, None):
-            raise Exception('Both `monomials` and `polynomial_variables` must either be provided or set to None otherwise.')
+    entries = {}
 
     def gen_rows():
-        for row in range(n_row):
+        for row in range(size):
 
             def gen_cols():
-                for col in range(n_col):
-                    match (n_row, n_col):
-                        case (1, 1):
-                            elem_name = name
-                        case (1, _):
-                            elem_name = f"{name}_{col+1}"
-                        case (_, 1):
-                            elem_name = f"{name}_{row+1}"
-                        case _:
-                            elem_name = f"{name}_{row+1}_{col+1}"
+                for col in range(size):
+                    if row <= col:
+                        param = define_variable(
+                            name=f"{name}{row+1}{col+1}",
+                            size=monomials,
+                        )
+                        entry = param, param.T @ monomials
 
-                    # param = monom.parametrize(variable=OptVariable(elem_name))
-                    param = define_variable(elem_name, size=monomials)
+                        entries[row, col] = entry
 
-                    yield param, param.T @ monomials
+                        yield entry
+                    else:
+                        yield entries[col, row]
 
-            params, polys = tuple(zip(*gen_cols()))
+            params, polynomials = tuple(zip(*gen_cols()))
+            yield params, polymat.h_stack(polynomials)
 
-            if 1 < len(polys):
-                expr = polymat.h_stack(polys)
-            else:
-                expr = polys[0]
+    params, row_vectors = tuple(zip(*gen_rows()))
 
-            yield params, expr
-
-    params, polys = tuple(zip(*gen_rows()))
-
-    if 1 < len(polys):
-        expr = polymat.v_stack(polys)
-    else:
-        expr = polys[0]
+    expr = polymat.v_stack(row_vectors)
 
     return PolynomialVariableImpl(
         name=name,
@@ -86,6 +86,71 @@ def init_polynomial_variable(
         coefficients=params,
         polynomial_variables=polynomial_variables,
         child=expr.child,
-        n_row=n_row,
-        n_col=n_col,
+        shape=(size, size),
+    )
+
+
+def init_polynomial_variable(
+    name: str,
+    monomials: MonomialVectorExpression | None = None,
+    polynomial_variables: VariableVectorExpression | None = None,
+    shape: tuple[int, int] = (1, 1),
+):
+    match (monomials, polynomial_variables):
+        case (None, None):
+            # empty variable vector
+            polynomial_variables = polymat.from_variable_indices(tuple())
+            monomials = polymat.from_(1).to_monomial_vector()
+        case (None, _) | (_, None):
+            raise Exception(
+                "Both `monomials` and `polynomial_variables` must either be provided or set to None otherwise."
+            )
+
+    match shape:
+        case (1, 1):
+            get_name = lambda r, c: name  # noqa: E731
+        case (1, _):
+            get_name = lambda r, c: f"{name}{c+1}"  # noqa: E731
+        case (_, 1):
+            get_name = lambda r, c: f"{name}{r+1}"  # noqa: E731
+        case _:
+            get_name = lambda r, c: f"{name}{r+1}{c+1}"  # noqa: E731
+
+    n_rows, n_cols = shape
+
+    def gen_rows():
+        for row in range(n_rows):
+
+            def gen_cols():
+                for col in range(n_cols):
+                    param = define_variable(
+                        name=get_name(row, col),
+                        size=monomials,
+                    )
+
+                    yield param, param.T @ monomials
+
+            params, polynomials = tuple(zip(*gen_cols()))
+
+            if 1 < len(polynomials):
+                expr = polymat.h_stack(polynomials)
+            else:
+                expr = polynomials[0]
+
+            yield params, expr
+
+    params, row_vectors = tuple(zip(*gen_rows()))
+
+    if 1 < len(row_vectors):
+        expr = polymat.v_stack(row_vectors)
+    else:
+        expr = row_vectors[0]
+
+    return PolynomialVariableImpl(
+        name=name,
+        monomials=monomials,
+        coefficients=params,
+        polynomial_variables=polynomial_variables,
+        child=expr.child,
+        shape=shape,
     )

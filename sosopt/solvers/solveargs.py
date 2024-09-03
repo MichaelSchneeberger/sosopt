@@ -8,7 +8,7 @@ import polymat
 from polymat.typing import ArrayRepr, PolynomialExpression, VectorExpression, VariableVectorExpression
 
 
-class SolveArgs(NamedTuple):
+class SolverArgs(NamedTuple):
     lin_cost: ArrayRepr
     quad_cost: ArrayRepr | None
     l_data: tuple[ArrayRepr, ...]
@@ -17,7 +17,7 @@ class SolveArgs(NamedTuple):
 
 
 @do()
-def get_solve_args(
+def get_solver_args(
         indices: VariableVectorExpression | tuple[int, ...],
         lin_cost: PolynomialExpression,
         quad_cost: VectorExpression | None = None,
@@ -74,7 +74,7 @@ def get_solve_args(
     assert_degree_of_constraints()
 
     return statemonad.from_(
-        SolveArgs(
+        SolverArgs(
             lin_cost=lin_cost_array,
             quad_cost=quad_cost_array,
             l_data=l_data_array,

@@ -4,13 +4,13 @@ from polymat.typing import MatrixExpression, VariableVectorExpression
 
 from sosopt.polymat.decisionvariableexpression import (
     DecisionVariableExpression,
-    SingleDimDecisionVariableExpression,
+    SingleValueDecisionVariableExpression,
 )
 
 @overload
 def define_variable(
     name: str,
-) -> SingleDimDecisionVariableExpression: ...
+) -> SingleValueDecisionVariableExpression: ...
 @overload
 def define_variable(
     name: str,

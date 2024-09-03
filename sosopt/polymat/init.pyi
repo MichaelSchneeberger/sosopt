@@ -1,22 +1,23 @@
 from typing import overload
 
 from polymat.typing import (
-    ExpressionTreeMixin,
+    ExpressionNode,
     VariableVectorExpression,
     MonomialVectorExpression,
 )
 
-from sosopt.polymat.abc import (
+from sosopt.polymat.polynomialvariable import (
     PolynomialMatrixVariable,
     PolynomialVariable,
     PolynomialRowVectorVariable,
     PolynomialVectorVariable,
+    PolynomialSymmetricMatrixVariable,
 )
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.polymat.decisionvariableexpression import DecisionVariableExpression
 
 def init_decision_variable_expression(
-    child: ExpressionTreeMixin, variable: DecisionVariableSymbol
+    child: ExpressionNode, symbol: DecisionVariableSymbol
 ) -> DecisionVariableExpression: ...
 @overload
 def init_polynomial_variable(
@@ -46,3 +47,9 @@ def init_polynomial_variable(
     n_row: int,
     n_col: int,
 ) -> PolynomialMatrixVariable: ...
+def init_symmetric_matrix_variable(
+        name: str,
+        monomials: MonomialVectorExpression,
+        polynomial_variables: VariableVectorExpression,
+        size: int,
+) -> PolynomialSymmetricMatrixVariable: ...

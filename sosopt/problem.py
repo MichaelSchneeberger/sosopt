@@ -8,18 +8,19 @@ from donotation import do
 import statemonad
 from statemonad.typing import StateMonad
 
-import polymat
 from polymat.typing import PolynomialExpression, VectorExpression, State
 
 from sosopt.constraints.constraint import Constraint
 from sosopt.constraints.constraintprimitives.constraintprimitive import (
     ConstraintPrimitive,
+    LinearConstraintPrimitive,
+    SDPConstraintPrimitive,
 )
-from sosopt.constraints.constraintprimitives.positivepolynomialconstraintprimitive import (
-    PositivePolynomialConstraintPrimitive,
+from sosopt.constraints.constraintprimitives.positivepolynomialprimitive import (
+    PositivePolynomialPrimitive,
 )
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
-from sosopt.solvers.solveargs import get_solve_args
+from sosopt.solvers.solveargs import get_solver_args
 from sosopt.solvers.solvermixin import SolverMixin
 from sosopt.solvers.solverdata import SolverData
 
@@ -90,20 +91,27 @@ class SOSProblem:
                 i for _, index_range in variable_index_ranges for i in index_range
             )
 
-            # filter positive polynomial constraints
+            # filter positive semidefinite constraints
             s_data = tuple(
                 primitive.to_constraint_vector()
                 for primitive in self.constraint_primitives
-                if isinstance(primitive, PositivePolynomialConstraintPrimitive)
+                if isinstance(primitive, SDPConstraintPrimitive)
             )
 
-            solver_args = yield from get_solve_args(
+            # filter linear constraints
+            l_data = tuple(
+                primitive.to_constraint_vector()
+                for primitive in self.constraint_primitives
+                if isinstance(primitive, LinearConstraintPrimitive)
+            )
+
+            solver_args = yield from get_solver_args(
                 indices=indices,
                 lin_cost=self.lin_cost,
                 quad_cost=self.quad_cost,
                 s_data=s_data,
                 q_data=tuple(),
-                l_data=tuple(),
+                l_data=l_data,
             )
 
             solver_data = self.solver.solve(solver_args)
@@ -132,3 +140,26 @@ class SOSProblem:
             return statemonad.from_(sos_result_mapping)
 
         return solve_sdp()
+
+
+def sos_problem(
+    lin_cost: PolynomialExpression,
+    constraints: tuple[Constraint, ...],
+    solver: SolverMixin,
+    quad_cost: VectorExpression | None = None,
+):
+    def gen_primitives():
+        for constraint in constraints:
+            for primitive in constraint.get_constraint_primitives():
+                yield primitive
+
+    primitives = tuple(gen_primitives())
+
+    return SOSProblem(
+        lin_cost=lin_cost,
+        quad_cost=quad_cost,
+        constraints=constraints,
+        solver=solver,
+        nested_constraint_primitives=primitives,
+    )
+

@@ -1,22 +1,17 @@
-# from abc import abstractmethod
-
 from polymat.typing import (
-    MatrixExpression,
+    VariableExpression,
 )
 
-# from sosopt.polymat.decisionvariable import DecisionVariable
 
-
-class DecisionVariableExpression(MatrixExpression):
+class DecisionVariableExpression(VariableExpression):
     """
     Expression that is a polynomial variable, i.e. an expression that cannot be
     reduced further.
     """
 
-    # @property
-    # @abstractmethod
-    # def variable(self) -> DecisionVariable: ...
+    def iterate_symbols(self):
+        yield self.symbol
 
 
-class SingleDimDecisionVariableExpression(DecisionVariableExpression):
+class SingleValueDecisionVariableExpression(DecisionVariableExpression):
     pass

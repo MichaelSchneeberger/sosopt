@@ -9,15 +9,12 @@ from polymat.typing import (
 )
 
 from sosopt.constraints.constraintprimitives.constraintprimitive import (
-    ConstraintPrimitive,
+    SDPConstraintPrimitive,
 )
 from sosopt.constraints.utils.polynomialvariablesmixin import PolynomialVariablesMixin
-from sosopt.utils.grammatrix import to_gram_matrix
 
 
-class PositivePolynomialConstraintPrimitive(
-    PolynomialVariablesMixin, ConstraintPrimitive
-):
+class PositivePolynomialPrimitive(PolynomialVariablesMixin, SDPConstraintPrimitive):
     @property
     @override
     @abstractmethod
@@ -25,7 +22,8 @@ class PositivePolynomialConstraintPrimitive(
 
     @property
     def gram_matrix(self):
-        return to_gram_matrix(self.condition, self.polynomial_variables)
+        return self.condition.quadratic_in(self.polynomial_variables)
 
+    @override
     def to_constraint_vector(self) -> VectorExpression:
         return self.gram_matrix.reshape(-1, 1).to_vector()

@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
+from statemonad.typing import StateMonad
+
+from polymat.typing import State
+
 from sosopt.constraints.constraintprimitives.constraintprimitive import (
     ConstraintPrimitive,
 )
@@ -17,9 +21,8 @@ class Constraint(DecisionVariablesMixin):
     @abstractmethod
     def name(self) -> str: ...
 
-    @property
     @abstractmethod
-    def constraint_primitives(
+    def get_constraint_primitives(
         self,
     ) -> tuple[ConstraintPrimitive, ...]:
         """

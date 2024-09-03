@@ -1,5 +1,6 @@
 from abc import abstractmethod
 
+import polymat
 from polymat.typing import (
     MatrixExpression,
     MonomialVectorExpression,
@@ -9,7 +10,11 @@ from polymat.typing import (
 from sosopt.polymat.decisionvariableexpression import DecisionVariableExpression
 
 
-class PolynomialVariable(MatrixExpression):
+class PolynomialMatrixVariable(MatrixExpression):
+    @property
+    @abstractmethod
+    def name(self) -> str: ...
+
     @property
     @abstractmethod
     def coefficients(self) -> tuple[tuple[DecisionVariableExpression]]: ...
@@ -24,21 +29,25 @@ class PolynomialVariable(MatrixExpression):
 
     @property
     @abstractmethod
-    def n_row(self) -> int: ...
-
-    @property
-    @abstractmethod
-    def n_col(self) -> int: ...
-
-    @property
-    @abstractmethod
-    def name(self) -> str: ...
+    def shape(self) -> tuple[int, int]: ...
 
     def iterate_coefficients(self):
-        for row in range(self.n_row):
-            for col in range(self.n_col):
+        n_rows, n_cols = self.shape
+
+        for row in range(n_rows):
+            for col in range(n_cols):
                 yield (row, col), self.coefficients[row][col]
 
-    def to_symbols(self):
+    def iterate_symbols(self):
         for _, variable in self.iterate_coefficients():
             yield variable.symbol
+
+    def to_coefficient_vector(self) -> VariableVectorExpression:
+        return polymat.v_stack(v for _, v in self.iterate_coefficients())
+
+
+PolynomialMatrixVariable = PolynomialMatrixVariable
+PolynomialSymmetricMatrixVariable = PolynomialMatrixVariable
+PolynomialVectorVariable = PolynomialMatrixVariable
+PolynomialRowVectorVariable = PolynomialMatrixVariable
+PolynomialVariable = PolynomialMatrixVariable

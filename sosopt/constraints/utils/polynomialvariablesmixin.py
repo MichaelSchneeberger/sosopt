@@ -8,7 +8,7 @@ from statemonad.typing import StateMonad
 import polymat
 from polymat.typing import (
     State,
-    PolynomialExpression,
+    MatrixExpression,
     VariableVectorExpression,
 )
 
@@ -22,7 +22,7 @@ class PolynomialVariablesMixin(ABC):
 
 
 def to_polynomial_variables(
-    condition: PolynomialExpression,
+    condition: MatrixExpression,
 ) -> StateMonad[State, VariableVectorExpression]:
     """Assume everything that is not a decision variable to be a polynomial variable"""
 

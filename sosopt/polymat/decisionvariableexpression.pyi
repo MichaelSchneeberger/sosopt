@@ -1,23 +1,24 @@
 from abc import abstractmethod
+from typing import Iterable
 from polymat.typing import (
     ExpressionTreeMixin,
     VariableExpression,
-    SingleDimVariableExpression,
+    SingleValueVariableExpression,
 )
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 
 class DecisionVariableExpression(VariableExpression):
     def cache(self) -> DecisionVariableExpression: ...
-    def copy(
-        self, child: ExpressionTreeMixin
-    ) -> DecisionVariableExpression: ...
-
+    def copy(self, child: ExpressionTreeMixin) -> DecisionVariableExpression: ...
     @property
     @abstractmethod
     def symbol(self) -> DecisionVariableSymbol: ...
+    def iterate_symbols(self) -> Iterable[DecisionVariableSymbol]: ...
 
-class SingleDimDecisionVariableExpression(
-    SingleDimVariableExpression, VariableExpression
+class SingleValueDecisionVariableExpression(
+    SingleValueVariableExpression, VariableExpression
 ):
-    def cache(self) -> SingleDimDecisionVariableExpression: ...
-    def copy(self, child: ExpressionTreeMixin) -> SingleDimDecisionVariableExpression: ...
+    def cache(self) -> SingleValueDecisionVariableExpression: ...
+    def copy(
+        self, child: ExpressionTreeMixin
+    ) -> SingleValueDecisionVariableExpression: ...

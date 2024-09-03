@@ -3,7 +3,7 @@ import numpy as np
 
 from dataclassabc import dataclassabc
 
-from sosopt.solvers.solveargs import SolveArgs
+from sosopt.solvers.solveargs import SolverArgs
 from sosopt.solvers.solverdata import SolverData
 from sosopt.solvers.solvermixin import SolverMixin
 
@@ -17,7 +17,7 @@ class MosekSolverResult(SolverData):
 
 
 class MosekSolver(SolverMixin):
-    def solve(self, info: SolveArgs):
+    def solve(self, info: SolverArgs):
         def get_col_indices(n_col):
             n_var = int(np.sqrt(n_col))
 

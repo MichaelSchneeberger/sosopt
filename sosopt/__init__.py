@@ -1,106 +1,46 @@
 from __future__ import annotations
 
-from polymat.typing import PolynomialExpression, VectorExpression
-
+from sosopt.constraints.from_ import (
+    sos_constraint as _sos_constraint,
+    zero_polynomial_constraint as _zero_polynomial_constraint,
+    sos_constraint_matrix as _sos_constraint_matrix,
+    sos_constraint_putinar as _sos_constraint_putinar,
+)
+# from sosopt.utils.grammatrix import to_gram_matrix as _to_gram_matrix
+from sosopt.polymat.init import (
+    init_polynomial_variable as _init_polynomial_variable,
+    init_symmetric_matrix_variable as _init_symmetric_matrix_variable,
+)
+from sosopt.polymat.from_ import define_variable as _define_variable
 from sosopt.solvers.cvxoptsolver import CVXOPTSolver
 from sosopt.solvers.moseksolver import MosekSolver
-from sosopt.solvers.solveargs import get_solve_args as _get_solve_args
-from sosopt.utils.grammatrix import to_gram_matrix as _to_gram_matrix
-from sosopt.constraints.constraint import Constraint
+from sosopt.solvers.solveargs import get_solver_args as _get_solver_args
 from sosopt.constraints.putinarpsatzconstraint import (
     define_multiplier as _define_multiplier,
 )
-from sosopt.solvers.solvermixin import SolverMixin
-from sosopt.polymat.from_ import define_variable as _define_variable
-from sosopt.polymat.init import (
-    init_polynomial_variable as _init_polynomial_variable,
-)
-from sosopt.problem import SOSProblem
-from sosopt.semialgebraicset import SemialgebraicSet
-from sosopt.constraints.init import (
-    to_positive_polynomial_constraint,
-    to_putinar_psatz_constraint,
-)
+from sosopt.semialgebraicset import set_ as _set_
+from sosopt.problem import sos_problem as _sos_problem
 
 cvx_opt_solver = CVXOPTSolver()
 mosek_solver = MosekSolver()
 
+# Creating Optimization Variables
 define_variable = _define_variable
-define_multiplier = _define_multiplier
 define_polynomial = _init_polynomial_variable
+define_symmetric_matrix = _init_symmetric_matrix_variable
+define_multiplier = _define_multiplier
 
-to_gram_matrix = _to_gram_matrix
+# # Polynomial Expression Manipulations
+# to_gram_matrix = _to_gram_matrix
 
-solve_args = _get_solve_args
+# Constraint Definition
+zero_polynomial_constraint = _zero_polynomial_constraint
+sos_constraint = _sos_constraint
+sos_constraint_matrix = _sos_constraint_matrix
+sos_constraint_putinar = _sos_constraint_putinar
 
-def sos_constraint(
-    name: str,
-    greater_than_zero: PolynomialExpression | None = None,
-    less_than_zero: PolynomialExpression | None = None,
-):
-    if greater_than_zero is not None:
-        condition = greater_than_zero
-    elif less_than_zero is not None:
-        condition = -less_than_zero
-    else:
-        raise Exception("SOS constraint requires condition.")
+set_ = _set_
 
-    return to_positive_polynomial_constraint(
-        name=name,
-        condition=condition,
-    )
-
-
-def sos_constraint_putinar(
-    name: str,
-    domain: SemialgebraicSet,
-    greater_than_zero: PolynomialExpression | None = None,
-    less_than_zero: PolynomialExpression | None = None,
-):
-    if greater_than_zero is not None:
-        condition = greater_than_zero
-    elif less_than_zero is not None:
-        condition = -less_than_zero
-    else:
-        raise Exception("SOS constraint requires condition.")
-
-    return to_putinar_psatz_constraint(
-        name,
-        condition=condition,
-        domain=domain,
-    )
-
-
-def set_(
-    equal_zero: dict[str, VectorExpression] = {},
-    greater_than_zero: dict[str, VectorExpression] = {},
-    less_than_zero: dict[str, VectorExpression] = {},
-):
-    inequalities = greater_than_zero | {n: -p for n, p in less_than_zero.items()}
-
-    return SemialgebraicSet(
-        inequalities=inequalities,
-        equalities=equal_zero,
-    )
-
-
-def sos_problem(
-    lin_cost: PolynomialExpression,
-    constraints: tuple[Constraint, ...],
-    solver: SolverMixin,
-    quad_cost: VectorExpression | None = None,
-):
-    def gen_primitives():
-        for constraint in constraints:
-            for primitive in constraint.constraint_primitives:
-                yield primitive
-
-    primitives = tuple(gen_primitives())
-
-    return SOSProblem(
-        lin_cost=lin_cost,
-        quad_cost=quad_cost,
-        constraints=constraints,
-        solver=solver,
-        nested_constraint_primitives=primitives,
-    )
+solve_args = _get_solver_args  # depricate
+solver_args = _get_solver_args
+sos_problem = _sos_problem

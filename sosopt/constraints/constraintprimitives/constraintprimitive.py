@@ -38,7 +38,6 @@ class ConstraintPrimitive(DecisionVariablesMixin):
         yield self
         yield from self.children
 
-    # @abstractmethod
     def eval(
         self, substitutions: dict[DecisionVariableSymbol, tuple[float, ...]]
     ) -> ConstraintPrimitive | None:
@@ -73,3 +72,8 @@ class ConstraintPrimitive(DecisionVariablesMixin):
 
     @abstractmethod
     def to_constraint_vector() -> VectorExpression: ...
+
+
+class LinearConstraintPrimitive(ConstraintPrimitive): ...
+class QuadraticConeConstraintPrimitive(ConstraintPrimitive): ...
+class SDPConstraintPrimitive(ConstraintPrimitive): ...
