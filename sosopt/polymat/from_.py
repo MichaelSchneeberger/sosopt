@@ -3,7 +3,6 @@ from typing import Iterator
 
 from donotation import do
 import statemonad
-from statemonad.typing import StateMonad
 
 import polymat
 from polymat.typing import (
@@ -15,7 +14,156 @@ from polymat.typing import (
 
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.polymat.init import init_polynomial_variable
-from sosopt.polymat.polynomialvariable import PolynomialVariable
+
+
+def define_variable(
+    name: DecisionVariableSymbol | str,
+    size: int | MatrixExpression | None = None,
+):
+    """
+    Defines a decision variable of the SOS optimizaton problem.
+    """
+    
+    if not isinstance(name, DecisionVariableSymbol):
+        symbol = DecisionVariableSymbol(name)
+    else:
+        symbol = name
+
+    return polymat.define_variable(name=symbol, size=size)
+
+    # if isinstance(size, MatrixExpression):
+    #     n_size = size.child
+    # else:
+    #     n_size = size
+
+    # child=init_define_variable(
+    #     symbol=symbol, size=n_size, stack=get_frame_summary()
+    # )
+
+    # return init_decision_variable_expression(
+    #     child=child,
+    #     symbol=symbol,
+    # )
+
+
+def define_polynomial(
+    name: str,
+    monomials: MonomialVectorExpression | None = None,
+    polynomial_variables: VariableVectorExpression | None = None,
+    shape: tuple[int, int] = (1, 1),
+):
+    """
+    Defines a polynomial matrix variable as a `polymat.typing.MatrixExpression`, 
+    where the coefficients of the polynomials are decision variables. The polynomial 
+    matrix is represented by a combination of monomials, decision variable coefficients, 
+    and polynomial variables.
+
+    Parameters:
+    ----------
+    name : str
+        The name assigned to the polynomial matrix variable.
+    monomials : MonomialVectorExpression, optional
+        A vector of monomials that determines the structure of the polynomial matrix. If None, 
+        monomials are assumed to be a single element 1.
+    polynomial_variables : VariableVectorExpression, optional
+        A vector of polynomial variables used to define the polynomial matrix. If None, 
+        no polynomial variables are considered, reducing the polynomial variable to a constant variable.
+    shape : tuple[int, int], optional
+        The shape of the resulting polynomial matrix. Defaults to a scalar polynomial (1, 1).
+
+    Returns:
+    --------
+    PolynomialMatrix:
+        A matrix of polynomial expressions where the coefficients are decision variables.
+        This matrix is equipped with its monomial terms, coefficients, and polynomial variables.
+
+    Example:
+    --------
+    ```python
+    x = polymat.define_variable('x')
+
+    # Define a polynomial matrix variable 'p' with specific monomials and polynomial variables
+    p = sosopt.define_polynomial(
+        name='p',
+        monomials=x.combinations((0, 1, 2)),  # Monomial vector for degrees 0, 1, and 2
+        polynomial_variables=x,               # Polynomial variables used in 'p'
+    )
+
+    # Convert polynomial matrix 'p' to sympy representation and print
+    state, p_sympy = polymat.to_sympy(p).apply(state)
+    # Expected output: p_sympy = p_0 + p_1*x + p_2*x**2
+    print(f'{p_sympy=}')
+
+    # Convert and print the monomial vector
+    state, monom_sympy = polymat.to_sympy(p.monomials.T).apply(state)
+    # Expected output: monom_sympy = Matrix([[1, x, x**2]])
+    print(f'{monom_sympy=}')
+
+    # Convert and print the coefficient vector
+    state, coeff_sympy = polymat.to_sympy(p.to_coefficient_vector().T).apply(state)
+    # Expected output: coeff_sympy = Matrix([[p_0, p_1, p_2]])
+    print(f'{coeff_sympy=}')
+    ```
+    """
+
+    match (monomials, polynomial_variables):
+        case (None, None):
+            # empty variable vector
+            polynomial_variables = polymat.from_variable_indices(tuple())
+            monomials = polymat.from_(1).to_monomial_vector()
+        case (None, _) | (_, None):
+            raise Exception(
+                "Both `monomials` and `polynomial_variables` must either be provided or set to None otherwise."
+            )
+
+    match shape:
+        case (1, 1):
+            get_name = lambda r, c: name  # noqa: E731
+        case (1, _):
+            get_name = lambda r, c: f"{name}{c+1}"  # noqa: E731
+        case (_, 1):
+            get_name = lambda r, c: f"{name}{r+1}"  # noqa: E731
+        case _:
+            get_name = lambda r, c: f"{name}{r+1}{c+1}"  # noqa: E731
+
+    n_rows, n_cols = shape
+
+    def gen_rows():
+        for row in range(n_rows):
+
+            def gen_cols():
+                for col in range(n_cols):
+                    param = define_variable(
+                        name=get_name(row, col),
+                        size=monomials,
+                    )
+
+                    yield param, param.T @ monomials
+
+            params, polynomials = tuple(zip(*gen_cols()))
+
+            if 1 < len(polynomials):
+                expr = polymat.h_stack(polynomials)
+            else:
+                expr = polynomials[0]
+
+            yield params, expr
+
+    params, row_vectors = tuple(zip(*gen_rows()))
+
+    if 1 < len(row_vectors):
+        expr = polymat.v_stack(row_vectors)
+    else:
+        expr = row_vectors[0]
+
+    return init_polynomial_variable(
+        name=name,
+        monomials=monomials,
+        coefficients=params,
+        polynomial_variables=polynomial_variables,
+        child=expr.child,
+        shape=shape,
+    )
 
 
 def define_multiplier(
@@ -23,7 +171,7 @@ def define_multiplier(
     degree: int,
     multiplicand: MatrixExpression,
     variables: VariableVectorExpression,
-) -> StateMonad[State, PolynomialVariable]:
+):
     """
     Defines a polynomial multiplier intended to be multiplied with a given polynomial 
     (the multiplicand), ensuring that the resulting product does not exceed a specified degree.
@@ -134,99 +282,6 @@ def define_symmetric_matrix(
         child=expr.child,
         shape=(size, size),
     )
-
-
-def define_polynomial(
-    name: str,
-    monomials: MonomialVectorExpression | None = None,
-    polynomial_variables: VariableVectorExpression | None = None,
-    shape: tuple[int, int] = (1, 1),
-):
-    match (monomials, polynomial_variables):
-        case (None, None):
-            # empty variable vector
-            polynomial_variables = polymat.from_variable_indices(tuple())
-            monomials = polymat.from_(1).to_monomial_vector()
-        case (None, _) | (_, None):
-            raise Exception(
-                "Both `monomials` and `polynomial_variables` must either be provided or set to None otherwise."
-            )
-
-    match shape:
-        case (1, 1):
-            get_name = lambda r, c: name  # noqa: E731
-        case (1, _):
-            get_name = lambda r, c: f"{name}{c+1}"  # noqa: E731
-        case (_, 1):
-            get_name = lambda r, c: f"{name}{r+1}"  # noqa: E731
-        case _:
-            get_name = lambda r, c: f"{name}{r+1}{c+1}"  # noqa: E731
-
-    n_rows, n_cols = shape
-
-    def gen_rows():
-        for row in range(n_rows):
-
-            def gen_cols():
-                for col in range(n_cols):
-                    param = define_variable(
-                        name=get_name(row, col),
-                        size=monomials,
-                    )
-
-                    yield param, param.T @ monomials
-
-            params, polynomials = tuple(zip(*gen_cols()))
-
-            if 1 < len(polynomials):
-                expr = polymat.h_stack(polynomials)
-            else:
-                expr = polynomials[0]
-
-            yield params, expr
-
-    params, row_vectors = tuple(zip(*gen_rows()))
-
-    if 1 < len(row_vectors):
-        expr = polymat.v_stack(row_vectors)
-    else:
-        expr = row_vectors[0]
-
-    return init_polynomial_variable(
-        name=name,
-        monomials=monomials,
-        coefficients=params,
-        polynomial_variables=polynomial_variables,
-        child=expr.child,
-        shape=shape,
-    )
-
-
-def define_variable(
-    name: DecisionVariableSymbol | str,
-    size: int | MatrixExpression | None = None,
-):
-    
-    if not isinstance(name, DecisionVariableSymbol):
-        symbol = DecisionVariableSymbol(name)
-    else:
-        symbol = name
-
-    return polymat.define_variable(name=symbol, size=size)
-
-    # if isinstance(size, MatrixExpression):
-    #     n_size = size.child
-    # else:
-    #     n_size = size
-
-    # child=init_define_variable(
-    #     symbol=symbol, size=n_size, stack=get_frame_summary()
-    # )
-
-    # return init_decision_variable_expression(
-    #     child=child,
-    #     symbol=symbol,
-    # )
 
 
 def v_stack(expressions: Iterator[MatrixExpression]) -> MatrixExpression:

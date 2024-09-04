@@ -31,7 +31,7 @@ def sos_constraint(
     name: str,
     greater_than_zero: PolynomialExpression | None = None,
     less_than_zero: PolynomialExpression | None = None,
-):
+):    
     if greater_than_zero is not None:
         condition = greater_than_zero
     elif less_than_zero is not None:
