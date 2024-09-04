@@ -111,7 +111,7 @@ print(f'{sos_result.solver_data.solution}')    # Expected output: array([ 5.4429
 - **Decision variable**: Use `sosopt.define_variable` to create a decision variable for the SOS Problem. Any variables created with `polymat.define_variable` are treated as polynomial variables.
 - **Polynomial variable**: Define a polynomial matrix variable with entries that are parametrized polynomials, where the coefficients are decision variables, using `sosopt.define_polynomial`.
 - **Matrix variable**: Create a symmetric $n \times n$ polynomial matrix variable using `sosopt.define_symmetric_matrix`.
-- **Multipliers**: Given a reference polynomial, create a parametrized polynomial intended for multiplication with the reference polynomial, ensuring that the resulting polynomial does not exceed a specified degree using `sosopt.define_multiplier`. 
+- [**Multipliers**](https://github.com/MichaelSchneeberger/sosopt/blob/main/sosopt/polymat/from_.py): Given a reference polynomial, create a polynomial variable intended for multiplication with the reference polynomial, ensuring that the resulting polynomial does not exceed a specified degree using `sosopt.define_multiplier`. 
 
 <!-- ### Polynomial Expression Manipulations
 

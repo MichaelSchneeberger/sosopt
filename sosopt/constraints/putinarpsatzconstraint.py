@@ -11,7 +11,6 @@ import statemonad
 import polymat
 from polymat.typing import (
     State,
-    VectorExpression,
     PolynomialExpression,
     VariableVectorExpression,
 )
@@ -20,8 +19,8 @@ from sosopt.constraints.constraintprimitives.constraintprimitive import (
     ConstraintPrimitive,
 )
 from sosopt.constraints.utils.polynomialvariablesmixin import PolynomialVariablesMixin
+from sosopt.polymat.from_ import define_multiplier
 from sosopt.polymat.polynomialvariable import PolynomialVariable
-from sosopt.polymat.init import init_polynomial_variable
 from sosopt.semialgebraicset import SemialgebraicSet
 from sosopt.constraints.constraintprimitives.init import (
     init_positive_polynomial_primitive,
@@ -90,7 +89,7 @@ class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
         return (primitive,)
 
 
-def get_sos_polynomial(
+def define_putinars_psatz_condition(
     condition: PolynomialExpression,
     domain: SemialgebraicSet,
     multipliers: dict[str, PolynomialVariable],
@@ -105,39 +104,7 @@ def get_sos_polynomial(
     return condition
 
 
-def define_multiplier(
-    name: str,
-    degree: int,
-    multiplicand: VectorExpression,
-    variables: VariableVectorExpression,
-):
-    def round_up_to_even(n):
-        if n % 2 == 0:
-            return n
-        else:
-            return n + 1
-
-    max_degree = round_up_to_even(degree)
-
-    @do()
-    def create_multiplier():
-        multiplicand_degrees = yield from polymat.to_degree(
-            multiplicand, variables=variables
-        )
-        max_degree_multiplicand = int(max(multiplicand_degrees))
-        degrees = max_degree - max_degree_multiplicand
-        degree_range = tuple(range(int(degrees) + 1))
-        expr = init_polynomial_variable(
-            name=name,
-            monomials=variables.combinations(degree_range).cache(),
-            polynomial_variables=variables,
-        )
-        return statemonad.from_[State](expr)
-
-    return create_multiplier()
-
-
-def define_multipliers(
+def define_psatz_multipliers(
     name: str,
     condition: PolynomialExpression,
     domain: SemialgebraicSet,

@@ -19,8 +19,8 @@ from sosopt.constraints.utils.polynomialvariablesmixin import to_polynomial_vari
 from sosopt.constraints.positivepolynomialconstraint import PositivePolynomialConstraint
 from sosopt.constraints.putinarpsatzconstraint import (
     PutinarsPsatzConstraint,
-    define_multipliers,
-    get_sos_polynomial,
+    define_psatz_multipliers,
+    define_putinars_psatz_condition,
 )
 from sosopt.constraints.zeropolynomialconstraint import ZeroPolynomialConstraint
 from sosopt.polymat.polynomialvariable import (
@@ -120,13 +120,13 @@ def to_putinar_psatz_constraint(
 ):
     polynomial_variables = yield from to_polynomial_variables(condition)
 
-    multipliers = yield from define_multipliers(
+    multipliers = yield from define_psatz_multipliers(
         name=name,
         condition=condition,
         domain=domain,
         variables=polynomial_variables,
     )
-    sos_polynomial = get_sos_polynomial(
+    sos_polynomial = define_putinars_psatz_condition(
         condition=condition,
         domain=domain,
         multipliers=multipliers,
