@@ -4,12 +4,17 @@ from sosopt.polymat.polynomialvariable import (
     PolynomialRowVectorVariable as _PolynomialRowVectorVariable,
     PolynomialVariable as _PolynomialVariable,
 )
-from sosopt.solvers.solverdata import SolverData as _SolverData
-
-
-SolverData = _SolverData
+from sosopt.solvers.solverdata import (
+    SolutionFound as _SolutionFound,
+    SolutionNotFound as _SolutionNotFound,
+    SolverData as _SolverData,
+)
 
 PolynomialMatrixVariable = _PolynomialMatrixVariable
 PolynomialVectorVariable = _PolynomialVectorVariable
 PolynomialRowVectorVariable = _PolynomialRowVectorVariable
 PolynomialVariable = _PolynomialVariable
+
+SolverData = _SolverData
+SolutionFound = _SolutionFound
+SolutionNotFound = _SolutionNotFound

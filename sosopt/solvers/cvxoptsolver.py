@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import math
 import cvxopt
 import numpy as np
@@ -7,12 +8,12 @@ from dataclassabc import dataclassabc
 from polymat.typing import ArrayRepr
 
 from sosopt.solvers.solveargs import SolverArgs
-from sosopt.solvers.solverdata import SolverData
+from sosopt.solvers.solverdata import SolutionFound, SolutionNotFound
 from sosopt.solvers.solvermixin import SolverMixin
 
 
-@dataclassabc(frozen=True)
-class CVXOptSolverResult(SolverData):
+@dataclass(frozen=True)
+class CVXOptSolverData:
     x: np.ndarray
     y: np.ndarray
     s: np.ndarray
@@ -27,7 +28,15 @@ class CVXOptSolverResult(SolverData):
     primal_slack: float
     dual_slack: float
     iterations: int
+    
 
+@dataclassabc(frozen=True, slots=True)
+class CVXOptSolutionNotFound(CVXOptSolverData, SolutionNotFound):
+    pass
+
+
+@dataclassabc(frozen=True, slots=True)
+class CVXOptSolutionFound(CVXOptSolverData, SolutionFound):
     @property
     def solution(self) -> np.ndarray:
         return self.x
@@ -73,7 +82,14 @@ class CVXOPTSolver(SolverMixin):
                 dims={'l': dim_l, 'q': dim_q, 's': dim_s},
             )
 
-        solver_result = CVXOptSolverResult(
+        status = return_val['status']
+
+        if status == 'optimal':
+            solver_data_cls = CVXOptSolutionFound
+        else:
+            solver_data_cls = CVXOptSolutionNotFound
+
+        solver_result = solver_data_cls(
             x=np.array(return_val['x']).reshape(-1),
             y=np.array(return_val['y']).reshape(-1),
             s=np.array(return_val['s']).reshape(-1),

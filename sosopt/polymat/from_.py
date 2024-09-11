@@ -228,7 +228,7 @@ def define_multiplier(
         multiplicand_degrees = yield from polymat.to_degree(
             multiplicand, variables=variables
         )
-        max_degree_multiplicand = int(max(multiplicand_degrees.reshape(-1)))
+        max_degree_multiplicand = max(max(multiplicand_degrees))
         degrees = max_degree - max_degree_multiplicand
         degree_range = tuple(range(int(degrees) + 1))
         expr = define_polynomial(

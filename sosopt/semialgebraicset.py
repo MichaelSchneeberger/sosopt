@@ -13,9 +13,9 @@ class SemialgebraicSet:
 def set_(
     equal_zero: dict[str, VectorExpression] = {},
     greater_than_zero: dict[str, VectorExpression] = {},
-    less_than_zero: dict[str, VectorExpression] = {},
+    smaller_than_zero: dict[str, VectorExpression] = {},
 ):
-    inequalities = greater_than_zero | {n: -p for n, p in less_than_zero.items()}
+    inequalities = greater_than_zero | {n: -p for n, p in smaller_than_zero.items()}
 
     return SemialgebraicSet(
         inequalities=inequalities,

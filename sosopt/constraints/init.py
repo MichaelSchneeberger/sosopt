@@ -30,7 +30,7 @@ from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.semialgebraicset import SemialgebraicSet
 
 
-@dataclassabc(frozen=True)
+@dataclassabc(frozen=True, slots=True)
 class ZeroPolynomialConstraintImpl(ZeroPolynomialConstraint):
     name: str
     condition: MatrixExpression
@@ -38,7 +38,6 @@ class ZeroPolynomialConstraintImpl(ZeroPolynomialConstraint):
     decision_variable_symbols: tuple[DecisionVariableSymbol, ...]
     polynomial_variables: VariableVectorExpression
     children: tuple[ConstraintPrimitive, ...]
-    volatile_symbols: tuple[DecisionVariableSymbol, ...]
 
     def copy(self, /, **others):
         return replace(self, **others)
@@ -60,13 +59,12 @@ def init_zero_polynomial_constraint(
         decision_variable_symbols=decision_variable_symbols,
         polynomial_variables=polynomial_variables,
         children=tuple(),
-        volatile_symbols=tuple(),
     )
 
     return statemonad.from_[State](constraint)
 
 
-@dataclassabc(frozen=True)
+@dataclassabc(frozen=True, slots=True)
 class PositivePolynomialConstraintImpl(PositivePolynomialConstraint):
     name: str
     condition: PolynomialExpression
@@ -98,7 +96,7 @@ def to_positive_polynomial_constraint(
     return statemonad.from_[State](constraint)
 
 
-@dataclassabc(frozen=True)
+@dataclassabc(frozen=True, slots=True)
 class PutinarPsatzConstraintImpl(PutinarsPsatzConstraint):
     condition: PolynomialExpression
     decision_variable_symbols: tuple[DecisionVariableSymbol, ...]

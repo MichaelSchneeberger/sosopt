@@ -25,10 +25,6 @@ class ConstraintPrimitive(DecisionVariablesMixin):
     @abstractmethod
     def condition(self) -> MatrixExpression: ...
 
-    @property
-    @abstractmethod
-    def volatile_symbols(self) -> tuple[DecisionVariableSymbol, ...]: ...
-
     def copy(self, /, **others) -> ConstraintPrimitive: ...
 
     # class method
@@ -49,26 +45,20 @@ class ConstraintPrimitive(DecisionVariablesMixin):
             filter(not_in_substitutions, self.decision_variable_symbols)
         )
 
-        def not_volatile(p: DecisionVariableSymbol):
-            return p not in self.volatile_symbols
-
-        non_volatile = tuple(filter(not_volatile, decision_variable_symbols))
+        condition = self.condition.eval(substitutions)
 
         # remove constraint primitive if not depending on decision variables
-        if len(non_volatile) != 0:
-            condition = self.condition.eval(substitutions)
+        def gen_children():
+            for child in self.children:
+                eval_child = child.eval(substitutions)
+                if eval_child is not None:
+                    yield eval_child
 
-            def gen_children():
-                for child in self.children:
-                    eval_child = child.eval(substitutions)
-                    if eval_child is not None:
-                        yield eval_child
-
-            return self.copy(
-                condition=condition,
-                decision_variable_symbols=decision_variable_symbols,
-                children=tuple(gen_children()),
-            )
+        return self.copy(
+            condition=condition,
+            decision_variable_symbols=decision_variable_symbols,
+            children=tuple(gen_children()),
+        )
 
     @abstractmethod
     def to_constraint_vector() -> VectorExpression: ...

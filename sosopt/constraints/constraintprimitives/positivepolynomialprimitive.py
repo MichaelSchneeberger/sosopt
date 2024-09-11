@@ -22,7 +22,7 @@ class PositivePolynomialPrimitive(PolynomialVariablesMixin, SDPConstraintPrimiti
 
     @property
     def gram_matrix(self):
-        return self.condition.quadratic_in(self.polynomial_variables)
+        return self.condition.to_gram_matrix(self.polynomial_variables)
 
     @override
     def to_constraint_vector(self) -> VectorExpression:

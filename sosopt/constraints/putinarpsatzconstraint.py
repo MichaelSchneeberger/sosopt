@@ -30,7 +30,6 @@ from sosopt.constraints.constraint import Constraint
 
 class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
     # abstract properties
-    #####################
 
     @property
     @abstractmethod
@@ -50,8 +49,7 @@ class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
 
     """ a dictionary mapping from the name of the equality or inequality constraint to the multiplier """
 
-    # class method
-    ##############
+    # methods
 
     @override
     def get_constraint_primitives(
@@ -66,24 +64,16 @@ class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
                     children=tuple(),  # no children
                     condition=multiplier,
                     decision_variable_symbols=(multiplier.coefficients[0][0].symbol,),
-                    volatile_symbols=tuple(),
                     polynomial_variables=multiplier.polynomial_variables,
                 )
 
         children = tuple(gen_children())
-
-        def gen_volatile_symbols():
-            for multiplier in self.multipliers.values():
-                yield multiplier.coefficients[0][0].symbol
-
-        volatile_symbols = tuple(gen_volatile_symbols())
 
         primitive = init_positive_polynomial_primitive(
             name=self.name,
             children=children,
             condition=self.sos_polynomial,
             decision_variable_symbols=self.decision_variable_symbols,
-            volatile_symbols=volatile_symbols,
             polynomial_variables=self.polynomial_variables,
         )
         return (primitive,)
@@ -123,7 +113,7 @@ def define_psatz_multipliers(
 
         vector = polymat.v_stack(gen_vector()).to_vector()
         max_degree = yield from polymat.to_degree(vector, variables=variables)
-        max_degree = int(np.max(max_degree))
+        max_degree = max(max(max_degree))
 
         def gen_multipliers():
             for constraint_name, constraint_expr in constraints.items():

@@ -40,7 +40,7 @@ class ZeroPolynomialConstraint(PolynomialVariablesMixin, ConstraintPrimitive, Co
 
             for row in range(n_rows):
                 for col in range(n_cols):
-                    yield self.condition[row, col].linear_in(self.polynomial_variables).T
+                    yield self.condition[row, col].to_linear_coefficients(self.polynomial_variables).T
 
         return polymat.v_stack(gen_linear_equations()).filter_non_zero()
 

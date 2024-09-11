@@ -28,7 +28,7 @@ class PositivePolynomialConstraint(PolynomialVariablesMixin, Constraint):
             children=tuple(),  # no children
             condition=self.condition,
             decision_variable_symbols=self.decision_variable_symbols,
-            volatile_symbols=tuple(),
+
             polynomial_variables=self.polynomial_variables,
         )
         return (primitive,)

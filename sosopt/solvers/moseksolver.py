@@ -8,7 +8,7 @@ from sosopt.solvers.solverdata import SolverData
 from sosopt.solvers.solvermixin import SolverMixin
 
 
-@dataclassabc(frozen=True)
+@dataclassabc(frozen=True, slots=True)
 class MosekSolverResult(SolverData):
     solution: np.ndarray
     status: str

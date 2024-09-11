@@ -16,13 +16,10 @@ from sosopt.constraints.constraintprimitives.constraintprimitive import (
     LinearConstraintPrimitive,
     SDPConstraintPrimitive,
 )
-from sosopt.constraints.constraintprimitives.positivepolynomialprimitive import (
-    PositivePolynomialPrimitive,
-)
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.solvers.solveargs import get_solver_args
 from sosopt.solvers.solvermixin import SolverMixin
-from sosopt.solvers.solverdata import SolverData
+from sosopt.solvers.solverdata import SolutionFound, SolutionNotFound, SolverData
 
 
 @dataclass(frozen=True)
@@ -93,14 +90,14 @@ class SOSProblem:
 
             # filter positive semidefinite constraints
             s_data = tuple(
-                primitive.to_constraint_vector()
+                (primitive.name, primitive.to_constraint_vector())
                 for primitive in self.constraint_primitives
                 if isinstance(primitive, SDPConstraintPrimitive)
             )
 
             # filter linear constraints
             l_data = tuple(
-                primitive.to_constraint_vector()
+                (primitive.name, primitive.to_constraint_vector())
                 for primitive in self.constraint_primitives
                 if isinstance(primitive, LinearConstraintPrimitive)
             )
@@ -115,22 +112,28 @@ class SOSProblem:
             )
 
             solver_data = self.solver.solve(solver_args)
-            solution = solver_data.solution
 
-            def gen_symbol_values():
-                for variable, index_range in variable_index_ranges:
+            match solver_data:
+                case SolutionNotFound():
+                    symbol_values = {}
 
-                    def gen_value_indices():
-                        for index in index_range:
-                            yield indices.index(index)
+                case SolutionFound():
+                    solution = solver_data.solution
 
-                    # convert numpy.float to float
-                    yield (
-                        variable,
-                        tuple(float(v) for v in solution[list(gen_value_indices())]),
-                    )
+                    def gen_symbol_values():
+                        for variable, index_range in variable_index_ranges:
 
-            symbol_values = dict(gen_symbol_values())
+                            def gen_value_indices():
+                                for index in index_range:
+                                    yield indices.index(index)
+
+                            # convert numpy.float to float
+                            yield (
+                                variable,
+                                tuple(float(v) for v in solution[list(gen_value_indices())]),
+                            )
+
+                    symbol_values = dict(gen_symbol_values())
 
             sos_result_mapping = SOSResultMapping(
                 solver_data=solver_data,

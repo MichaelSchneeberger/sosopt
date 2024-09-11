@@ -30,6 +30,6 @@ class ZeroPolynomialPrimitive(
     def to_constraint_vector(self) -> VectorExpression:
         def gen_linear_equations():
             for row in range(self.n_rows):
-                yield self.condition[row, 0].linear_in(self.polynomial_variables).T
+                yield self.condition[row, 0].to_linear_coefficients(self.polynomial_variables).T
 
         return polymat.v_stack(gen_linear_equations()).filter_non_zero()

@@ -30,12 +30,12 @@ def zero_polynomial_constraint(
 def sos_constraint(
     name: str,
     greater_than_zero: PolynomialExpression | None = None,
-    less_than_zero: PolynomialExpression | None = None,
+    smaller_than_zero: PolynomialExpression | None = None,
 ):    
     if greater_than_zero is not None:
         condition = greater_than_zero
-    elif less_than_zero is not None:
-        condition = -less_than_zero
+    elif smaller_than_zero is not None:
+        condition = -smaller_than_zero
     else:
         raise Exception("SOS constraint requires condition.")
 
@@ -49,12 +49,12 @@ def sos_constraint(
 def sos_constraint_matrix(
     name: str,
     greater_than_zero: SymmetricMatrixExpression | None = None,
-    less_than_zero: SymmetricMatrixExpression | None = None,
+    smaller_than_zero: SymmetricMatrixExpression | None = None,
 ):
     if greater_than_zero is not None:
         condition = greater_than_zero
-    elif less_than_zero is not None:
-        condition = -less_than_zero
+    elif smaller_than_zero is not None:
+        condition = -smaller_than_zero
     else:
         raise Exception("SOS constraint requires condition.")
 
@@ -72,12 +72,12 @@ def sos_constraint_putinar(
     name: str,
     domain: SemialgebraicSet,
     greater_than_zero: PolynomialExpression | None = None,
-    less_than_zero: PolynomialExpression | None = None,
+    smaller_than_zero: PolynomialExpression | None = None,
 ):
     if greater_than_zero is not None:
         condition = greater_than_zero
-    elif less_than_zero is not None:
-        condition = -less_than_zero
+    elif smaller_than_zero is not None:
+        condition = -smaller_than_zero
     else:
         raise Exception("SOS constraint requires condition.")
 

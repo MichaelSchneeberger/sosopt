@@ -16,7 +16,7 @@ from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.polymat.polynomialvariable import PolynomialVariable
 
 
-@dataclassabc(frozen=True)
+@dataclassabc(frozen=True, slots=True)
 class DecisionVariableExpressionImpl(DecisionVariableExpression):
     child: ExpressionNode
     symbol: DecisionVariableSymbol
@@ -33,7 +33,7 @@ def init_decision_variable_expression(child: ExpressionNode, symbol: DecisionVar
     )
 
 
-@dataclassabc(frozen=True)
+@dataclassabc(frozen=True, slots=True)
 class PolynomialVariableImpl(PolynomialVariable):
     name: str
     child: ExpressionNode

@@ -5,7 +5,14 @@ from donotation import do
 import statemonad
 
 import polymat
-from polymat.typing import ArrayRepr, PolynomialExpression, VectorExpression, VariableVectorExpression
+from polymat.typing import (
+    State,
+    ArrayRepr,
+    MatrixExpression,
+    PolynomialExpression,
+    VectorExpression,
+    VariableVectorExpression,
+)
 
 
 class SolverArgs(NamedTuple):
@@ -18,14 +25,37 @@ class SolverArgs(NamedTuple):
 
 @do()
 def get_solver_args(
-        indices: VariableVectorExpression | tuple[int, ...],
-        lin_cost: PolynomialExpression,
-        quad_cost: VectorExpression | None = None,
-        l_data: Iterable[VectorExpression] | None = None,
-        q_data: Iterable[VectorExpression] | None = None,
-        s_data: Iterable[VectorExpression] | None = None,
+    indices: VariableVectorExpression | tuple[int, ...],
+    lin_cost: PolynomialExpression,
+    quad_cost: VectorExpression | None = None,
+    l_data: Iterable[tuple[str, VectorExpression]] | None = None,
+    q_data: Iterable[tuple[str, VectorExpression]] | None = None,
+    s_data: Iterable[tuple[str, VectorExpression]] | None = None,
 ):
-    lin_cost_array = yield from polymat.to_array(lin_cost, indices)
+    @do()
+    def to_array(name, expr: MatrixExpression):
+        array = yield from polymat.to_array(name=name, expr=expr, variables=indices)
+
+        # degrees = yield from polymat.to_degree(expr, indices)
+
+        # max_degree = max(max(degrees))
+
+        if 1 < array.degree:
+
+            
+
+            # truncated_expr = expr.truncate_monomials(variables=indices, degrees=(max_degree,))
+
+            raise AssertionError(
+                (
+                    f"The degree={array.degree} of the polynomial {name} in decision variables"
+                    f" used to encode the optimization problem constraint must not exceed 1."
+                )
+            )
+
+        return statemonad.from_[State](array)
+
+    lin_cost_array = yield from to_array(name="linear_cost", expr=lin_cost)
 
     # maximum degree of cost function must be 2
     assert lin_cost_array.degree <= 1, f"{lin_cost_array.degree=}"
@@ -33,7 +63,7 @@ def get_solver_args(
     if quad_cost is None:
         quad_cost_array = None
     else:
-        quad_cost_array = yield from polymat.to_array(quad_cost, indices)
+        quad_cost_array = yield from to_array(name="quadratic_cost", expr=quad_cost)
 
         # maximum degree of cost function must be 2
         assert quad_cost_array.degree <= 1, f"{quad_cost_array.degree=}"
@@ -42,21 +72,21 @@ def get_solver_args(
         l_data_array = tuple()
     else:
         l_data_array = yield from statemonad.zip(
-            (polymat.to_array(e, indices) for e in l_data)
+            (to_array(name=name, expr=expr) for name, expr in l_data)
         )
 
     if q_data is None:
         q_data_array = tuple()
     else:
         q_data_array = yield from statemonad.zip(
-            (polymat.to_array(e, indices) for e in q_data)
+            (to_array(name=name, expr=expr) for name, expr in q_data)
         )
 
     if s_data is None:
         s_data_array = tuple()
     else:
         s_data_array = yield from statemonad.zip(
-            (polymat.to_array(e, indices) for e in s_data)
+            (to_array(name=name, expr=expr) for name, expr in s_data)
         )
 
     # maximum degree of constraint must not be greater than 1
