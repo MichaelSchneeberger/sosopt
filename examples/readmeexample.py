@@ -43,22 +43,25 @@ def define_sos_problem():
     # sublevel set of r.
     constraint = yield from sosopt.sos_constraint_putinar(
         name="rpos",
-        less_than_zero=r,
+        smaller_than_zero=r,
         domain=sosopt.set_(
-            less_than_zero={
+            smaller_than_zero={
                 "w1": w1,
                 "w2": w2,
             },
         ),
     )
 
+    # Collect all constraints
+    constraints = (constraint,)
+
     # Minimize a surrogate of the volume of the zero sublevel set of r.
-    r_diag = r.quadratic_in(x).diag()
+    r_diag = r.to_gram_matrix(x).diag()
 
     problem = sosopt.sos_problem(
         lin_cost=-r_diag.sum(),
         quad_cost=r_diag,
-        constraints=(constraint,),
+        constraints=constraints,
         solver=sosopt.cvx_opt_solver,   # choose solver
         # solver=sosopt.mosek_solver,
     )
