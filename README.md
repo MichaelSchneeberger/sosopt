@@ -70,9 +70,9 @@ print(f'r={sympy_repr}')
 # are contained within the zero sublevel set of r.
 state, constraint = sosopt.sos_constraint_putinar(
     name="rlevel",
-    less_than_zero=r,
+    smaller_than_zero=r,
     domain=sosopt.set_(
-        less_than_zero={
+        smaller_than_zero={
             "w1": w1,
             "w2": w2,
         },
@@ -80,7 +80,7 @@ state, constraint = sosopt.sos_constraint_putinar(
 ).apply(state)
 
 # Minimize the volume surrogate of the zero-sublevel set of r
-Qr_trace = r.quadratic_in(r, x).trace()
+Qr_trace = r.to_gram_matrix(r, x).trace()
 
 # Define the SOS problem
 problem = sosopt.sos_problem(
@@ -106,6 +106,7 @@ print(f'{sos_result.solver_data.solution}')    # Expected output: array([ 5.4429
 
 ## Operations
 
+
 ### [Defining Optimization Variables](https://github.com/MichaelSchneeberger/sosopt/blob/main/sosopt/polymat/from_.py)
 
 - **Decision variable**: Use `sosopt.define_variable` to create a decision variable for the SOS Problem. Any variables created with `polymat.define_variable` are treated as polynomial variables.
@@ -113,13 +114,11 @@ print(f'{sos_result.solver_data.solution}')    # Expected output: array([ 5.4429
 - **Matrix variable**: Create a symmetric $n \times n$ polynomial matrix variable using `sosopt.define_symmetric_matrix`.
 - **Multipliers**: Given a reference polynomial, create a polynomial variable intended for multiplication with the reference polynomial, ensuring that the resulting polynomial does not exceed a specified degree using `sosopt.define_multiplier`. 
 
-<!-- ### Polynomial Expression Manipulations
-
-- **Gram Matrix**: Creates the Gramian matrix  -->
 
 ### Defining Sets
 
 - **Semialgebraic set**: Define a semialgebraic set from a collection scalar polynomial expressions with `sosopt.set_`.
+
 
 ### Defining Constraint
 
