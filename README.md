@@ -112,7 +112,7 @@ print(f'{sos_result.solver_data.solution}')    # Expected output: array([ 5.4429
 - **Decision variable**: Use `sosopt.define_variable` to create a decision variable for the SOS Problem. Any variables created with `polymat.define_variable` are treated as polynomial variables.
 - **Polynomial variable**: Define a polynomial matrix variable with entries that are parametrized polynomials, where the coefficients are decision variables, using `sosopt.define_polynomial`.
 - **Matrix variable**: Create a symmetric $n \times n$ polynomial matrix variable using `sosopt.define_symmetric_matrix`.
-- **Multipliers**: Given a reference polynomial, create a polynomial variable intended for multiplication with the reference polynomial, ensuring that the resulting polynomial does not exceed a specified degree using `sosopt.define_multiplier`. 
+- **Multipliers***: Given a reference polynomial, create a polynomial variable intended for multiplication with the reference polynomial, ensuring that the resulting polynomial does not exceed a specified degree using `sosopt.define_multiplier`. 
 
 
 ### Defining Sets
@@ -122,18 +122,18 @@ print(f'{sos_result.solver_data.solution}')    # Expected output: array([ 5.4429
 
 ### Defining Constraint
 
-- **Zero Polynomial**: Enforce a polynomial expression to be equal to zero using `sosopt.zero_polynomial_constraint`.
-- **Sum-of-Sqaures (SOS)**: Define a scalar polynomial expression within the SOS Cone using `sosopt.sos_constraint`.
-- **SOS Matrix**: Define a polynomial matrix expression within the SOS Matrix Cone using `sosopt.sos_constraint_matrix`.
-- **Putinar's P-satz**: Encode a positivity condition for a polynomial matrix expression on a semialgebraic set using `sosopt.sos_constraint_putinar`.
+- **Zero Polynomial***: Enforce a polynomial expression to be equal to zero using `sosopt.zero_polynomial_constraint`.
+- **Sum-of-Sqaures (SOS)***: Define a scalar polynomial expression within the SOS Cone using `sosopt.sos_constraint`.
+- **SOS Matrix***: Define a polynomial matrix expression within the SOS Matrix Cone using `sosopt.sos_constraint_matrix`.
+- **Putinar's P-satz***: Encode a positivity condition for a polynomial matrix expression on a semialgebraic set using `sosopt.sos_constraint_putinar`.
 
 ### Defining the SOS Optimization Problem
 
-- **Solver Arguments**: Convert polynomial expression to their array representations, which are required for defining the SOS problem, using `sosopt.solver_args`.
+- **Solver Arguments***: Convert polynomial expression to their array representations, which are required for defining the SOS problem, using `sosopt.solver_args`.
 - **SOS Problem**: Create an SOS Optimization problem using the solver arguments with `sosopt.sos_problem`.
 
 
-
+\*These operations return a state monad object. To retrieve the actualy result, you need to call the `apply` method on the returned object, passing the state as an argument.
 
 
 
