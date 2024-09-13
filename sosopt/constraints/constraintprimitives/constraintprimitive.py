@@ -45,20 +45,21 @@ class ConstraintPrimitive(DecisionVariablesMixin):
             filter(not_in_substitutions, self.decision_variable_symbols)
         )
 
-        condition = self.condition.eval(substitutions)
+        if len(decision_variable_symbols):
+            condition = self.condition.eval(substitutions)
 
-        # remove constraint primitive if not depending on decision variables
-        def gen_children():
-            for child in self.children:
-                eval_child = child.eval(substitutions)
-                if eval_child is not None:
-                    yield eval_child
+            # remove constraint primitive if not depending on decision variables
+            def gen_children():
+                for child in self.children:
+                    eval_child = child.eval(substitutions)
+                    if eval_child is not None:
+                        yield eval_child
 
-        return self.copy(
-            condition=condition,
-            decision_variable_symbols=decision_variable_symbols,
-            children=tuple(gen_children()),
-        )
+            return self.copy(
+                condition=condition,
+                decision_variable_symbols=decision_variable_symbols,
+                children=tuple(gen_children()),
+            )
 
     @abstractmethod
     def to_constraint_vector() -> VectorExpression: ...
