@@ -9,12 +9,12 @@ from sosopt.constraints.constraintprimitives.constraintprimitive import (
     ConstraintPrimitive,
 )
 from sosopt.constraints.constraintprimitives.init import (
-    init_positive_polynomial_primitive,
+    init_sum_of_squares_primitive,
 )
 from sosopt.constraints.utils.polynomialvariablesmixin import PolynomialVariablesMixin
 
 
-class PositivePolynomialConstraint(PolynomialVariablesMixin, Constraint):
+class SumOfSqauresConstraint(PolynomialVariablesMixin, Constraint):
     @property
     @abstractmethod
     def condition(self) -> PolynomialExpression: ...
@@ -23,7 +23,7 @@ class PositivePolynomialConstraint(PolynomialVariablesMixin, Constraint):
     def get_constraint_primitives(
         self,
     ) -> tuple[ConstraintPrimitive, ...]:
-        primitive = init_positive_polynomial_primitive(
+        primitive = init_sum_of_squares_primitive(
             name=self.name,
             children=tuple(),  # no children
             condition=self.condition,

@@ -11,7 +11,7 @@ from polymat.typing import (
 
 from sosopt.constraints.init import (
     init_zero_polynomial_constraint,
-    to_positive_polynomial_constraint,
+    to_sum_of_squares_constraint,
     to_putinar_psatz_constraint,
 )
 from sosopt.semialgebraicset import SemialgebraicSet
@@ -39,7 +39,7 @@ def sos_constraint(
     else:
         raise Exception("SOS constraint requires condition.")
 
-    return to_positive_polynomial_constraint(
+    return to_sum_of_squares_constraint(
         name=name,
         condition=condition,
     )

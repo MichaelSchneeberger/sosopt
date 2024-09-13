@@ -16,7 +16,7 @@ from polymat.typing import (
 from sosopt.constraints.constraintprimitives.constraintprimitive import ConstraintPrimitive
 from sosopt.constraints.utils.decisionvariablesmixin import to_decision_variable_symbols
 from sosopt.constraints.utils.polynomialvariablesmixin import to_polynomial_variables
-from sosopt.constraints.positivepolynomialconstraint import PositivePolynomialConstraint
+from sosopt.constraints.sumofsqauresconstraint import SumOfSqauresConstraint
 from sosopt.constraints.putinarpsatzconstraint import (
     PutinarsPsatzConstraint,
     define_psatz_multipliers,
@@ -65,7 +65,7 @@ def init_zero_polynomial_constraint(
 
 
 @dataclassabc(frozen=True, slots=True)
-class PositivePolynomialConstraintImpl(PositivePolynomialConstraint):
+class SumOfSqauresConstraintImpl(SumOfSqauresConstraint):
     name: str
     condition: PolynomialExpression
     decision_variable_symbols: tuple[DecisionVariableSymbol, ...]
@@ -76,7 +76,7 @@ class PositivePolynomialConstraintImpl(PositivePolynomialConstraint):
 
 
 @do()
-def to_positive_polynomial_constraint(
+def to_sum_of_squares_constraint(
     name: str,
     condition: PolynomialExpression,
 ):
@@ -87,7 +87,7 @@ def to_positive_polynomial_constraint(
     polynomial_variables = yield from to_polynomial_variables(condition)
     decision_variable_symbols = yield from to_decision_variable_symbols(condition)
 
-    constraint = PositivePolynomialConstraintImpl(
+    constraint = SumOfSqauresConstraintImpl(
         name=name,
         condition=condition,
         decision_variable_symbols=decision_variable_symbols,

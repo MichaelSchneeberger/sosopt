@@ -14,7 +14,7 @@ from sosopt.constraints.constraintprimitives.constraintprimitive import (
 from sosopt.constraints.utils.polynomialvariablesmixin import PolynomialVariablesMixin
 
 
-class PositivePolynomialPrimitive(PolynomialVariablesMixin, SDPConstraintPrimitive):
+class SumOfSqauresPrimitive(PolynomialVariablesMixin, SDPConstraintPrimitive):
     @property
     @override
     @abstractmethod

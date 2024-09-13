@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from itertools import accumulate
 from typing import override
 import numpy as np
 
@@ -23,7 +24,7 @@ from sosopt.polymat.from_ import define_multiplier
 from sosopt.polymat.polynomialvariable import PolynomialVariable
 from sosopt.semialgebraicset import SemialgebraicSet
 from sosopt.constraints.constraintprimitives.init import (
-    init_positive_polynomial_primitive,
+    init_sum_of_squares_primitive,
 )
 from sosopt.constraints.constraint import Constraint
 
@@ -37,17 +38,16 @@ class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
 
     @property
     @abstractmethod
-    def domain(self) -> SemialgebraicSet | None: ...
+    def domain(self) -> SemialgebraicSet: ...
 
     @property
     @abstractmethod
-    def multipliers(self) -> dict[str, PolynomialVariable]: ...
+    def multipliers(self) -> dict[str, PolynomialVariable]:
+        """ a dictionary mapping from the name of the equality or inequality constraint to the multiplier """
 
     @property
     @abstractmethod
     def sos_polynomial(self) -> PolynomialExpression: ...
-
-    """ a dictionary mapping from the name of the equality or inequality constraint to the multiplier """
 
     # methods
 
@@ -55,11 +55,15 @@ class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
     def get_constraint_primitives(
         self,
     ) -> tuple[ConstraintPrimitive, ...]:
-        """create 1 positive polynomial primitive for the condition and for each multiplier"""
-
+        
         def gen_children():
-            for multiplier in self.multipliers.values():
-                yield init_positive_polynomial_primitive(
+            """Create an SOS constraint primitive for each inequality"""
+
+            for name in self.domain.inequalities.keys():
+
+                multiplier = self.multipliers[name]
+
+                yield init_sum_of_squares_primitive(
                     name=self.name,
                     children=tuple(),  # no children
                     condition=multiplier,
@@ -69,13 +73,14 @@ class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
 
         children = tuple(gen_children())
 
-        primitive = init_positive_polynomial_primitive(
+        primitive = init_sum_of_squares_primitive(
             name=self.name,
             children=children,
             condition=self.sos_polynomial,
             decision_variable_symbols=self.decision_variable_symbols,
             polynomial_variables=self.polynomial_variables,
         )
+
         return (primitive,)
 
 
@@ -84,14 +89,20 @@ def define_putinars_psatz_condition(
     domain: SemialgebraicSet,
     multipliers: dict[str, PolynomialVariable],
 ) -> PolynomialExpression:
-    condition = condition
-
     constraints = domain.inequalities | domain.equalities
-    for domain_name in constraints.keys():
-        multiplier = multipliers[domain_name]
-        condition = condition - multiplier * constraints[domain_name]
 
-    return condition
+    def acc_domain_polynomials(acc, next):
+        domain_name, constraint = next
+
+        return acc - multipliers[domain_name] * constraint
+        
+    *_, n_condition = accumulate(
+        constraints.items(),
+        acc_domain_polynomials,
+        initial=condition,
+    )
+
+    return n_condition
 
 
 def define_psatz_multipliers(
@@ -119,7 +130,7 @@ def define_psatz_multipliers(
             for constraint_name, constraint_expr in constraints.items():
 
                 @do()
-                def create_multiplier():
+                def create_multiplier(constraint_expr=constraint_expr):
                     expr = yield from define_multiplier(
                         name=f"{name}_{constraint_name}_gamma",
                         degree=max_degree,
