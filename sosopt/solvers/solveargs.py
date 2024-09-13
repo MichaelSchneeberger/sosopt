@@ -36,20 +36,16 @@ def get_solver_args(
     def to_array(name, expr: MatrixExpression):
         array = yield from polymat.to_array(name=name, expr=expr, variables=indices)
 
-        # degrees = yield from polymat.to_degree(expr, indices)
-
-        # max_degree = max(max(degrees))
-
         if 1 < array.degree:
 
-            
-
-            # truncated_expr = expr.truncate_monomials(variables=indices, degrees=(max_degree,))
+            monomial_expr = expr.truncate_monomials(variables=indices, degrees=(array.degree,)).to_linear_monomials(indices)[0, 0]
+            monomial = yield from polymat.to_sympy(monomial_expr)
 
             raise AssertionError(
                 (
-                    f"The degree={array.degree} of the polynomial {name} in decision variables"
-                    f" used to encode the optimization problem constraint must not exceed 1."
+                    f'The degree={array.degree} of the polynomial "{name}" in decision variables'
+                    f' used to encode the optimization problem constraint must not exceed 1. '
+                    f'However, the monomial "{monomial}" is of higher degree.'
                 )
             )
 
@@ -89,19 +85,19 @@ def get_solver_args(
             (to_array(name=name, expr=expr) for name, expr in s_data)
         )
 
-    # maximum degree of constraint must not be greater than 1
-    # the assertion is defined inside a function because the do-notation forbits for loops
-    def assert_degree_of_constraints():
-        for array in l_data_array + q_data_array + s_data_array:
-            if 1 < array.degree:
-                raise AssertionError(
-                    (
-                        "The degree of the polynomial in the decision variables used to encode the optimization problem constraints "
-                        "must not exceed 1."
-                    )
-                )
+    # # maximum degree of constraint must not be greater than 1
+    # # the assertion is defined inside a function because the do-notation forbits for loops
+    # def assert_degree_of_constraints():
+    #     for array in l_data_array + q_data_array + s_data_array:
+    #         if 1 < array.degree:
+    #             raise AssertionError(
+    #                 (
+    #                     "The degree of the polynomial in the decision variables used to encode the optimization problem constraints "
+    #                     "must not exceed 1."
+    #                 )
+    #             )
 
-    assert_degree_of_constraints()
+    # assert_degree_of_constraints()
 
     return statemonad.from_(
         SolverArgs(
