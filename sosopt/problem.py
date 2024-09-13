@@ -121,16 +121,14 @@ class SOSProblem:
                     solution = solver_data.solution
 
                     def gen_symbol_values():
-                        for variable, index_range in variable_index_ranges:
+                        for symbol, index_range in variable_index_ranges:
 
-                            def gen_value_indices():
-                                for index in index_range:
-                                    yield indices.index(index)
+                            solution_sel = [indices.index(index) for index in index_range]
 
                             # convert numpy.float to float
                             yield (
-                                variable,
-                                tuple(float(v) for v in solution[list(gen_value_indices())]),
+                                symbol,
+                                tuple(float(v) for v in solution[solution_sel]),
                             )
 
                     symbol_values = dict(gen_symbol_values())

@@ -84,7 +84,7 @@ class CVXOPTSolver(SolverMixin):
 
         status = return_val['status']
 
-        if status == 'optimal':
+        if status == 'optimal' or status == 'unknown':
             solver_data_cls = CVXOptSolutionFound
         else:
             solver_data_cls = CVXOptSolutionNotFound
