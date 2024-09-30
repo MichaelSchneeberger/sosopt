@@ -6,11 +6,11 @@ import polymat
 from polymat.typing import VectorExpression
 
 from sosopt.constraints.constraint import Constraint
-from sosopt.constraints.constraintprimitives.constraintprimitive import ConstraintPrimitive
+from sosopt.constraints.constraintprimitives.constraintprimitive import LinearConstraintPrimitive
 from sosopt.constraints.utils.polynomialvariablesmixin import PolynomialVariablesMixin
 
 
-class ZeroPolynomialConstraint(PolynomialVariablesMixin, ConstraintPrimitive, Constraint):
+class ZeroPolynomialConstraint(PolynomialVariablesMixin, LinearConstraintPrimitive, Constraint):
     @property
     @abstractmethod
     def condition(self) -> VectorExpression: ...
