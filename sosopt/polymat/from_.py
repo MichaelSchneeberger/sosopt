@@ -50,7 +50,8 @@ def define_polynomial(
     name: str,
     monomials: MonomialVectorExpression | None = None,
     polynomial_variables: VariableVectorExpression | None = None,
-    shape: tuple[int, int] = (1, 1),
+    n_rows: int = 1,
+    n_cols: int = 1,
 ):
     """
     Defines a polynomial matrix variable as a `polymat.typing.MatrixExpression`, 
@@ -68,9 +69,11 @@ def define_polynomial(
     polynomial_variables : VariableVectorExpression, optional
         A vector of polynomial variables used to define the polynomial matrix. If None, 
         no polynomial variables are considered, reducing the polynomial variable to a constant variable.
-    shape : tuple[int, int], optional
-        The shape of the resulting polynomial matrix. Defaults to a scalar polynomial (1, 1).
-
+    n_rows : int, optional
+        The number of rows of the resulting polynomial matrix.
+    n_cols : int, optional
+        The number of columns of the resulting polynomial matrix.
+        
     Returns:
     --------
     PolynomialMatrix:
@@ -115,6 +118,8 @@ def define_polynomial(
             raise Exception(
                 "Both `monomials` and `polynomial_variables` must either be provided or set to None otherwise."
             )
+        
+    shape = n_rows, n_cols
 
     match shape:
         case (1, 1):
@@ -126,7 +131,7 @@ def define_polynomial(
         case _:
             get_name = lambda r, c: f"{name}{r+1}{c+1}"  # noqa: E731
 
-    n_rows, n_cols = shape
+    # n_rows, n_cols = shape
 
     def gen_rows():
         for row in range(n_rows):
@@ -243,10 +248,21 @@ def define_multiplier(
 
 def define_symmetric_matrix(
     name: str,
-    monomials: MonomialVectorExpression,
-    polynomial_variables: VariableVectorExpression,
     size: int,
+    monomials: MonomialVectorExpression | None = None,
+    polynomial_variables: VariableVectorExpression | None = None,
 ):
+    
+    match (monomials, polynomial_variables):
+        case (None, None):
+            # empty variable vector
+            polynomial_variables = polymat.from_variable_indices(tuple())
+            monomials = polymat.from_(1).to_monomial_vector()
+        case (None, _) | (_, None):
+            raise Exception(
+                "Both `monomials` and `polynomial_variables` must either be provided or set to None otherwise."
+            )
+
     entries = {}
 
     def gen_rows():

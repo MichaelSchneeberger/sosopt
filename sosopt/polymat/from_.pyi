@@ -55,11 +55,17 @@ def define_polynomial(
     n_row: int,
     n_col: int,
 ) -> PolynomialMatrixVariable: ...
+@overload
 def define_symmetric_matrix(
-        name: str,
-        monomials: MonomialVectorExpression,
-        polynomial_variables: VariableVectorExpression,
-        size: int,
+    name: str,
+    size: int,
+) -> PolynomialSymmetricMatrixVariable: ...
+@overload
+def define_symmetric_matrix(
+    name: str,
+    monomials: MonomialVectorExpression,
+    polynomial_variables: VariableVectorExpression,
+    size: int,
 ) -> PolynomialSymmetricMatrixVariable: ...
 @overload
 def define_variable(
