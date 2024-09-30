@@ -63,11 +63,16 @@ class CVXOPTSolver(SolverMixin):
         h = np.vstack(tuple(c[0] for c in constraints))
         G = np.vstack(tuple(-c[1] for c in constraints))
 
+        b = np.vstack(tuple(c[0] for c in info.eq_data))
+        A = np.vstack(tuple(-c[1] for c in info.eq_data))
+
         if info.quad_cost is None:
             return_val = cvxopt.solvers.conelp(
                 c=cvxopt.matrix(q),
                 G=cvxopt.matrix(G), 
                 h=cvxopt.matrix(h),
+                A=cvxopt.matrix(A), 
+                b=cvxopt.matrix(b),
                 dims={'l': dim_l, 'q': dim_q, 's': dim_s},
             )
 
@@ -76,9 +81,11 @@ class CVXOPTSolver(SolverMixin):
 
             return_val = cvxopt.solvers.coneqp(
                 P=cvxopt.matrix(P), 
-                q=cvxopt.matrix(q.reshape(-1, 1)),
+                q=cvxopt.matrix(q),
                 G=cvxopt.matrix(G), 
                 h=cvxopt.matrix(h),
+                A=cvxopt.matrix(A), 
+                b=cvxopt.matrix(b),
                 dims={'l': dim_l, 'q': dim_q, 's': dim_s},
             )
 

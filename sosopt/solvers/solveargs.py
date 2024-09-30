@@ -21,6 +21,7 @@ class SolverArgs(NamedTuple):
     l_data: tuple[ArrayRepr, ...]
     q_data: tuple[ArrayRepr, ...]
     s_data: tuple[ArrayRepr, ...]
+    eq_data: tuple[ArrayRepr, ...]
 
 
 @do()
@@ -31,6 +32,7 @@ def get_solver_args(
     l_data: Iterable[tuple[str, VectorExpression]] | None = None,
     q_data: Iterable[tuple[str, VectorExpression]] | None = None,
     s_data: Iterable[tuple[str, VectorExpression]] | None = None,
+    eq_data: Iterable[tuple[str, VectorExpression]] | None = None,
 ):
     @do()
     def to_array(name, expr: MatrixExpression):
@@ -85,6 +87,13 @@ def get_solver_args(
             (to_array(name=name, expr=expr) for name, expr in s_data)
         )
 
+    if eq_data is None:
+        eq_data_array = tuple()
+    else:
+        eq_data_array = yield from statemonad.zip(
+            (to_array(name=name, expr=expr) for name, expr in eq_data)
+        )
+
     # # maximum degree of constraint must not be greater than 1
     # # the assertion is defined inside a function because the do-notation forbits for loops
     # def assert_degree_of_constraints():
@@ -106,5 +115,6 @@ def get_solver_args(
             l_data=l_data_array,
             q_data=q_data_array,
             s_data=s_data_array,
+            eq_data=eq_data_array,
         )
     )

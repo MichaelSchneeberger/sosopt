@@ -13,6 +13,7 @@ from polymat.typing import PolynomialExpression, VectorExpression, State
 from sosopt.constraints.constraint import Constraint
 from sosopt.constraints.constraintprimitives.constraintprimitive import (
     ConstraintPrimitive,
+    EqualityConstraintPrimitive,
     LinearConstraintPrimitive,
     SDPConstraintPrimitive,
 )
@@ -95,11 +96,18 @@ class SOSProblem:
                 if isinstance(primitive, SDPConstraintPrimitive)
             )
 
-            # filter linear constraints
+            # filter linear inequality constraints
             l_data = tuple(
                 (primitive.name, primitive.to_constraint_vector())
                 for primitive in self.constraint_primitives
                 if isinstance(primitive, LinearConstraintPrimitive)
+            )
+
+            # filter linear equality constraints
+            eq_data = tuple(
+                (primitive.name, primitive.to_constraint_vector())
+                for primitive in self.constraint_primitives
+                if isinstance(primitive, EqualityConstraintPrimitive)
             )
 
             solver_args = yield from get_solver_args(
@@ -107,8 +115,9 @@ class SOSProblem:
                 lin_cost=self.lin_cost,
                 quad_cost=self.quad_cost,
                 s_data=s_data,
-                q_data=tuple(),
+                q_data=None,
                 l_data=l_data,
+                eq_data=eq_data,
             )
 
             solver_data = self.solver.solve(solver_args)
