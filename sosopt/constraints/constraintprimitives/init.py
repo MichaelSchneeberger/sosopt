@@ -27,10 +27,13 @@ class SumOfSqauresPrimitiveImpl(SumOfSqauresPrimitive):
 def init_sum_of_squares_primitive(
     name: str,
     condition: MatrixExpression,
-    children: tuple[ConstraintPrimitive, ...],
     decision_variable_symbols: tuple[DecisionVariableSymbol, ...],
     polynomial_variables: VariableVectorExpression,
+    children: tuple[ConstraintPrimitive, ...] | None = None,
 ):
+    if children is None:
+        children = tuple()
+
     return SumOfSqauresPrimitiveImpl(
         name=name,
         condition=condition,

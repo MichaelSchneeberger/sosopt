@@ -29,8 +29,8 @@ def zero_polynomial_constraint(
 
 def sos_constraint(
     name: str,
-    greater_than_zero: PolynomialExpression | None = None,
-    smaller_than_zero: PolynomialExpression | None = None,
+    greater_than_zero: MatrixExpression | None = None,
+    smaller_than_zero: MatrixExpression | None = None,
 ):    
     if greater_than_zero is not None:
         condition = greater_than_zero
@@ -46,7 +46,7 @@ def sos_constraint(
 
 
 @do()
-def sos_constraint_matrix(
+def sos_matrix_constraint(
     name: str,
     greater_than_zero: SymmetricMatrixExpression | None = None,
     smaller_than_zero: SymmetricMatrixExpression | None = None,

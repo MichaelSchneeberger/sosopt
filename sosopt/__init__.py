@@ -3,7 +3,7 @@ from __future__ import annotations
 from sosopt.constraints.from_ import (
     sos_constraint as _sos_constraint,
     zero_polynomial_constraint as _zero_polynomial_constraint,
-    sos_constraint_matrix as _sos_constraint_matrix,
+    sos_matrix_constraint as _sos_matrix_constraint,
     sos_constraint_putinar as _sos_constraint_putinar,
 )
 from sosopt.polymat.from_ import (
@@ -33,7 +33,8 @@ set_ = _set_
 # Defining Constraint
 zero_polynomial_constraint = _zero_polynomial_constraint
 sos_constraint = _sos_constraint
-sos_constraint_matrix = _sos_constraint_matrix
+sos_matrix_constraint = _sos_matrix_constraint
+sos_constraint_matrix = _sos_matrix_constraint
 sos_constraint_putinar = _sos_constraint_putinar
 
 # Defining the SOS Optimization Problem

@@ -49,6 +49,10 @@ class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
     @abstractmethod
     def sos_polynomial(self) -> PolynomialExpression: ...
 
+    @property
+    @abstractmethod
+    def shape(self) -> tuple[int, int]: ...
+
     # methods
 
     @override
@@ -65,7 +69,6 @@ class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
 
                 yield init_sum_of_squares_primitive(
                     name=self.name,
-                    children=tuple(),  # no children
                     condition=multiplier,
                     decision_variable_symbols=(multiplier.coefficients[0][0].symbol,),
                     polynomial_variables=multiplier.polynomial_variables,
