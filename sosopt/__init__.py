@@ -4,7 +4,7 @@ from sosopt.constraints.from_ import (
     sos_constraint as _sos_constraint,
     zero_polynomial_constraint as _zero_polynomial_constraint,
     sos_matrix_constraint as _sos_matrix_constraint,
-    sos_constraint_putinar as _sos_constraint_putinar,
+    psatz_putinar_constraint as _psatz_putinar_constraint,
 )
 from sosopt.polymat.from_ import (
     define_multiplier as _define_multiplier,
@@ -34,8 +34,9 @@ set_ = _set_
 zero_polynomial_constraint = _zero_polynomial_constraint
 sos_constraint = _sos_constraint
 sos_matrix_constraint = _sos_matrix_constraint
-sos_constraint_matrix = _sos_matrix_constraint
-sos_constraint_putinar = _sos_constraint_putinar
+sos_constraint_matrix = _sos_matrix_constraint      # depricated
+psatz_putinar_constraint = _psatz_putinar_constraint
+sos_constraint_putinar = _psatz_putinar_constraint      # depricated
 
 # Defining the SOS Optimization Problem
 solve_args = _get_solver_args  # depricate

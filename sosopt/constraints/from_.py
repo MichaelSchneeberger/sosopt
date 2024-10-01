@@ -5,7 +5,6 @@ from donotation import do
 import polymat
 from polymat.typing import (
     MatrixExpression,
-    PolynomialExpression,
     SymmetricMatrixExpression,
 )
 
@@ -68,11 +67,11 @@ def sos_matrix_constraint(
     )
 
 
-def sos_constraint_putinar(
+def psatz_putinar_constraint(
     name: str,
     domain: SemialgebraicSet,
-    greater_than_zero: PolynomialExpression | None = None,
-    smaller_than_zero: PolynomialExpression | None = None,
+    greater_than_zero: MatrixExpression | None = None,
+    smaller_than_zero: MatrixExpression | None = None,
 ):
     if greater_than_zero is not None:
         condition = greater_than_zero

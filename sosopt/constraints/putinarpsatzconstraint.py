@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from collections import defaultdict
 from itertools import accumulate
 from typing import override
-import numpy as np
 
 from donotation import do
 
@@ -14,6 +14,7 @@ from polymat.typing import (
     State,
     PolynomialExpression,
     VariableVectorExpression,
+    MatrixExpression,
 )
 
 from sosopt.constraints.constraintprimitives.constraintprimitive import (
@@ -30,11 +31,13 @@ from sosopt.constraints.constraint import Constraint
 
 
 class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
+
     # abstract properties
+    #####################
 
     @property
     @abstractmethod
-    def condition(self) -> PolynomialExpression: ...
+    def condition(self) -> MatrixExpression: ...
 
     @property
     @abstractmethod
@@ -42,75 +45,109 @@ class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
 
     @property
     @abstractmethod
-    def multipliers(self) -> dict[str, PolynomialVariable]:
+    def multipliers(self) -> dict[tuple[int, int], dict[str, PolynomialVariable]]:
         """ a dictionary mapping from the name of the equality or inequality constraint to the multiplier """
 
     @property
     @abstractmethod
-    def sos_polynomial(self) -> PolynomialExpression: ...
+    def sos_polynomial(self) -> MatrixExpression: ...
 
     @property
     @abstractmethod
     def shape(self) -> tuple[int, int]: ...
 
     # methods
+    #########
 
     @override
     def get_constraint_primitives(
         self,
     ) -> tuple[ConstraintPrimitive, ...]:
         
-        def gen_children():
-            """Create an SOS constraint primitive for each inequality"""
+        n_rows, n_cols = self.shape
+        
+        def gen_primitives():
+            for row in range(n_rows):
+                for col in range(n_cols):
+                    multiplier_entry = self.multipliers[row, col]
 
-            for name in self.domain.inequalities.keys():
+                    def gen_children():
+                        """Create an SOS constraint primitive for each inequality"""
 
-                multiplier = self.multipliers[name]
+                        for name in self.domain.inequalities.keys():
 
-                yield init_sum_of_squares_primitive(
-                    name=self.name,
-                    condition=multiplier,
-                    decision_variable_symbols=(multiplier.coefficients[0][0].symbol,),
-                    polynomial_variables=multiplier.polynomial_variables,
-                )
+                            multiplier = multiplier_entry[name]
 
-        children = tuple(gen_children())
+                            yield init_sum_of_squares_primitive(
+                                name=self.name,
+                                condition=multiplier,
+                                decision_variable_symbols=(multiplier.coefficients[0][0].symbol,),
+                                polynomial_variables=multiplier.polynomial_variables,
+                            )
 
-        primitive = init_sum_of_squares_primitive(
-            name=self.name,
-            children=children,
-            condition=self.sos_polynomial,
-            decision_variable_symbols=self.decision_variable_symbols,
-            polynomial_variables=self.polynomial_variables,
-        )
+                    children = tuple(gen_children())
 
-        return (primitive,)
+                    primitive = init_sum_of_squares_primitive(
+                        name=self.name,
+                        children=children,
+                        condition=self.sos_polynomial,
+                        decision_variable_symbols=self.decision_variable_symbols,
+                        polynomial_variables=self.polynomial_variables,
+                    )
+                    yield primitive
+
+        return tuple(gen_primitives())
 
 
 def define_putinars_psatz_condition(
-    condition: PolynomialExpression,
+    condition: MatrixExpression,
     domain: SemialgebraicSet,
-    multipliers: dict[str, PolynomialVariable],
-) -> PolynomialExpression:
+    multipliers: dict[tuple[int, int], dict[str, PolynomialVariable]],
+    shape: tuple[int, int],
+) -> MatrixExpression:
     constraints = domain.inequalities | domain.equalities
 
-    def acc_domain_polynomials(acc, next):
-        domain_name, constraint = next
+    n_rows, n_cols = shape
 
-        return acc - multipliers[domain_name] * constraint
-        
-    *_, n_condition = accumulate(
-        constraints.items(),
-        acc_domain_polynomials,
-        initial=condition,
-    )
+    def gen_rows():
+        for row in range(n_rows):
+            def gen_cols():
+                for col in range(n_cols):
+                    multipliers_entry = multipliers[row, col]
 
-    return n_condition
+                    def acc_domain_polynomials(acc, next):
+                        domain_name, constraint = next
+
+                        return acc - multipliers_entry[domain_name] * constraint
+                        
+                    *_, condition_entry = accumulate(
+                        constraints.items(),
+                        acc_domain_polynomials,
+                        initial=condition[row, col],
+                    )
+
+                    yield condition_entry
+            
+            cols = tuple(gen_cols())
+
+            if 1 < len(cols):
+                result = polymat.h_stack(cols)
+            else:
+                result = cols[0]
+            yield result
+
+    rows = tuple(gen_rows())
+
+    if 1 < len(rows):
+        result = polymat.v_stack(rows)
+    else:
+        result = rows[0]
+    return result
 
 
 def define_psatz_multipliers(
     name: str,
-    condition: PolynomialExpression,
+    condition: MatrixExpression,
     domain: SemialgebraicSet,
     variables: VariableVectorExpression,
 ):
@@ -126,27 +163,39 @@ def define_psatz_multipliers(
                 yield from domain.equalities.values()
 
         vector = polymat.v_stack(gen_vector()).to_vector()
-        max_degree = yield from polymat.to_degree(vector, variables=variables)
-        max_degree = max(max(max_degree))
+        max_degrees = yield from polymat.to_degree(vector, variables=variables)
+        max_degree = max(max(max_degrees))
+
+        n_rows, n_cols = yield from polymat.to_shape(condition)
 
         def gen_multipliers():
-            for constraint_name, constraint_expr in constraints.items():
+            for row in range(n_rows):
+                for col in range(n_cols):
+                    for constraint_name, constraint_expr in constraints.items():
 
-                @do()
-                def create_multiplier(constraint_expr=constraint_expr):
-                    expr = yield from define_multiplier(
-                        name=f"{name}_{constraint_name}_gamma",
-                        degree=max_degree,
-                        multiplicand=constraint_expr,
-                        variables=variables,
-                    )
+                        @do()
+                        def create_multiplier(constraint_expr=constraint_expr):
+                            expr = yield from define_multiplier(
+                                name=f"{name}_{constraint_name}_gamma",
+                                degree=max_degree,
+                                multiplicand=constraint_expr,
+                                variables=variables,
+                            )
 
-                    return statemonad.from_[State]((constraint_name, expr))
+                            entry = (row, col), constraint_name, expr
 
-                yield create_multiplier()
+                            return statemonad.from_[State](entry)
+
+                        yield create_multiplier()
 
         multipliers = yield from statemonad.zip(gen_multipliers())
 
-        return statemonad.from_[State](dict(multipliers))
+        def convert_to_dict():
+            multipliers_dict = defaultdict(dict)
+            for index, name, expr in multipliers:
+                multipliers_dict[index][name] = expr
+            return multipliers_dict
+
+        return statemonad.from_[State](convert_to_dict())
 
     return create_multipliers()

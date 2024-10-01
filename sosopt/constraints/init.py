@@ -7,7 +7,6 @@ import statemonad
 
 import polymat
 from polymat.typing import (
-    PolynomialExpression,
     VariableVectorExpression,
     State,
     MatrixExpression,
@@ -33,11 +32,11 @@ from sosopt.semialgebraicset import SemialgebraicSet
 @dataclassabc(frozen=True, slots=True)
 class PutinarPsatzConstraintImpl(PutinarsPsatzConstraint):
     name: str
-    condition: PolynomialExpression
+    condition: MatrixExpression
     shape: tuple[int, int]
     domain: SemialgebraicSet
-    multipliers: dict[str, PolynomialVariable]
-    sos_polynomial: PolynomialExpression
+    multipliers: dict[tuple[int, int], dict[str, PolynomialVariable]]
+    sos_polynomial: MatrixExpression
     decision_variable_symbols: tuple[DecisionVariableSymbol, ...]
     polynomial_variables: VariableVectorExpression
 
@@ -48,7 +47,7 @@ class PutinarPsatzConstraintImpl(PutinarsPsatzConstraint):
 @do()
 def to_putinar_psatz_constraint(
     name: str,
-    condition: PolynomialExpression,
+    condition: MatrixExpression,
     domain: SemialgebraicSet,
 ):
     polynomial_variables = yield from to_polynomial_variables(condition)
@@ -64,6 +63,7 @@ def to_putinar_psatz_constraint(
         condition=condition,
         domain=domain,
         multipliers=multipliers,
+        shape=shape,
     )
     decision_variable_symbols = yield from to_decision_variable_symbols(
         sos_polynomial
