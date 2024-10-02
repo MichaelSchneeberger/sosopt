@@ -5,8 +5,8 @@ from functools import cached_property
 
 from polymat.typing import PolynomialExpression, VectorExpression
 
-from sosopt.coneproblem import ConeProblem, init_sdp_problem
-from sosopt.sosconstraints.constraint import Constraint
+from sosopt.conicproblem import ConicProblem, init_sdp_problem
+from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.solvers.solvermixin import SolverMixin
 
@@ -19,8 +19,8 @@ class SOSProblem:
     This problem contains expression objects.
     """
 
-    constraints: tuple[Constraint, ...]
-    sdp_problem: ConeProblem
+    constraints: tuple[PolynomialConstraint, ...]
+    sdp_problem: ConicProblem
 
     @property
     def lin_cost(self):
@@ -50,7 +50,7 @@ class SOSProblem:
 
 def init_sos_problem(
     lin_cost: PolynomialExpression,
-    constraints: tuple[Constraint, ...],
+    constraints: tuple[PolynomialConstraint, ...],
     solver: SolverMixin,
     quad_cost: VectorExpression | None = None,
 ):

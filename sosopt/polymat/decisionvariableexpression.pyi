@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Iterable
 from polymat.typing import (
-    ExpressionTreeMixin,
+    ExpressionNode,
     VariableExpression,
     SingleValueVariableExpression,
 )
@@ -9,7 +9,7 @@ from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 
 class DecisionVariableExpression(VariableExpression):
     def cache(self) -> DecisionVariableExpression: ...
-    def copy(self, child: ExpressionTreeMixin) -> DecisionVariableExpression: ...
+    def copy(self, child: ExpressionNode) -> DecisionVariableExpression: ...
     @property
     @abstractmethod
     def symbol(self) -> DecisionVariableSymbol: ...
@@ -20,5 +20,5 @@ class SingleValueDecisionVariableExpression(
 ):
     def cache(self) -> SingleValueDecisionVariableExpression: ...
     def copy(
-        self, child: ExpressionTreeMixin
+        self, child: ExpressionNode
     ) -> SingleValueDecisionVariableExpression: ...

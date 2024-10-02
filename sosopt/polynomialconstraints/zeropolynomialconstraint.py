@@ -5,12 +5,12 @@ from typing import override
 import polymat
 from polymat.typing import VectorExpression
 
-from sosopt.sosconstraints.constraint import Constraint
+from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
 from sosopt.coneconstraints.coneconstraint import EqualityConstraint
 from sosopt.utils.polynomialvariablesmixin import PolynomialVariablesMixin
 
 
-class ZeroPolynomialConstraint(PolynomialVariablesMixin, EqualityConstraint, Constraint):
+class ZeroPolynomialConstraint(PolynomialVariablesMixin, EqualityConstraint, PolynomialConstraint):
     @property
     @abstractmethod
     def condition(self) -> VectorExpression: ...

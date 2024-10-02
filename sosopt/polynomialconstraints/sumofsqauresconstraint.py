@@ -4,7 +4,7 @@ from typing import override
 
 from polymat.typing import MatrixExpression
 
-from sosopt.sosconstraints.constraint import Constraint
+from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
 from sosopt.coneconstraints.coneconstraint import (
     ConeConstraint,
 )
@@ -14,7 +14,7 @@ from sosopt.coneconstraints.init import (
 from sosopt.utils.polynomialvariablesmixin import PolynomialVariablesMixin
 
 
-class SumOfSqauresConstraint(PolynomialVariablesMixin, Constraint):
+class SumOfSqauresConstraint(PolynomialVariablesMixin, PolynomialConstraint):
     @property
     @abstractmethod
     def condition(self) -> MatrixExpression: ...

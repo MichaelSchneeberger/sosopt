@@ -26,10 +26,10 @@ from sosopt.semialgebraicset import SemialgebraicSet
 from sosopt.coneconstraints.init import (
     init_sum_of_squares_constraint,
 )
-from sosopt.sosconstraints.constraint import Constraint
+from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
 
 
-class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
+class PutinarsPsatzConstraint(PolynomialVariablesMixin, PolynomialConstraint):
 
     # abstract properties
     #####################
@@ -70,25 +70,26 @@ class PutinarsPsatzConstraint(PolynomialVariablesMixin, Constraint):
                 for col in range(n_cols):
                     multiplier_entry = self.multipliers[row, col]
 
-                    def gen_children():
-                        """Create a cone constraint for each inequality"""
+                    # def gen_children():
+                    #     """Create a cone constraint for each inequality"""
 
-                        for name in self.domain.inequalities.keys():
+                    for name in self.domain.inequalities.keys():
 
-                            multiplier = multiplier_entry[name]
+                        multiplier = multiplier_entry[name]
 
-                            yield init_sum_of_squares_constraint(
-                                name=self.name,
-                                condition=multiplier,
-                                decision_variable_symbols=(multiplier.coefficients[0][0].symbol,),
-                                polynomial_variables=multiplier.polynomial_variables,
-                            )
+                        yield init_sum_of_squares_constraint(
+                            name=self.name,
+                            condition=multiplier,
+                            decision_variable_symbols=(multiplier.coefficients[0][0].symbol,),
+                            polynomial_variables=multiplier.polynomial_variables,
+                        )
 
-                    children = tuple(gen_children())
+                    # children = tuple(gen_children())
+                    # yield from children
 
                     constraint = init_sum_of_squares_constraint(
                         name=self.name,
-                        children=children,
+                        # children=children,
                         condition=self.sos_polynomial[row, col],
                         decision_variable_symbols=self.decision_variable_symbols,
                         polynomial_variables=self.polynomial_variables,
@@ -152,37 +153,34 @@ def define_psatz_multipliers(
 ):
     @do()
     def create_multipliers():
-        constraints = domain.inequalities | domain.equalities
+        domain_polynomials = domain.inequalities | domain.equalities
+
+        vector = polymat.v_stack(domain_polynomials.values()).to_vector()
+        max_domain_degrees = yield from polymat.to_degree(vector, variables=variables)
+        max_domain_degree = max(max(max_domain_degrees))
 
         n_rows, n_cols = yield from polymat.to_shape(condition)
 
         def gen_multipliers():
             for row in range(n_rows):
                 for col in range(n_cols):
-                    for constraint_name, constraint_expr in constraints.items():
+
+                    for domain_name, domain_polynomial in domain_polynomials.items():
 
                         @do()
-                        def create_multiplier(constraint_expr=constraint_expr):
+                        def create_multiplier(constraint_expr=domain_polynomial):
 
-                            def gen_vector():
-                                yield condition[row, col]
-
-                                if domain is not None:
-                                    yield from domain.inequalities.values()
-                                    yield from domain.equalities.values()
-
-                            vector = polymat.v_stack(gen_vector()).to_vector()
-                            max_degrees = yield from polymat.to_degree(vector, variables=variables)
-                            max_degree = max(max(max_degrees))
+                            max_cond_degrees = yield from polymat.to_degree(condition[row, col], variables=variables)
+                            max_cond_degree = max(max(max_cond_degrees))
 
                             expr = yield from define_multiplier(
-                                name=f"{name}_{constraint_name}_gamma",
-                                degree=max_degree,
+                                name=f"{name}_{row}_{col}_{domain_name}",
+                                degree=max(max_domain_degree, max_cond_degree),
                                 multiplicand=constraint_expr,
                                 variables=variables,
                             )
 
-                            entry = (row, col), constraint_name, expr
+                            entry = (row, col), domain_name, expr
 
                             return statemonad.from_[State](entry)
 

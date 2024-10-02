@@ -38,22 +38,22 @@ def define_polynomial(
     name: str,
     monomials: MonomialVectorExpression,
     polynomial_variables: VariableVectorExpression,
-    n_row: int,
+    n_rows: int,
 ) -> PolynomialVectorVariable: ...
 @overload
 def define_polynomial(
     name: str,
     monomials: MonomialVectorExpression,
     polynomial_variables: VariableVectorExpression,
-    n_col: int,
+    n_cols: int,
 ) -> PolynomialRowVectorVariable: ...
 @overload
 def define_polynomial(
     name: str,
     monomials: MonomialVectorExpression,
     polynomial_variables: VariableVectorExpression,
-    n_row: int,
-    n_col: int,
+    n_rows: int,
+    n_cols: int,
 ) -> PolynomialMatrixVariable: ...
 @overload
 def define_symmetric_matrix(

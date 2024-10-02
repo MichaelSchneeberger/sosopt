@@ -2,17 +2,13 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
-from statemonad.typing import StateMonad
-
-from polymat.typing import State
-
 from sosopt.coneconstraints.coneconstraint import (
     ConeConstraint,
 )
 from sosopt.utils.decisionvariablesmixin import DecisionVariablesMixin
 
 
-class Constraint(DecisionVariablesMixin):
+class PolynomialConstraint(DecisionVariablesMixin):
     """
     A constraints implements helper methods that can be used to define the cost function
     """

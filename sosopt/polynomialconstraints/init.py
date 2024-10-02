@@ -15,13 +15,13 @@ from polymat.typing import (
 from sosopt.coneconstraints.coneconstraint import ConeConstraint
 from sosopt.utils.decisionvariablesmixin import to_decision_variable_symbols
 from sosopt.utils.polynomialvariablesmixin import to_polynomial_variables
-from sosopt.sosconstraints.sumofsqauresconstraint import SumOfSqauresConstraint
-from sosopt.sosconstraints.putinarpsatzconstraint import (
+from sosopt.polynomialconstraints.sumofsqauresconstraint import SumOfSqauresConstraint
+from sosopt.polynomialconstraints.putinarpsatzconstraint import (
     PutinarsPsatzConstraint,
     define_psatz_multipliers,
     define_putinars_psatz_condition,
 )
-from sosopt.sosconstraints.zeropolynomialconstraint import ZeroPolynomialConstraint
+from sosopt.polynomialconstraints.zeropolynomialconstraint import ZeroPolynomialConstraint
 from sosopt.polymat.polynomialvariable import (
     PolynomialVariable,
 )

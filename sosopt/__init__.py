@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sosopt.sosconstraints.from_ import (
+from sosopt.polynomialconstraints.from_ import (
     sos_constraint as _sos_constraint,
     zero_polynomial_constraint as _zero_polynomial_constraint,
     sos_matrix_constraint as _sos_matrix_constraint,

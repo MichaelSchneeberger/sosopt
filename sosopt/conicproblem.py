@@ -23,13 +23,13 @@ from sosopt.solvers.solverdata import SolutionFound, SolutionNotFound, SolverDat
 
 
 @dataclass(frozen=True)
-class ConeProblemResult:
+class ConicProblemResult:
     solver_data: SolverData
     symbol_values: dict[DecisionVariableSymbol, tuple[float, ...]]
 
 
 @dataclass(frozen=True)
-class ConeProblem:
+class ConicProblem:
     lin_cost: PolynomialExpression
     quad_cost: VectorExpression | None
     constraints: tuple[ConeConstraint, ...]
@@ -66,7 +66,7 @@ class ConeProblem:
 
         return tuple(gen_flattened_constraints())
 
-    def solve(self) -> StateMonad[State, ConeProblemResult]:
+    def solve(self) -> StateMonad[State, ConicProblemResult]:
         @do()
         def solve_sdp():
             state = yield from statemonad.get[State]()
@@ -135,7 +135,7 @@ class ConeProblem:
 
                     symbol_values = dict(gen_symbol_values())
 
-            sos_result_mapping = ConeProblemResult(
+            sos_result_mapping = ConicProblemResult(
                 solver_data=solver_data,
                 symbol_values=symbol_values,
             )
@@ -152,7 +152,7 @@ def init_sdp_problem(
     quad_cost: VectorExpression | None = None,
 ):
 
-    return ConeProblem(
+    return ConicProblem(
         lin_cost=lin_cost,
         quad_cost=quad_cost,
         constraints=constraints,

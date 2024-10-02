@@ -19,7 +19,7 @@ class ConeConstraint(DecisionVariablesMixin):
 
     @property
     @abstractmethod
-    def children(self) -> tuple[ConeConstraint, ...]: ...
+    def children(self) -> tuple[ConeConstraint, ...]: ...       # remove?
 
     @property
     @abstractmethod
