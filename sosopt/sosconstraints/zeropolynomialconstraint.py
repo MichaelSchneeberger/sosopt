@@ -5,12 +5,12 @@ from typing import override
 import polymat
 from polymat.typing import VectorExpression
 
-from sosopt.constraints.constraint import Constraint
-from sosopt.constraints.constraintprimitives.constraintprimitive import EqualityConstraintPrimitive
-from sosopt.constraints.utils.polynomialvariablesmixin import PolynomialVariablesMixin
+from sosopt.sosconstraints.constraint import Constraint
+from sosopt.coneconstraints.coneconstraint import EqualityConstraint
+from sosopt.utils.polynomialvariablesmixin import PolynomialVariablesMixin
 
 
-class ZeroPolynomialConstraint(PolynomialVariablesMixin, EqualityConstraintPrimitive, Constraint):
+class ZeroPolynomialConstraint(PolynomialVariablesMixin, EqualityConstraint, Constraint):
     @property
     @abstractmethod
     def condition(self) -> VectorExpression: ...
@@ -20,18 +20,18 @@ class ZeroPolynomialConstraint(PolynomialVariablesMixin, EqualityConstraintPrimi
     def shape(self) -> tuple[int, int]: ...
 
     @override
-    def get_constraint_primitives(
+    def get_cone_constraints(
         self,
     ):
         return (self,)
-        # primitive = init_zero_polynomial_primitive(
+        # constraint = init_zero_polynomial_constraint(
         #     name=self.name,
         #     condition=self.condition,
         #     n_rows=self.n_rows,
         #     decision_variable_symbols=self.decision_variable_symbols,
         #     polynomial_variables=self.polynomial_variables,
         # )
-        # return (primitive,)
+        # return (constraint,)
 
     @override
     def to_constraint_vector(self) -> VectorExpression:

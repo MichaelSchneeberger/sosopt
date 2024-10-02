@@ -10,12 +10,11 @@ from statemonad.typing import StateMonad
 
 from polymat.typing import PolynomialExpression, VectorExpression, State
 
-from sosopt.constraints.constraint import Constraint
-from sosopt.constraints.constraintprimitives.constraintprimitive import (
-    ConstraintPrimitive,
-    EqualityConstraintPrimitive,
-    LinearConstraintPrimitive,
-    SDPConstraintPrimitive,
+from sosopt.coneconstraints.coneconstraint import (
+    ConeConstraint,
+    EqualityConstraint,
+    LinearConstraint,
+    SDPConstraint,
 )
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.solvers.solveargs import get_solver_args
@@ -24,31 +23,17 @@ from sosopt.solvers.solverdata import SolutionFound, SolutionNotFound, SolverDat
 
 
 @dataclass(frozen=True)
-class SOSResultMapping:
+class ConeProblemResult:
     solver_data: SolverData
     symbol_values: dict[DecisionVariableSymbol, tuple[float, ...]]
 
 
 @dataclass(frozen=True)
-class SOSProblem:
-    """
-    Generic sum of squares problem.
-    This problem contains expression objects.
-    """
-
+class ConeProblem:
     lin_cost: PolynomialExpression
     quad_cost: VectorExpression | None
-    constraints: tuple[Constraint, ...]
+    constraints: tuple[ConeConstraint, ...]
     solver: SolverMixin
-    nested_constraint_primitives: tuple[ConstraintPrimitive, ...]
-
-    @property
-    def constraint_primitives(self) -> tuple[ConstraintPrimitive, ...]:
-        def gen_flattened_primitives():
-            for primitive in self.nested_constraint_primitives:
-                yield from primitive.flatten()
-
-        return tuple(gen_flattened_primitives())
 
     def copy(self, /, **others):
         return replace(self, **others)
@@ -56,24 +41,32 @@ class SOSProblem:
     @cached_property
     def decision_variable_symbols(self) -> tuple[DecisionVariableSymbol, ...]:
         def gen_decision_variable_symbols():
-            for primitive in self.constraint_primitives:
-                yield from primitive.decision_variable_symbols
+            for constraint in self.flattened_constraints:
+                yield from constraint.decision_variable_symbols
 
         return tuple(sorted(set(gen_decision_variable_symbols())))
 
     def eval(self, substitutions: dict[DecisionVariableSymbol, tuple[float, ...]]):
-        def evaluate_primitives():
-            for primitive in self.nested_constraint_primitives:
-                n_primitive = primitive.eval(substitutions)
+        def evaluate_constraints():
+            for constraint in self.constraints:
+                evaluated_constraint = constraint.eval(substitutions)
 
                 # constraint still contains decision variables
-                if n_primitive is not None:
-                    yield n_primitive
+                if evaluated_constraint is not None:
+                    yield evaluated_constraint
 
-        primitives = tuple(evaluate_primitives())
-        return self.copy(nested_constraint_primitives=primitives)
+        constraints = tuple(evaluate_constraints())
+        return self.copy(constraints=constraints)
 
-    def solve(self) -> StateMonad[State, SOSResultMapping]:
+    @cached_property
+    def flattened_constraints(self) -> tuple[ConeConstraint, ...]:
+        def gen_flattened_constraints():
+            for constraint in self.constraints:
+                yield from constraint.flatten()
+
+        return tuple(gen_flattened_constraints())
+
+    def solve(self) -> StateMonad[State, ConeProblemResult]:
         @do()
         def solve_sdp():
             state = yield from statemonad.get[State]()
@@ -91,23 +84,23 @@ class SOSProblem:
 
             # filter positive semidefinite constraints
             s_data = tuple(
-                (primitive.name, primitive.to_constraint_vector())
-                for primitive in self.constraint_primitives
-                if isinstance(primitive, SDPConstraintPrimitive)
+                (constraint.name, constraint.to_constraint_vector())
+                for constraint in self.flattened_constraints
+                if isinstance(constraint, SDPConstraint)
             )
 
             # filter linear inequality constraints
             l_data = tuple(
-                (primitive.name, primitive.to_constraint_vector())
-                for primitive in self.constraint_primitives
-                if isinstance(primitive, LinearConstraintPrimitive)
+                (constraint.name, constraint.to_constraint_vector())
+                for constraint in self.flattened_constraints
+                if isinstance(constraint, LinearConstraint)
             )
 
             # filter linear equality constraints
             eq_data = tuple(
-                (primitive.name, primitive.to_constraint_vector())
-                for primitive in self.constraint_primitives
-                if isinstance(primitive, EqualityConstraintPrimitive)
+                (constraint.name, constraint.to_constraint_vector())
+                for constraint in self.flattened_constraints
+                if isinstance(constraint, EqualityConstraint)
             )
 
             solver_args = yield from get_solver_args(
@@ -142,7 +135,7 @@ class SOSProblem:
 
                     symbol_values = dict(gen_symbol_values())
 
-            sos_result_mapping = SOSResultMapping(
+            sos_result_mapping = ConeProblemResult(
                 solver_data=solver_data,
                 symbol_values=symbol_values,
             )
@@ -152,24 +145,16 @@ class SOSProblem:
         return solve_sdp()
 
 
-def sos_problem(
+def init_sdp_problem(
     lin_cost: PolynomialExpression,
-    constraints: tuple[Constraint, ...],
+    constraints: tuple[ConeConstraint, ...],
     solver: SolverMixin,
     quad_cost: VectorExpression | None = None,
 ):
-    def gen_primitives():
-        for constraint in constraints:
-            for primitive in constraint.get_constraint_primitives():
-                yield primitive
 
-    primitives = tuple(gen_primitives())
-
-    return SOSProblem(
+    return ConeProblem(
         lin_cost=lin_cost,
         quad_cost=quad_cost,
         constraints=constraints,
         solver=solver,
-        nested_constraint_primitives=primitives,
     )
-

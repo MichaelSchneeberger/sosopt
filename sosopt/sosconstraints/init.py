@@ -12,16 +12,16 @@ from polymat.typing import (
     MatrixExpression,
 )
 
-from sosopt.constraints.constraintprimitives.constraintprimitive import ConstraintPrimitive
-from sosopt.constraints.utils.decisionvariablesmixin import to_decision_variable_symbols
-from sosopt.constraints.utils.polynomialvariablesmixin import to_polynomial_variables
-from sosopt.constraints.sumofsqauresconstraint import SumOfSqauresConstraint
-from sosopt.constraints.putinarpsatzconstraint import (
+from sosopt.coneconstraints.coneconstraint import ConeConstraint
+from sosopt.utils.decisionvariablesmixin import to_decision_variable_symbols
+from sosopt.utils.polynomialvariablesmixin import to_polynomial_variables
+from sosopt.sosconstraints.sumofsqauresconstraint import SumOfSqauresConstraint
+from sosopt.sosconstraints.putinarpsatzconstraint import (
     PutinarsPsatzConstraint,
     define_psatz_multipliers,
     define_putinars_psatz_condition,
 )
-from sosopt.constraints.zeropolynomialconstraint import ZeroPolynomialConstraint
+from sosopt.sosconstraints.zeropolynomialconstraint import ZeroPolynomialConstraint
 from sosopt.polymat.polynomialvariable import (
     PolynomialVariable,
 )
@@ -124,7 +124,7 @@ class ZeroPolynomialConstraintImpl(ZeroPolynomialConstraint):
     shape: tuple[int, int]
     decision_variable_symbols: tuple[DecisionVariableSymbol, ...]
     polynomial_variables: VariableVectorExpression
-    children: tuple[ConstraintPrimitive, ...]
+    children: tuple[ConeConstraint, ...]
 
     def copy(self, /, **others):
         return replace(self, **others)

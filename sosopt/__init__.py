@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sosopt.constraints.from_ import (
+from sosopt.sosconstraints.from_ import (
     sos_constraint as _sos_constraint,
     zero_polynomial_constraint as _zero_polynomial_constraint,
     sos_matrix_constraint as _sos_matrix_constraint,
@@ -16,7 +16,7 @@ from sosopt.solvers.cvxoptsolver import CVXOPTSolver
 from sosopt.solvers.moseksolver import MosekSolver
 from sosopt.solvers.solveargs import get_solver_args as _get_solver_args
 from sosopt.semialgebraicset import set_ as _set_
-from sosopt.problem import sos_problem as _sos_problem
+from sosopt.sosproblem import init_sos_problem as _init_sos_problem
 
 cvx_opt_solver = CVXOPTSolver()
 mosek_solver = MosekSolver()
@@ -41,4 +41,4 @@ sos_constraint_putinar = _psatz_putinar_constraint      # depricated
 # Defining the SOS Optimization Problem
 solve_args = _get_solver_args  # depricate
 solver_args = _get_solver_args
-sos_problem = _sos_problem
+sos_problem = _init_sos_problem

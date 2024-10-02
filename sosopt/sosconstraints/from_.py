@@ -8,7 +8,7 @@ from polymat.typing import (
     SymmetricMatrixExpression,
 )
 
-from sosopt.constraints.init import (
+from sosopt.sosconstraints.init import (
     init_zero_polynomial_constraint,
     to_sum_of_squares_constraint,
     to_putinar_psatz_constraint,

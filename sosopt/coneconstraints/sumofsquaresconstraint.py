@@ -8,13 +8,13 @@ from polymat.typing import (
     VectorExpression,
 )
 
-from sosopt.constraints.constraintprimitives.constraintprimitive import (
-    SDPConstraintPrimitive,
+from sosopt.coneconstraints.coneconstraint import (
+    SDPConstraint,
 )
-from sosopt.constraints.utils.polynomialvariablesmixin import PolynomialVariablesMixin
+from sosopt.utils.polynomialvariablesmixin import PolynomialVariablesMixin
 
 
-class SumOfSqauresPrimitive(PolynomialVariablesMixin, SDPConstraintPrimitive):
+class SumOfSqauresConstraint(PolynomialVariablesMixin, SDPConstraint):
     @property
     @override
     @abstractmethod

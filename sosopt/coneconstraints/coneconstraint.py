@@ -5,11 +5,11 @@ from collections.abc import Iterator
 
 from polymat.typing import MatrixExpression, VectorExpression
 
-from sosopt.constraints.utils.decisionvariablesmixin import DecisionVariablesMixin
+from sosopt.utils.decisionvariablesmixin import DecisionVariablesMixin
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 
 
-class ConstraintPrimitive(DecisionVariablesMixin):
+class ConeConstraint(DecisionVariablesMixin):
     # abstract properties
     #####################
 
@@ -19,24 +19,24 @@ class ConstraintPrimitive(DecisionVariablesMixin):
 
     @property
     @abstractmethod
-    def children(self) -> tuple[ConstraintPrimitive, ...]: ...
+    def children(self) -> tuple[ConeConstraint, ...]: ...
 
     @property
     @abstractmethod
     def condition(self) -> MatrixExpression: ...
 
-    def copy(self, /, **others) -> ConstraintPrimitive: ...
+    def copy(self, /, **others) -> ConeConstraint: ...
 
     # class method
     ##############
 
-    def flatten(self) -> Iterator[ConstraintPrimitive]:
+    def flatten(self) -> Iterator[ConeConstraint]:
         yield self
         yield from self.children
 
     def eval(
         self, substitutions: dict[DecisionVariableSymbol, tuple[float, ...]]
-    ) -> ConstraintPrimitive | None:
+    ) -> ConeConstraint | None:
         def not_in_substitutions(p: DecisionVariableSymbol):
             return p not in substitutions
 
@@ -48,7 +48,7 @@ class ConstraintPrimitive(DecisionVariablesMixin):
         if len(decision_variable_symbols):
             condition = self.condition.eval(substitutions)
 
-            # remove constraint primitive if not depending on decision variables
+            # remove cone constraints if not depending on decision variables
             def gen_children():
                 for child in self.children:
                     eval_child = child.eval(substitutions)
@@ -65,7 +65,7 @@ class ConstraintPrimitive(DecisionVariablesMixin):
     def to_constraint_vector() -> VectorExpression: ...
 
 
-class EqualityConstraintPrimitive(ConstraintPrimitive): ...
-class LinearConstraintPrimitive(ConstraintPrimitive): ...
-class QuadraticConeConstraintPrimitive(ConstraintPrimitive): ...
-class SDPConstraintPrimitive(ConstraintPrimitive): ...
+class EqualityConstraint(ConeConstraint): ...
+class LinearConstraint(ConeConstraint): ...
+class QuadraticConeConstraint(ConeConstraint): ...
+class SDPConstraint(ConeConstraint): ...

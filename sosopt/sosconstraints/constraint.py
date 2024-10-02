@@ -6,10 +6,10 @@ from statemonad.typing import StateMonad
 
 from polymat.typing import State
 
-from sosopt.constraints.constraintprimitives.constraintprimitive import (
-    ConstraintPrimitive,
+from sosopt.coneconstraints.coneconstraint import (
+    ConeConstraint,
 )
-from sosopt.constraints.utils.decisionvariablesmixin import DecisionVariablesMixin
+from sosopt.utils.decisionvariablesmixin import DecisionVariablesMixin
 
 
 class Constraint(DecisionVariablesMixin):
@@ -22,11 +22,9 @@ class Constraint(DecisionVariablesMixin):
     def name(self) -> str: ...
 
     @abstractmethod
-    def get_constraint_primitives(
+    def get_cone_constraints(
         self,
-    ) -> tuple[ConstraintPrimitive, ...]:
+    ) -> tuple[ConeConstraint, ...]:
         """
-        Generates a tree of constraint primitives, encoding the dependency between constraints
-
-        primitives are closer to what the solver can solve
+        Generates a tree of cone constraint, encoding the dependency between constraints.
         """

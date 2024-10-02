@@ -4,14 +4,14 @@ from typing import override
 
 from polymat.typing import MatrixExpression
 
-from sosopt.constraints.constraint import Constraint
-from sosopt.constraints.constraintprimitives.constraintprimitive import (
-    ConstraintPrimitive,
+from sosopt.sosconstraints.constraint import Constraint
+from sosopt.coneconstraints.coneconstraint import (
+    ConeConstraint,
 )
-from sosopt.constraints.constraintprimitives.init import (
-    init_sum_of_squares_primitive,
+from sosopt.coneconstraints.init import (
+    init_sum_of_squares_constraint,
 )
-from sosopt.constraints.utils.polynomialvariablesmixin import PolynomialVariablesMixin
+from sosopt.utils.polynomialvariablesmixin import PolynomialVariablesMixin
 
 
 class SumOfSqauresConstraint(PolynomialVariablesMixin, Constraint):
@@ -24,19 +24,19 @@ class SumOfSqauresConstraint(PolynomialVariablesMixin, Constraint):
     def shape(self) -> tuple[int, int]: ...
 
     @override
-    def get_constraint_primitives(
+    def get_cone_constraints(
         self,
-    ) -> tuple[ConstraintPrimitive, ...]:
+    ) -> tuple[ConeConstraint, ...]:
         
-        def gen_primitives():
+        def gen_cone_constraints():
             n_rows, n_cols = self.shape
             for row in range(n_rows):
                 for col in range(n_cols):
-                    yield init_sum_of_squares_primitive(
+                    yield init_sum_of_squares_constraint(
                         name=self.name,
                         condition=self.condition[row, col],
                         decision_variable_symbols=self.decision_variable_symbols,
                         polynomial_variables=self.polynomial_variables,
                     )
                     
-        return tuple(gen_primitives())
+        return tuple(gen_cone_constraints())
