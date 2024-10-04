@@ -1,42 +1,68 @@
 from __future__ import annotations
-from abc import abstractmethod
-from typing import override
+from dataclasses import replace
 
-from polymat.typing import MatrixExpression
+from dataclassabc import dataclassabc
 
+import statemonad
+
+import polymat
+from polymat.typing import MatrixExpression, VariableVectorExpression, State
+
+from sosopt.polynomialconstraints.constraintprimitive.sumofsquaresprimitive import init_sum_of_squares_primitive
 from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
-from sosopt.coneconstraints.coneconstraint import (
-    ConeConstraint,
+from sosopt.polynomialconstraints.constraintprimitive.constraintprimitive import (
+    ConstraintPrimitive,
 )
-from sosopt.coneconstraints.init import (
-    init_sum_of_squares_constraint,
-)
-from sosopt.utils.polynomialvariablesmixin import PolynomialVariablesMixin
+from sosopt.utils.decisionvariablesmixin import to_decision_variable_symbols
+from sosopt.utils.polynomialvariablesmixin import PolynomialVariablesMixin, to_polynomial_variables
 
 
+@dataclassabc(frozen=True, slots=True)
 class SumOfSqauresConstraint(PolynomialVariablesMixin, PolynomialConstraint):
-    @property
-    @abstractmethod
-    def condition(self) -> MatrixExpression: ...
+    name: str
+    condition: MatrixExpression
+    shape: tuple[int, int]
+    polynomial_variables: VariableVectorExpression
+    primitives: tuple[ConstraintPrimitive, ...]
 
-    @property
-    @abstractmethod
-    def shape(self) -> tuple[int, int]: ...
+    def copy(self, /, **others):
+        return replace(self, **others)
 
-    @override
-    def get_cone_constraints(
-        self,
-    ) -> tuple[ConeConstraint, ...]:
-        
-        def gen_cone_constraints():
-            n_rows, n_cols = self.shape
-            for row in range(n_rows):
-                for col in range(n_cols):
-                    yield init_sum_of_squares_constraint(
-                        name=self.name,
-                        condition=self.condition[row, col],
-                        decision_variable_symbols=self.decision_variable_symbols,
-                        polynomial_variables=self.polynomial_variables,
+
+def init_sum_of_squares_constraint(
+    name: str,
+    condition: MatrixExpression,
+):
+
+    def create_constraint(state: State):
+        state, polynomial_variables = to_polynomial_variables(condition).apply(state)
+
+        state, (n_rows, n_cols) = polymat.to_shape(condition).apply(state)
+
+        constraint_primitives = []
+
+        for row in range(n_rows):
+            for col in range(n_cols):
+                condition_entry = condition[row, col]
+
+                state, decision_variable_symbols = to_decision_variable_symbols(condition_entry).apply(state)               
+
+                constraint_primitives.append(
+                    init_sum_of_squares_primitive(
+                        name=name,
+                        expression=condition_entry,
+                        decision_variable_symbols=decision_variable_symbols,
+                        polynomial_variables=polynomial_variables,
                     )
-                    
-        return tuple(gen_cone_constraints())
+                )
+
+        constraint = SumOfSqauresConstraint(
+            name=name,
+            condition=condition,
+            shape=(n_rows, n_cols),
+            polynomial_variables=polynomial_variables,
+            primitives=tuple(constraint_primitives),
+        )
+        return state, constraint
+    
+    return statemonad.get_map_put(create_constraint)

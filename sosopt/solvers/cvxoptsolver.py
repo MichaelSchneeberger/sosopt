@@ -48,15 +48,6 @@ class CVXOptSolutionFound(CVXOptSolverData, SolutionFound):
 
 class CVXOPTSolver(SolverMixin):
     def solve(self, info: SolverArgs):
-        def get_dim_s(array: ArrayRepr) -> int:
-            dim = np.sqrt(array.n_eq)
-            assert math.isclose(int(dim), dim), f"{dim=}"
-            return int(dim)
-
-        dim_l = sum(d.n_eq for d in info.l_data)
-        dim_q = list(d.n_eq for d in info.q_data)
-        dim_s = list(get_dim_s(d) for d in info.s_data)
-
         inequality_constraints = info.l_data + info.q_data + info.s_data
 
         q = cvxopt.matrix(info.lin_cost[1].T)
@@ -67,6 +58,15 @@ class CVXOPTSolver(SolverMixin):
         else:
             h = None
             G = None
+
+        def get_dim_s(array: ArrayRepr) -> int:
+            dim = np.sqrt(array.n_eq)
+            assert math.isclose(int(dim), dim), f"{dim=}"
+            return int(dim)
+
+        dim_l = sum(d.n_eq for d in info.l_data)
+        dim_q = list(d.n_eq for d in info.q_data)
+        dim_s = list(get_dim_s(d) for d in info.s_data)
 
         if info.eq_data:
             b = cvxopt.matrix(np.vstack(tuple(c[0] for c in info.eq_data)))

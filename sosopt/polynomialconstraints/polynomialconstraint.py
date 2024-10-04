@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
-from sosopt.coneconstraints.coneconstraint import (
-    ConeConstraint,
+from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
+from sosopt.polynomialconstraints.constraintprimitive.constraintprimitive import (
+    ConstraintPrimitive,
 )
-from sosopt.utils.decisionvariablesmixin import DecisionVariablesMixin
+# from sosopt.utils.decisionvariablesmixin import DecisionVariablesMixin
 
 
-class PolynomialConstraint(DecisionVariablesMixin):
+class PolynomialConstraint: #(DecisionVariablesMixin):
     """
     A constraints implements helper methods that can be used to define the cost function
     """
@@ -17,10 +18,22 @@ class PolynomialConstraint(DecisionVariablesMixin):
     @abstractmethod
     def name(self) -> str: ...
 
+    def copy(self, /, **others) -> PolynomialConstraint: ...
+
+    @property
     @abstractmethod
-    def get_cone_constraints(
-        self,
-    ) -> tuple[ConeConstraint, ...]:
-        """
-        Generates a tree of cone constraint, encoding the dependency between constraints.
-        """
+    def primitives(self) -> tuple[ConstraintPrimitive, ...]: ...
+
+    def eval(
+        self, substitutions: dict[DecisionVariableSymbol, tuple[float, ...]]
+    ) -> PolynomialConstraint | None:
+        def gen_evaluated_primitives():
+            for primitive in self.primitives:
+                evaluated_primitive = primitive.eval(substitutions)
+
+                # constraint still contains decision variables
+                if evaluated_primitive is not None:
+                    yield evaluated_primitive
+
+        evaluated_primitives = tuple(gen_evaluated_primitives())
+        return self.copy(primitives=evaluated_primitives)

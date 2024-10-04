@@ -8,11 +8,9 @@ from polymat.typing import (
     SymmetricMatrixExpression,
 )
 
-from sosopt.polynomialconstraints.init import (
-    init_zero_polynomial_constraint,
-    to_sum_of_squares_constraint,
-    to_putinar_psatz_constraint,
-)
+from sosopt.polynomialconstraints.putinarpsatzconstraint import init_putinar_psatz_constraint
+from sosopt.polynomialconstraints.sumofsqauresconstraint import init_sum_of_squares_constraint
+from sosopt.polynomialconstraints.zeropolynomialconstraint import init_zero_polynomial_constraint
 from sosopt.semialgebraicset import SemialgebraicSet
 
 
@@ -38,7 +36,7 @@ def sos_constraint(
     else:
         raise Exception("SOS constraint requires condition.")
 
-    return to_sum_of_squares_constraint(
+    return init_sum_of_squares_constraint(
         name=name,
         condition=condition,
     )
@@ -80,7 +78,7 @@ def psatz_putinar_constraint(
     else:
         raise Exception("SOS constraint requires condition.")
 
-    return to_putinar_psatz_constraint(
+    return init_putinar_psatz_constraint(
         name,
         condition=condition,
         domain=domain,

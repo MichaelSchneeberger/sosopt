@@ -94,20 +94,6 @@ def get_solver_args(
             (to_array(name=name, expr=expr) for name, expr in eq_data)
         )
 
-    # # maximum degree of constraint must not be greater than 1
-    # # the assertion is defined inside a function because the do-notation forbits for loops
-    # def assert_degree_of_constraints():
-    #     for array in l_data_array + q_data_array + s_data_array:
-    #         if 1 < array.degree:
-    #             raise AssertionError(
-    #                 (
-    #                     "The degree of the polynomial in the decision variables used to encode the optimization problem constraints "
-    #                     "must not exceed 1."
-    #                 )
-    #             )
-
-    # assert_degree_of_constraints()
-
     return statemonad.from_(
         SolverArgs(
             lin_cost=lin_cost_array,

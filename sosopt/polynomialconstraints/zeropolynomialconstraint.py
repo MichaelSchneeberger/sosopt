@@ -1,46 +1,66 @@
 from __future__ import annotations
-from abc import abstractmethod
-from typing import override
+from dataclasses import replace
+
+from dataclassabc import dataclassabc
+
+import statemonad
 
 import polymat
-from polymat.typing import VectorExpression
+from polymat.typing import MatrixExpression, VariableVectorExpression, State
 
+from sosopt.polynomialconstraints.constraintprimitive.constraintprimitive import ConstraintPrimitive
+from sosopt.polynomialconstraints.constraintprimitive.zeropolynomialprimitive import init_zero_polynomial_primitive
+from sosopt.utils.decisionvariablesmixin import to_decision_variable_symbols
 from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
-from sosopt.coneconstraints.coneconstraint import EqualityConstraint
-from sosopt.utils.polynomialvariablesmixin import PolynomialVariablesMixin
+from sosopt.utils.polynomialvariablesmixin import PolynomialVariablesMixin, to_polynomial_variables
 
 
-class ZeroPolynomialConstraint(PolynomialVariablesMixin, EqualityConstraint, PolynomialConstraint):
-    @property
-    @abstractmethod
-    def condition(self) -> VectorExpression: ...
+@dataclassabc(frozen=True, slots=True)
+class ZeroPolynomialConstraint(PolynomialVariablesMixin, PolynomialConstraint):
+    name: str
+    condition: MatrixExpression
+    shape: tuple[int, int]
+    polynomial_variables: VariableVectorExpression
+    primitives: tuple[ConstraintPrimitive, ...]
 
-    @property
-    @abstractmethod
-    def shape(self) -> tuple[int, int]: ...
+    def copy(self, /, **others):
+        return replace(self, **others)
 
-    @override
-    def get_cone_constraints(
-        self,
-    ):
-        return (self,)
-        # constraint = init_zero_polynomial_constraint(
-        #     name=self.name,
-        #     condition=self.condition,
-        #     n_rows=self.n_rows,
-        #     decision_variable_symbols=self.decision_variable_symbols,
-        #     polynomial_variables=self.polynomial_variables,
-        # )
-        # return (constraint,)
 
-    @override
-    def to_constraint_vector(self) -> VectorExpression:
-        def gen_linear_equations():
-            n_rows, n_cols = self.shape
+def init_zero_polynomial_constraint(
+    name: str,
+    condition: MatrixExpression,
+):
 
-            for row in range(n_rows):
-                for col in range(n_cols):
-                    yield self.condition[row, col].to_linear_coefficients(self.polynomial_variables).T
+    def create_constraint(state: State):
+        state, polynomial_variables = to_polynomial_variables(condition).apply(state)
 
-        return polymat.v_stack(gen_linear_equations()).filter_non_zero()
+        state, (n_rows, n_cols) = polymat.to_shape(condition).apply(state)
 
+        constraint_primitives = []
+
+        for row in range(n_rows):
+            for col in range(n_cols):
+                condition_entry = condition[row, col]
+
+                state, decision_variable_symbols = to_decision_variable_symbols(condition_entry).apply(state)               
+
+                constraint_primitives.append(
+                    init_zero_polynomial_primitive(
+                        name=name,
+                        expression=condition_entry,
+                        polynomial_variables=polynomial_variables,
+                        decision_variable_symbols=decision_variable_symbols,
+                    )
+                )
+
+        constraint = ZeroPolynomialConstraint(
+            name=name,
+            condition=condition,
+            shape=(n_rows, n_cols),
+            polynomial_variables=polynomial_variables,
+            primitives=tuple(constraint_primitives),
+        )
+        return state, constraint
+    
+    return statemonad.get_map_put(create_constraint)

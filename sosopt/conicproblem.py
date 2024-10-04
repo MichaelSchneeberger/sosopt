@@ -6,16 +6,12 @@ from functools import cached_property
 from donotation import do
 
 import statemonad
-from statemonad.typing import StateMonad
 
 from polymat.typing import PolynomialExpression, VectorExpression, State
 
-from sosopt.coneconstraints.coneconstraint import (
-    ConeConstraint,
-    EqualityConstraint,
-    LinearConstraint,
-    SDPConstraint,
-)
+from sosopt.coneconstraints.coneconstraint import ConeConstraint
+from sosopt.coneconstraints.equalityconstraint import EqualityConstraint
+from sosopt.coneconstraints.semidefiniteconstraint import SemiDefiniteConstraint
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.solvers.solveargs import get_solver_args
 from sosopt.solvers.solvermixin import SolverMixin
@@ -41,36 +37,14 @@ class ConicProblem:
     @cached_property
     def decision_variable_symbols(self) -> tuple[DecisionVariableSymbol, ...]:
         def gen_decision_variable_symbols():
-            for constraint in self.flattened_constraints:
+            for constraint in self.constraints:
                 yield from constraint.decision_variable_symbols
 
         return tuple(sorted(set(gen_decision_variable_symbols())))
 
-    def eval(self, substitutions: dict[DecisionVariableSymbol, tuple[float, ...]]):
-        def evaluate_constraints():
-            for constraint in self.constraints:
-                evaluated_constraint = constraint.eval(substitutions)
-
-                # constraint still contains decision variables
-                if evaluated_constraint is not None:
-                    yield evaluated_constraint
-
-        constraints = tuple(evaluate_constraints())
-        return self.copy(constraints=constraints)
-
-    @cached_property
-    def flattened_constraints(self) -> tuple[ConeConstraint, ...]:
-        def gen_flattened_constraints():
-            for constraint in self.constraints:
-                yield from constraint.flatten()
-
-        return tuple(gen_flattened_constraints())
-
-    def solve(self) -> StateMonad[State, ConicProblemResult]:
-        @do()
-        def solve_sdp():
-            state = yield from statemonad.get[State]()
-
+    def solve(self):
+        def _solve(state: State):
+            
             def gen_variable_index_ranges():
                 for variable in self.decision_variable_symbols:
                     # raises exception if variable doesn't exist
@@ -84,34 +58,34 @@ class ConicProblem:
 
             # filter positive semidefinite constraints
             s_data = tuple(
-                (constraint.name, constraint.to_constraint_vector())
-                for constraint in self.flattened_constraints
-                if isinstance(constraint, SDPConstraint)
+                (constraint.name, constraint.to_vector())
+                for constraint in self.constraints
+                if isinstance(constraint, SemiDefiniteConstraint)
             )
 
-            # filter linear inequality constraints
-            l_data = tuple(
-                (constraint.name, constraint.to_constraint_vector())
-                for constraint in self.flattened_constraints
-                if isinstance(constraint, LinearConstraint)
-            )
+            # # filter linear inequality constraints
+            # l_data = tuple(
+            #     (constraint.name, constraint.to_vector())
+            #     for constraint in self.constraints
+            #     if isinstance(constraint, LinearConstraint)
+            # )
 
             # filter linear equality constraints
             eq_data = tuple(
-                (constraint.name, constraint.to_constraint_vector())
-                for constraint in self.flattened_constraints
+                (constraint.name, constraint.to_vector())
+                for constraint in self.constraints
                 if isinstance(constraint, EqualityConstraint)
             )
 
-            solver_args = yield from get_solver_args(
+            state, solver_args = get_solver_args(
                 indices=indices,
                 lin_cost=self.lin_cost,
                 quad_cost=self.quad_cost,
                 s_data=s_data,
                 q_data=None,
-                l_data=l_data,
+                l_data=None,
                 eq_data=eq_data,
-            )
+            ).apply(state)
 
             solver_data = self.solver.solve(solver_args)
 
@@ -140,9 +114,9 @@ class ConicProblem:
                 symbol_values=symbol_values,
             )
 
-            return statemonad.from_(sos_result_mapping)
+            return state, sos_result_mapping
 
-        return solve_sdp()
+        return statemonad.get_map_put(_solve)
 
 
 def init_sdp_problem(

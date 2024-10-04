@@ -228,11 +228,10 @@ def define_multiplier(
 
     max_degree = round_up_to_even(degree)
 
-    @do()
-    def create_multiplier():
-        multiplicand_degrees = yield from polymat.to_degree(
+    def create_multiplier(state):
+        state, multiplicand_degrees = polymat.to_degree(
             multiplicand, variables=variables
-        )
+        ).apply(state)
         max_degree_multiplicand = max(max(multiplicand_degrees))
         degrees = max_degree - max_degree_multiplicand
         degree_range = tuple(range(int(degrees) + 1))
@@ -241,9 +240,9 @@ def define_multiplier(
             monomials=variables.combinations(degree_range).cache(),
             polynomial_variables=variables,
         )
-        return statemonad.from_[State](expr)
+        return state, expr
 
-    return create_multiplier()
+    return statemonad.get_map_put(create_multiplier)
 
 
 def define_symmetric_matrix(
