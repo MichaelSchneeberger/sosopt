@@ -68,7 +68,7 @@ print(f'r={sympy_repr}')
 
 # Apply Putinar's Positivstellensatz to ensure the cylindrical constraints (w1 and w2) 
 # are contained within the zero sublevel set of r.
-state, constraint = sosopt.sos_constraint_putinar(
+state, constraint = sosopt.psatz_putinar_constraint(
     name="rlevel",
     smaller_than_zero=r,
     domain=sosopt.set_(
@@ -125,7 +125,7 @@ print(f'{sos_result.solver_data.solution}')    # Expected output: array([ 5.4429
 - **Zero Polynomial***: Enforce a polynomial expression to be equal to zero using `sosopt.zero_polynomial_constraint`.
 - **Sum-of-Sqaures (SOS)***: Define a scalar polynomial expression within the SOS Cone using `sosopt.sos_constraint`.
 - **SOS Matrix***: Define a polynomial matrix expression within the SOS Matrix Cone using `sosopt.sos_matrix_constraint`.
-- **Putinar's P-satz***: Encode a positivity condition for a polynomial matrix expression on a semialgebraic set using `sosopt.sos_constraint_putinar`.
+- **Putinar's P-satz***: Encode a positivity condition for a polynomial matrix expression on a semialgebraic set using `sosopt.psatz_putinar_constraint`.
 
 ### Defining the SOS Optimization Problem
 
