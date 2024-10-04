@@ -30,9 +30,18 @@ def define_multiplier(
 @overload
 def define_polynomial(
     name: str,
+) -> PolynomialVariable: ...
+@overload
+def define_polynomial(
+    name: str,
     monomials: MonomialVectorExpression,
     polynomial_variables: VariableVectorExpression,
 ) -> PolynomialVariable: ...
+@overload
+def define_polynomial(
+    name: str,
+    n_rows: int,
+) -> PolynomialVectorVariable: ...
 @overload
 def define_polynomial(
     name: str,
@@ -43,10 +52,21 @@ def define_polynomial(
 @overload
 def define_polynomial(
     name: str,
+    n_cols: int,
+) -> PolynomialRowVectorVariable: ...
+@overload
+def define_polynomial(
+    name: str,
     monomials: MonomialVectorExpression,
     polynomial_variables: VariableVectorExpression,
     n_cols: int,
 ) -> PolynomialRowVectorVariable: ...
+@overload
+def define_polynomial(
+    name: str,
+    n_rows: int,
+    n_cols: int,
+) -> PolynomialMatrixVariable: ...
 @overload
 def define_polynomial(
     name: str,
