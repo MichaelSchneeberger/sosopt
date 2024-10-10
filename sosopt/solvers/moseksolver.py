@@ -70,7 +70,6 @@ class MosekSolver(SolverMixin):
             b = np.vstack(tuple(c[0] for c in info.eq_data))
             A = np.vstack(tuple(-c[1] for c in info.eq_data))
 
-            n_eq = n_eq + A.shape[0]
             A_rows, A_vars, A_vals = to_sparse_representation(A)
 
         with mosek.Task() as task:
@@ -102,15 +101,15 @@ class MosekSolver(SolverMixin):
                 n_lin_eq = A.shape[0]
 
                 task.appendcons(n_lin_eq)
-                task.putaijlist(A_vars, A_rows, A_vals)
-                task.putconboundslice(0, n_lin_eq, tuple(b))
+                task.putaijlist(A_rows, A_vars, A_vals)
+                task.putconboundslice(0, n_lin_eq, tuple(mosek.boundkey.fx for _ in b), tuple(b), tuple(b))
 
             task.putobjsense(mosek.objsense.minimize)
 
             task.optimize()
 
             # Get status information about the solution
-            status = task.getsolsta(mosek.soltype.bas)
+            status = task.getsolsta(mosek.soltype.itr)
 
             if (status == mosek.solsta.optimal):
                 solver_result = MosekSolutionFound(
