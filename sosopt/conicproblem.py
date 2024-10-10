@@ -3,8 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from functools import cached_property
 
-from donotation import do
-
 import statemonad
 
 from polymat.typing import PolynomialExpression, VectorExpression, State
@@ -108,6 +106,9 @@ class ConicProblem:
                             )
 
                     symbol_values = dict(gen_symbol_values())
+
+                case _:
+                    raise Exception(f'Unknown return value from solver {self.solver}.')
 
             sos_result_mapping = ConicProblemResult(
                 solver_data=solver_data,

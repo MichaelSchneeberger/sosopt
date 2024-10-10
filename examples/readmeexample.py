@@ -58,7 +58,7 @@ def define_sos_problem():
     # Minimize a surrogate of the volume of the zero sublevel set of r.
     r_diag = r.to_gram_matrix(x).diag()
 
-    problem = sosopt.sos_problem(
+    problem = yield from sosopt.sos_problem(
         lin_cost=-r_diag.sum(),
         quad_cost=r_diag,
         constraints=constraints,

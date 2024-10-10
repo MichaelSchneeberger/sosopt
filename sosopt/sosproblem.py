@@ -3,12 +3,18 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from functools import cached_property
 
+from donotation import do
+
 from polymat.typing import PolynomialExpression, VectorExpression
 
 from sosopt.conicproblem import ConicProblem
+from sosopt.conversions import to_linear_cost
 from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
+from sosopt.solvers.cvxoptsolver import CVXOPTSolver
+from sosopt.solvers.moseksolver import MosekSolver
 from sosopt.solvers.solvermixin import SolverMixin
+import statemonad
 
 
 @dataclass(frozen=True)
@@ -67,15 +73,32 @@ class SOSProblem:
         return self.get_cone_problem().solve()
 
 
+@do()
 def init_sos_problem(
     lin_cost: PolynomialExpression,
     constraints: tuple[PolynomialConstraint, ...],
     solver: SolverMixin,
     quad_cost: VectorExpression | None = None,
 ):
-    return SOSProblem(
-        lin_cost=lin_cost,
-        quad_cost=quad_cost,
-        constraints=constraints,
+    
+    match solver:
+        case MosekSolver() if quad_cost is not None:
+            n_lin_cost, quad_cost_constraint = yield from to_linear_cost(
+                name='quad_to_lin_cost',
+                lin_cost=lin_cost,
+                quad_cost=quad_cost,
+            )
+            n_quad_cost = None
+            n_constraints = constraints + (quad_cost_constraint,)
+
+        case _:
+            n_lin_cost = lin_cost
+            n_quad_cost = quad_cost
+            n_constraints = constraints
+
+    return statemonad.from_(SOSProblem(
+        lin_cost=n_lin_cost,
+        quad_cost=n_quad_cost,
+        constraints=n_constraints,
         solver=solver,
-    )
+    ))

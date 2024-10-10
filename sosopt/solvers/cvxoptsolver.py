@@ -48,9 +48,9 @@ class CVXOptSolutionFound(CVXOptSolverData, SolutionFound):
 
 class CVXOPTSolver(SolverMixin):
     def solve(self, info: SolverArgs):
-        inequality_constraints = info.l_data + info.q_data + info.s_data
-
         q = cvxopt.matrix(info.lin_cost[1].T)
+
+        inequality_constraints = info.l_data + info.q_data + info.s_data
 
         if inequality_constraints:
             h = cvxopt.matrix(np.vstack(tuple(c[0] for c in inequality_constraints)))
