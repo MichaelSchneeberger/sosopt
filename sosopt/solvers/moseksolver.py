@@ -47,33 +47,12 @@ class MosekSolver(SolverMixin):
             afeidx, varidx = np.nonzero(G)
             f_val = G[afeidx, varidx]
             return tuple(afeidx), tuple(varidx), tuple(f_val)
-        
-        def gen_s_arrays():
-            for array in info.s_data:
-                row_indices = to_vectorized_tril_indices(array.n_eq)
-                off_diag_indices = to_vectorized_tril_indices(array.n_eq, -1)
-
-                array[0][off_diag_indices,:] *= np.sqrt(2)
-                array[1][off_diag_indices,:] *= np.sqrt(2)
-
-                # Mosek requires only the lower-triangle entries of the semi-definite matrix
-                yield array[0][row_indices, :], array[1][row_indices, :]
-
-        s_arrays = tuple(gen_s_arrays())
-
-        h = np.vstack(tuple(c[0] for c in s_arrays))
-        G = np.vstack(tuple(c[1] for c in s_arrays))
-
-        n_eq = G.shape[0]
-        n_var = G.shape[1]
-
-        G_rows, G_vars, G_vals = to_sparse_representation(G)
-
+                
         with mosek.Task() as task:
-            task.appendvars(n_var)
-
             # linear cost
             q = info.lin_cost[1].T
+            n_var = q.shape[0]
+            task.appendvars(n_var)
             for j in np.nonzero(q)[0]:
                 task.putcj(j, q[j, 0])
 
@@ -81,18 +60,40 @@ class MosekSolver(SolverMixin):
             inf = 0.0
             for j in range(n_var):
                 task.putvarbound(j, mosek.boundkey.fr, -inf, +inf)
-    
-            # add semi-definite entries
-            task.appendafes(n_eq)
-            task.putafefentrylist(G_rows, G_vars, G_vals)
-            task.putafegslice(0, n_eq, tuple(h))
 
-            # indicate which semi-definite entries belong to which semi-definite constraint
-            index = 0
-            for array in s_arrays:
-                n_array_eq = array[0].shape[0]
-                task.appendacc(task.appendsvecpsdconedomain(n_array_eq), list(range(index, index + n_array_eq)), None)
-                index = index + n_array_eq
+            if info.s_data:
+                def gen_s_arrays():
+                    for array in info.s_data:
+                        row_indices = to_vectorized_tril_indices(array.n_eq)
+                        off_diag_indices = to_vectorized_tril_indices(array.n_eq, -1)
+
+                        array[0][off_diag_indices,:] *= np.sqrt(2)
+                        array[1][off_diag_indices,:] *= np.sqrt(2)
+
+                        # Mosek requires only the lower-triangle entries of the semi-definite matrix
+                        yield array[0][row_indices, :], array[1][row_indices, :]
+
+                s_arrays = tuple(gen_s_arrays())
+
+                h = np.vstack(tuple(c[0] for c in s_arrays))
+                G = np.vstack(tuple(c[1] for c in s_arrays))
+
+                n_eq = G.shape[0]
+                n_var = G.shape[1]
+
+                G_rows, G_vars, G_vals = to_sparse_representation(G)
+    
+                # add semi-definite entries
+                task.appendafes(n_eq)
+                task.putafefentrylist(G_rows, G_vars, G_vals)
+                task.putafegslice(0, n_eq, tuple(h))
+
+                # indicate which semi-definite entries belong to which semi-definite constraint
+                index = 0
+                for array in s_arrays:
+                    n_array_eq = array[0].shape[0]
+                    task.appendacc(task.appendsvecpsdconedomain(n_array_eq), list(range(index, index + n_array_eq)), None)
+                    index = index + n_array_eq
 
             if info.eq_data:
                 b = np.vstack(tuple(c[0] for c in info.eq_data))
