@@ -125,11 +125,11 @@ def define_polynomial(
         case (1, 1):
             get_name = lambda r, c: name  # noqa: E731
         case (1, _):
-            get_name = lambda r, c: f"{name}{c+1}"  # noqa: E731
+            get_name = lambda r, c: f"{name}_{c+1}"  # noqa: E731
         case (_, 1):
-            get_name = lambda r, c: f"{name}{r+1}"  # noqa: E731
+            get_name = lambda r, c: f"{name}_{r+1}"  # noqa: E731
         case _:
-            get_name = lambda r, c: f"{name}{r+1}{c+1}"  # noqa: E731
+            get_name = lambda r, c: f"{name}_{r+1}_{c+1}"  # noqa: E731
 
     # n_rows, n_cols = shape
 
@@ -271,7 +271,7 @@ def define_symmetric_matrix(
                 for col in range(size):
                     if row <= col:
                         param = define_variable(
-                            name=f"{name}{row+1}{col+1}",
+                            name=f"{name}_{row+1}_{col+1}",
                             size=monomials,
                         )
                         entry = param, param.T @ monomials

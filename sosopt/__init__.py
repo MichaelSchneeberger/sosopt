@@ -19,7 +19,8 @@ from sosopt.semialgebraicset import set_ as _set_
 from sosopt.sosproblem import init_sos_problem as _init_sos_problem
 from sosopt.conversions import to_linear_cost as _to_linear_cost
 
-cvx_opt_solver = CVXOPTSolver()
+cvxopt_solver = CVXOPTSolver()
+cvx_opt_solver = cvxopt_solver      # depricated
 mosek_solver = MosekSolver()
 
 # Defining Optimization Variables
