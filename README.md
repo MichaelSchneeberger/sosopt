@@ -83,12 +83,12 @@ state, constraint = sosopt.psatz_putinar_constraint(
 Qr_trace = r.to_gram_matrix(r, x).trace()
 
 # Define the SOS problem
-problem = yield from sosopt.sos_problem(
+state, problem = sosopt.sos_problem(
     lin_cost=-Qr_trace,
     constraints=(constraint,),
     solver=sosopt.cvx_opt_solver,   # choose solver
     # solver=sosopt.mosek_solver,
-)
+).apply(state)
 
 # Solve the SOS problem
 state, sos_result = problem.solve().apply(state)
