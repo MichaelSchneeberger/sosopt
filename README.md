@@ -68,8 +68,8 @@ print(f'r={sympy_repr}')
 
 # Apply Putinar's Positivstellensatz to ensure the cylindrical constraints (w1 and w2) 
 # are contained within the zero sublevel set of r.
-state, constraint = sosopt.psatz_putinar_constraint(
-    name="rlevel",
+state, constraint = sosopt.sos_constraint_putinar(
+    name="rpos",
     smaller_than_zero=r,
     domain=sosopt.set_(
         smaller_than_zero={
@@ -80,11 +80,12 @@ state, constraint = sosopt.psatz_putinar_constraint(
 ).apply(state)
 
 # Minimize the volume surrogate of the zero-sublevel set of r
-Qr_trace = r.to_gram_matrix(r, x).trace()
+Qr_diag = r.to_gram_matrix(x).diag()
 
 # Define the SOS problem
 state, problem = sosopt.sos_problem(
-    lin_cost=-Qr_trace,
+    lin_cost=-Qr_diag.sum(),
+    quad_cost=Qr_diag,
     constraints=(constraint,),
     solver=sosopt.cvx_opt_solver,   # choose solver
     # solver=sosopt.mosek_solver,
