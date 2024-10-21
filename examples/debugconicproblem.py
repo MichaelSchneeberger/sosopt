@@ -59,11 +59,16 @@ conic_problem = problem.to_conic_problem()
 
 state, args = conic_problem.to_solver_args().apply(state)
 
+# Conic problem summary
+#######################
+
 # print solver argument summary
 print(args.to_summary())
 
+# improve string representation of numpy arrays
 np.set_printoptions(precision=2, threshold=1000, linewidth=1000, suppress=True)
 
+# print linear cost of conic problem
 print(f'Linear cost={args.lin_cost.to_numpy(1)}')
 
 # print matrices encoding semidefinite constraints
@@ -79,16 +84,3 @@ if args.equality:
     for array in args.equality:
         print(f'- const={array.to_numpy(0)}')
         print(f'- linear={array.to_numpy(1)}')
-
-# # Solve the SOS problem
-# state, sos_result = conic_problem.solve(args).apply(state)
-
-# # Output the result
-# # Prints the mapping of symbols to their correspoindg vlaues found by the solver
-# print(f'{sos_result.symbol_values=}')
-
-# # Display solver data such as status, iterations, and final cost.
-# print(f'{sos_result.solver_data.status}')      # Expected output: 'optimal'
-# print(f'{sos_result.solver_data.iterations}')  # Expected output: 6
-# print(f'{sos_result.solver_data.cost}')        # Expected output: -1.2523582776230828
-# print(f'{sos_result.solver_data.solution}')    # Expected output: array([ 5.44293046e-01, ...])
