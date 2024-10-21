@@ -63,7 +63,7 @@ class SOSProblem:
         return problem
 
     def solve(self):
-        return self.to_conic_problem().flat_map(lambda p: p.solve())
+        return self.to_conic_problem().solve()
 
 
 def init_sos_problem(

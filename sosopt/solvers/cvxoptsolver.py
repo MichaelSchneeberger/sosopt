@@ -50,7 +50,7 @@ class CVXOPTSolver(SolverMixin):
     def solve(self, info: SolverArgs):
         q = cvxopt.matrix(info.lin_cost[1].T)
 
-        inequality_constraints = info.linear_ineq + info.second_order_cone + info.semidef_cone
+        inequality_constraints = info.nonneg_orthant + info.second_order_cone + info.semidef_cone
 
         if inequality_constraints:
             h = cvxopt.matrix(np.vstack(tuple(c[0] for c in inequality_constraints)))
@@ -63,7 +63,7 @@ class CVXOPTSolver(SolverMixin):
             assert math.isclose(int(dim), dim), f"{dim=}"
             return int(dim)
 
-        dim_l = sum(d.n_eq for d in info.linear_ineq)
+        dim_l = sum(d.n_eq for d in info.nonneg_orthant)
         dim_q = list(d.n_eq for d in info.second_order_cone)
         dim_s = list(get_dim_s(d) for d in info.semidef_cone)
 
