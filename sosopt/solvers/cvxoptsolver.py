@@ -50,27 +50,26 @@ class CVXOPTSolver(SolverMixin):
     def solve(self, info: SolverArgs):
         q = cvxopt.matrix(info.lin_cost[1].T)
 
-        inequality_constraints = info.l_data + info.q_data + info.s_data
+        inequality_constraints = info.linear_ineq + info.second_order_cone + info.semidef_cone
 
         if inequality_constraints:
             h = cvxopt.matrix(np.vstack(tuple(c[0] for c in inequality_constraints)))
             G = cvxopt.matrix(np.vstack(tuple(-c[1] for c in inequality_constraints)))
         else:
-            h = None
-            G = None
+            raise Exception('CVXOPT requires at least one semi-definite constraint.')
 
         def get_dim_s(array: ArrayRepr) -> int:
             dim = np.sqrt(array.n_eq)
             assert math.isclose(int(dim), dim), f"{dim=}"
             return int(dim)
 
-        dim_l = sum(d.n_eq for d in info.l_data)
-        dim_q = list(d.n_eq for d in info.q_data)
-        dim_s = list(get_dim_s(d) for d in info.s_data)
+        dim_l = sum(d.n_eq for d in info.linear_ineq)
+        dim_q = list(d.n_eq for d in info.second_order_cone)
+        dim_s = list(get_dim_s(d) for d in info.semidef_cone)
 
-        if info.eq_data:
-            b = cvxopt.matrix(np.vstack(tuple(c[0] for c in info.eq_data)))
-            A = cvxopt.matrix(np.vstack(tuple(-c[1] for c in info.eq_data)))
+        if info.equality:
+            b = cvxopt.matrix(np.vstack(tuple(c[0] for c in info.equality)))
+            A = cvxopt.matrix(np.vstack(tuple(-c[1] for c in info.equality)))
         else:
             b = None
             A = None

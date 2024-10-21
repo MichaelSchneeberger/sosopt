@@ -6,6 +6,7 @@ from dataclassabc import dataclassabc
 from sosopt.solvers.solveargs import SolverArgs
 from sosopt.solvers.solverdata import SolutionFound, SolutionNotFound
 from sosopt.solvers.solvermixin import SolverMixin
+from sosopt.utils.toquadraticsize import to_quadratic_size
 
 
 @dataclassabc(frozen=True, slots=True)
@@ -28,12 +29,10 @@ class MosekSolver(SolverMixin):
         if info.quad_cost is not None:
             raise Exception('Mosek can not solve a quadratic cost.')
 
-        def to_quadratic_size(n):
-            n_sqrt = np.sqrt(n)
-
-            assert n_sqrt.is_integer(), f'{n=}'
-
-            return int(n_sqrt)
+        # def to_quadratic_size(n):
+        #     n_sqrt = np.sqrt(n)
+        #     assert n_sqrt.is_integer(), f'{n=}'
+        #     return int(n_sqrt)
 
         def to_vectorized_tril_indices(n_col, offset=0):
             """
@@ -61,9 +60,9 @@ class MosekSolver(SolverMixin):
             for j in range(n_var):
                 task.putvarbound(j, mosek.boundkey.fr, -inf, +inf)
 
-            if info.s_data:
+            if info.semidef_cone:
                 def gen_s_arrays():
-                    for array in info.s_data:
+                    for array in info.semidef_cone:
                         row_indices = to_vectorized_tril_indices(array.n_eq)
                         off_diag_indices = to_vectorized_tril_indices(array.n_eq, -1)
 
@@ -95,9 +94,9 @@ class MosekSolver(SolverMixin):
                     task.appendacc(task.appendsvecpsdconedomain(n_array_eq), list(range(index, index + n_array_eq)), None)
                     index = index + n_array_eq
 
-            if info.eq_data:
-                b = np.vstack(tuple(c[0] for c in info.eq_data))
-                A = np.vstack(tuple(-c[1] for c in info.eq_data))
+            if info.equality:
+                b = np.vstack(tuple(c[0] for c in info.equality))
+                A = np.vstack(tuple(-c[1] for c in info.equality))
                 n_lin_eq = A.shape[0]
 
                 A_rows, A_vars, A_vals = to_sparse_representation(A)

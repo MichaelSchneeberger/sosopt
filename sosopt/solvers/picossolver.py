@@ -12,7 +12,7 @@ class PICOSSolver(SolverMixin):
 
         p.minimize = info.lin_cost[1] * x
 
-        for array in info.s_data:
+        for array in info.semidef_cone:
             array[0] + array[1] * x
 
             p +=

@@ -14,10 +14,10 @@ from sosopt.polymat.from_ import (
 )
 from sosopt.solvers.cvxoptsolver import CVXOPTSolver
 from sosopt.solvers.moseksolver import MosekSolver
-from sosopt.solvers.solveargs import get_solver_args as _get_solver_args
+from sosopt.solvers.solveargs import to_solver_args as _get_solver_args
 from sosopt.semialgebraicset import set_ as _set_
 from sosopt.sosproblem import init_sos_problem as _init_sos_problem
-from sosopt.conversions import to_linear_cost as _to_linear_cost
+# from sosopt.conversions import to_linear_cost as _to_linear_cost
 
 cvxopt_solver = CVXOPTSolver()
 cvx_opt_solver = cvxopt_solver      # depricated
@@ -45,5 +45,5 @@ solve_args = _get_solver_args  # depricate
 solver_args = _get_solver_args
 sos_problem = _init_sos_problem
 
-# conversions
-to_linear_cost = _to_linear_cost
+# # conversions
+# to_linear_cost = _to_linear_cost
