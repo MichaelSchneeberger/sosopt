@@ -35,6 +35,7 @@ set_ = _set_
 # Defining Constraint
 zero_polynomial_constraint = _zero_polynomial_constraint
 sos_constraint = _sos_constraint
+sos_psd_constraint = _sos_matrix_constraint
 sos_matrix_constraint = _sos_matrix_constraint
 sos_constraint_matrix = _sos_matrix_constraint      # depricated
 psatz_putinar_constraint = _psatz_putinar_constraint

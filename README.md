@@ -83,13 +83,13 @@ state, constraint = sosopt.sos_constraint_putinar(
 Qr_diag = r.to_gram_matrix(x).diag()
 
 # Define the SOS problem
-state, problem = sosopt.sos_problem(
+problem = sosopt.sos_problem(
     lin_cost=-Qr_diag.sum(),
     quad_cost=Qr_diag,
     constraints=(constraint,),
     solver=sosopt.cvx_opt_solver,   # choose solver
     # solver=sosopt.mosek_solver,
-).apply(state)
+)
 
 # Solve the SOS problem
 state, sos_result = problem.solve().apply(state)

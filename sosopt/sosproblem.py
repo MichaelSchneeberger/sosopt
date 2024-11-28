@@ -101,12 +101,12 @@ def init_sos_problem(
     #     constraints=cone_constraints
     # )
 
-    return statemonad.from_(
-        SOSProblem(
-            lin_cost=lin_cost,
-            quad_cost=quad_cost,
-            constraints=constraints,
-            solver=solver,
-            # conic_problem=conic_problem,
-        )
+    # return statemonad.from_(
+    return SOSProblem(
+        lin_cost=lin_cost,
+        quad_cost=quad_cost,
+        constraints=constraints,
+        solver=solver,
+        # conic_problem=conic_problem,
     )
+    # )
