@@ -67,10 +67,11 @@ def sos_matrix_constraint(
 
 def psatz_putinar_constraint(
     name: str,
-    domain: SemialgebraicSet,
+    domain: SemialgebraicSet | None = None,
     greater_than_zero: MatrixExpression | None = None,
     smaller_than_zero: MatrixExpression | None = None,
 ):
+    
     if greater_than_zero is not None:
         condition = greater_than_zero
     elif smaller_than_zero is not None:

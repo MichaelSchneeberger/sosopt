@@ -4,7 +4,6 @@ from dataclasses import replace
 
 from dataclassabc import dataclassabc
 
-from sosopt.polynomialconstraints.constraintprimitive.sumofsquaresprimitive import init_sum_of_squares_primitive
 import statemonad
 
 import polymat
@@ -25,8 +24,9 @@ from sosopt.utils.polynomialvariablesmixin import (
 )
 from sosopt.polymat.from_ import define_multiplier
 from sosopt.polymat.polynomialvariable import PolynomialVariable
-from sosopt.semialgebraicset import SemialgebraicSet
+from sosopt.semialgebraicset import SemialgebraicSet, set_
 from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
+from sosopt.polynomialconstraints.constraintprimitive.sumofsquaresprimitive import init_sum_of_squares_primitive
 
 
 @dataclassabc(frozen=True, slots=True)
@@ -34,7 +34,7 @@ class PutinarPsatzConstraint(PolynomialVariablesMixin, PolynomialConstraint):
     name: str
     condition: MatrixExpression
     shape: tuple[int, int]
-    domain: SemialgebraicSet
+    domain: SemialgebraicSet | None
     multipliers: dict[tuple[int, int], dict[str, PolynomialVariable]]
     sos_polynomials: dict[tuple[int, int], PolynomialExpression]
     polynomial_variables: VariableVectorExpression
@@ -47,18 +47,24 @@ class PutinarPsatzConstraint(PolynomialVariablesMixin, PolynomialConstraint):
 def init_putinar_psatz_constraint(
     name: str,
     condition: MatrixExpression,
-    domain: SemialgebraicSet,
+    domain: SemialgebraicSet | None = None,
 ):
+
     def create_constraint(state: State):
         state, polynomial_variables = to_polynomial_variables(condition).apply(state)
 
-        domain_polynomials = domain.inequalities | domain.equalities
+        if domain is None:
+            domain_polynomials = {}
+            max_domain_degree = 0
 
-        vector = polymat.v_stack(domain_polynomials.values()).to_vector()
-        state, max_domain_degrees = polymat.to_degree(
-            vector, variables=polynomial_variables
-        ).apply(state)
-        max_domain_degree = max(max(max_domain_degrees))
+        else:
+            domain_polynomials = domain.inequalities | domain.equalities
+
+            vector = polymat.v_stack(domain_polynomials.values()).to_vector()
+            state, max_domain_degrees = polymat.to_degree(
+                vector, variables=polynomial_variables
+            ).apply(state)
+            max_domain_degree = max(max(max_domain_degrees))
 
         state, (n_rows, n_cols) = polymat.to_shape(condition).apply(state)
 
