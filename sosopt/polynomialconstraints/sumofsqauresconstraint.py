@@ -19,11 +19,15 @@ from sosopt.utils.polynomialvariablesmixin import PolynomialVariablesMixin, to_p
 
 @dataclassabc(frozen=True, slots=True)
 class SumOfSqauresConstraint(PolynomialVariablesMixin, PolynomialConstraint):
-    name: str
-    condition: MatrixExpression
+    name: str                                       # override
+    primitives: tuple[ConstraintPrimitive, ...]     # override
+    polynomial_variables: VariableVectorExpression  # override
+
+    # the parametrized polynomial matrix that is required to be SOS in each entry
+    positive_matrix: MatrixExpression
+
+    # shape of polynomial matrix
     shape: tuple[int, int]
-    polynomial_variables: VariableVectorExpression
-    primitives: tuple[ConstraintPrimitive, ...]
 
     def copy(self, /, **others):
         return replace(self, **others)
@@ -31,19 +35,19 @@ class SumOfSqauresConstraint(PolynomialVariablesMixin, PolynomialConstraint):
 
 def init_sum_of_squares_constraint(
     name: str,
-    condition: MatrixExpression,
+    positive_matrix: MatrixExpression,
 ):
 
     def create_constraint(state: State):
-        state, polynomial_variables = to_polynomial_variables(condition).apply(state)
+        state, polynomial_variables = to_polynomial_variables(positive_matrix).apply(state)
 
-        state, (n_rows, n_cols) = polymat.to_shape(condition).apply(state)
+        state, (n_rows, n_cols) = polymat.to_shape(positive_matrix).apply(state)
 
         constraint_primitives = []
 
         for row in range(n_rows):
             for col in range(n_cols):
-                condition_entry = condition[row, col]
+                condition_entry = positive_matrix[row, col]
 
                 state, decision_variable_symbols = to_decision_variable_symbols(condition_entry).apply(state)               
 
@@ -58,10 +62,10 @@ def init_sum_of_squares_constraint(
 
         constraint = SumOfSqauresConstraint(
             name=name,
-            condition=condition,
-            shape=(n_rows, n_cols),
-            polynomial_variables=polynomial_variables,
             primitives=tuple(constraint_primitives),
+            polynomial_variables=polynomial_variables,
+            positive_matrix=positive_matrix,
+            shape=(n_rows, n_cols),
         )
         return state, constraint
     

@@ -18,10 +18,14 @@ from sosopt.utils.polynomialvariablesmixin import PolynomialVariablesMixin, to_p
 @dataclassabc(frozen=True, slots=True)
 class ZeroPolynomialConstraint(PolynomialVariablesMixin, PolynomialConstraint):
     name: str
-    condition: MatrixExpression
-    shape: tuple[int, int]
-    polynomial_variables: VariableVectorExpression
     primitives: tuple[ConstraintPrimitive, ...]
+    polynomial_variables: VariableVectorExpression
+
+    # the parametrized polynomial matrix that is required to be zero in each entry
+    zero_matrix: MatrixExpression
+
+    # shape of the polynomial matrix
+    shape: tuple[int, int]
 
     def copy(self, /, **others):
         return replace(self, **others)
@@ -29,19 +33,19 @@ class ZeroPolynomialConstraint(PolynomialVariablesMixin, PolynomialConstraint):
 
 def init_zero_polynomial_constraint(
     name: str,
-    condition: MatrixExpression,
+    zero_matrix: MatrixExpression,
 ):
 
     def create_constraint(state: State):
-        state, polynomial_variables = to_polynomial_variables(condition).apply(state)
+        state, polynomial_variables = to_polynomial_variables(zero_matrix).apply(state)
 
-        state, (n_rows, n_cols) = polymat.to_shape(condition).apply(state)
+        state, (n_rows, n_cols) = polymat.to_shape(zero_matrix).apply(state)
 
         constraint_primitives = []
 
         for row in range(n_rows):
             for col in range(n_cols):
-                condition_entry = condition[row, col]
+                condition_entry = zero_matrix[row, col]
 
                 state, decision_variable_symbols = to_decision_variable_symbols(condition_entry).apply(state)               
 
@@ -56,7 +60,7 @@ def init_zero_polynomial_constraint(
 
         constraint = ZeroPolynomialConstraint(
             name=name,
-            condition=condition,
+            zero_matrix=zero_matrix,
             shape=(n_rows, n_cols),
             polynomial_variables=polynomial_variables,
             primitives=tuple(constraint_primitives),

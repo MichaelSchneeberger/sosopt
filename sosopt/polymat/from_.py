@@ -129,28 +129,6 @@ def define_polynomial(
         case _:
             get_name = lambda r, c: f"{name}_{r+1}_{c+1}"  # noqa: E731
 
-    # def gen_coefficients():
-    #     for row in range(n_rows):
-    #         def gen_column_coefficients():
-    #             for col in range(n_cols):
-    #                 yield define_variable(
-    #                     name=get_name(row, col),
-    #                     size=monomials,
-    #                 )
-    #         yield tuple(gen_column_coefficients())
-
-    # coefficients = tuple(gen_coefficients())
-
-    # def gen_polynomials():
-    #     for row_coefficients in coefficients:
-    #         def gen_column_expressions():
-    #             for coeff in row_coefficients:
-    #                 yield coeff.T @ monomials
-
-    #         yield tuple(gen_column_expressions())
-
-    # expr = polymat.concat(gen_polynomials())
-
     def gen_rows():
         for row in range(n_rows):
 

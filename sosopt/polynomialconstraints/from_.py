@@ -20,7 +20,7 @@ def zero_polynomial_constraint(
 ):
     return init_zero_polynomial_constraint(
         name=name,
-        condition=equal_to_zero,
+        zero_matrix=equal_to_zero,
     )
 
 
@@ -30,15 +30,15 @@ def sos_constraint(
     smaller_than_zero: MatrixExpression | None = None,
 ):    
     if greater_than_zero is not None:
-        condition = greater_than_zero
+        positive_matrix = greater_than_zero
     elif smaller_than_zero is not None:
-        condition = -smaller_than_zero
+        positive_matrix = -smaller_than_zero
     else:
         raise Exception("SOS constraint requires condition.")
 
     return init_sum_of_squares_constraint(
         name=name,
-        condition=condition,
+        positive_matrix=positive_matrix,
     )
 
 
@@ -73,14 +73,14 @@ def psatz_putinar_constraint(
 ):
     
     if greater_than_zero is not None:
-        condition = greater_than_zero
+        positive_matrix = greater_than_zero
     elif smaller_than_zero is not None:
-        condition = -smaller_than_zero
+        positive_matrix = -smaller_than_zero
     else:
         raise Exception("SOS constraint requires condition.")
 
     return init_putinar_psatz_constraint(
         name,
-        condition=condition,
+        positive_matrix=positive_matrix,
         domain=domain,
     )

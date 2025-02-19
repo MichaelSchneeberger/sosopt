@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 
-import statemonad
-
-from polymat.typing import State, PolynomialExpression, VectorExpression
+from polymat.typing import PolynomialExpression, VectorExpression
 
 from sosopt.conicproblem import ConicProblem
 from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint

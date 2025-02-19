@@ -6,10 +6,9 @@ from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.polynomialconstraints.constraintprimitive.constraintprimitive import (
     ConstraintPrimitive,
 )
-# from sosopt.utils.decisionvariablesmixin import DecisionVariablesMixin
 
 
-class PolynomialConstraint: #(DecisionVariablesMixin):
+class PolynomialConstraint:
     """
     A constraints implements helper methods that can be used to define the cost function
     """
