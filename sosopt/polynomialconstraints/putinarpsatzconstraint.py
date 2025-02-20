@@ -62,20 +62,25 @@ def init_putinar_psatz_constraint(
 ):
 
     def create_constraint(state: State):
-        state, polynomial_variables = to_polynomial_variables(positive_matrix).apply(state)
 
         if domain is None:
-            domain_polynomials = {}
-            max_domain_degree = 0
-
+            inequalities = {}
+            equalities = {}
+        
         else:
-            domain_polynomials = domain.inequalities | domain.equalities
+            inequalities = domain.inequalities
+            equalities = domain.equalities
 
-            vector = polymat.v_stack(domain_polynomials.values()).to_vector()
-            state, max_domain_degrees = polymat.to_degree(
-                vector, variables=polynomial_variables
-            ).apply(state)
-            max_domain_degree = max(max(max_domain_degrees))
+        domain_polynomials = inequalities | equalities
+
+        vector = polymat.v_stack(domain_polynomials.values()).to_vector()
+
+        state, polynomial_variables = to_polynomial_variables(vector).apply(state)
+
+        state, max_domain_degrees = polymat.to_degree(
+            vector, variables=polynomial_variables
+        ).apply(state)
+        max_domain_degree = max(max(max_domain_degrees))
 
         state, shape = polymat.to_shape(positive_matrix).apply(state)
         n_rows, n_cols = shape
@@ -119,14 +124,15 @@ def init_putinar_psatz_constraint(
 
                     sos_polynomial_entry = sos_polynomial_entry - multiplier * domain_polynomial
 
-                    constraint_primitives.append(
-                        init_sum_of_squares_primitive(
-                            name=name,
-                            expression=multiplier,
-                            decision_variable_symbols=tuple(multiplier.iterate_symbols()),
-                            polynomial_variables=polynomial_variables,
+                    if domain_name in inequalities:
+                        constraint_primitives.append(
+                            init_sum_of_squares_primitive(
+                                name=name,
+                                expression=multiplier,
+                                decision_variable_symbols=tuple(multiplier.iterate_symbols()),
+                                polynomial_variables=polynomial_variables,
+                            )
                         )
-                    )
 
                 multipliers[row, col] = multipliers_entry
                 sos_certificates[row, col] = sos_polynomial_entry
