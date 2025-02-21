@@ -14,7 +14,7 @@ pip install sosopt
 
 This example illustrates how to define and solve a simple SOS optimization problem using SOSOpt.
 
-In this example, we aim to compute the coefficients of a polynomial $r(x)$ whose zero-sublevel set contains the box-like set defined by polynomials $w_1(x)$ and $w_2(x)$:
+In this example, we aim to compute the coefficients of a polynomial $r(x)$ whose zero-sublevel set contains the box-like set defined by the intersection of the zero-sublevel sets of polynomials $w_1(x)$ and $w_2(x)$:
 
 $$\mathcal X_\text{Box} := \lbrace x \mid w_1(x) \leq 0, w_2(x) \leq 0 \rbrace$$
 
@@ -57,7 +57,6 @@ w2 = ((x1 + 0.3) / 20) ** 2 + (x2 / 1.3) ** 2 + (x3 / 1.3) ** 2 - 1
 r_var = sosopt.define_polynomial(
     name='r',
     monomials=x.combinations(degrees=(1, 2)),
-    polynomial_variables=x,
 )
 # Fix the constant part of the polynomial to -1 to ensure numerical stability
 r = r_var - 1
@@ -108,7 +107,7 @@ print(f'{sos_result.solver_data.solution}')    # Expected output: array([ 5.4429
 
 This figure illustrates the contour of the zero-sublevel sets of the resulting polynomial $r(x)$:
 
-![sos problem result](docs/images/readmeexample_plot.jpeg)
+![sos problem result](docs/images/readmeexample_plot.png)
 
 ## Operations
 
@@ -139,7 +138,7 @@ This figure illustrates the contour of the zero-sublevel sets of the resulting p
 - **SOS Problem**: Create an SOS Optimization problem using the solver arguments with `sosopt.sos_problem`.
 
 
-\*These operations return a state monad object. To retrieve the actualy result, you need to call the `apply` method on the returned object, passing the state as an argument.
+\* These operations return a state monad object. To retrieve the actualy result, you need to call the `apply` method on the returned object, passing the state as an argument.
 
 
 
@@ -149,3 +148,4 @@ Below are some references related to this project:
 
 * [PolyMat](https://github.com/MichaelSchneeberger/polymat) is a Python library designed for the representation and manipulation of multivariate polynomial matrices.
 * [Advanced safety filter](https://github.com/MichaelSchneeberger/advanced-safety-filter) includes Jupyter notebooks that model and simulate the concept of an advanced safety filter using SOSOpt.
+* [SumOfSqaures.py](https://github.com/yuanchenyang/SumOfSquares.py) is a simple sum-of-squares Python library built on `sympy`, leading to increased computation time when converting an SOS problem into a SDP.
