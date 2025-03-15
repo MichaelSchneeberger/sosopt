@@ -3,11 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from functools import cached_property
 
-from sosopt.conversions import to_linear_cost
 import statemonad
 
-from polymat.typing import PolynomialExpression, VectorExpression, State
+from polymat.typing import ScalarPolynomialExpression, VectorExpression, State
 
+from sosopt.conversions import to_linear_cost
 from sosopt.coneconstraints.coneconstraint import ConeConstraint
 from sosopt.coneconstraints.equalityconstraint import EqualityConstraint
 from sosopt.coneconstraints.semidefiniteconstraint import SemiDefiniteConstraint
@@ -25,7 +25,7 @@ class ConicProblemResult:
 
 @dataclass(frozen=True)
 class ConicProblem:
-    lin_cost: PolynomialExpression
+    lin_cost: ScalarPolynomialExpression
     quad_cost: VectorExpression | None
     constraints: tuple[ConeConstraint, ...]
     solver: SolverMixin
@@ -111,7 +111,6 @@ class ConicProblem:
         return statemonad.get_map_put(to_solver_args_with_state)
 
     def solve(self, solver_args: SolverArgs | None = None):
-
         def solve_and_retrieve_symbol_values(
                 solver_args: SolverArgs,
                 variable_index_ranges: dict[DecisionVariableSymbol, tuple[int, int]]
@@ -163,7 +162,7 @@ class ConicProblem:
 
 
 def init_conic_problem(
-    lin_cost: PolynomialExpression,
+    lin_cost: ScalarPolynomialExpression,
     constraints: tuple[ConeConstraint, ...],
     solver: SolverMixin,
     quad_cost: VectorExpression | None = None,

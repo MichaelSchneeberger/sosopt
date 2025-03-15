@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 
-from polymat.typing import PolynomialExpression, VectorExpression
+from polymat.typing import ScalarPolynomialExpression, VectorExpression
 
 from sosopt.conicproblem import ConicProblem
 from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
@@ -17,7 +17,7 @@ class SOSProblem:
     This problem contains expression objects.
     """
 
-    lin_cost: PolynomialExpression
+    lin_cost: ScalarPolynomialExpression
     quad_cost: VectorExpression | None
     constraints: tuple[PolynomialConstraint, ...]
     solver: SolverMixin
@@ -65,7 +65,7 @@ class SOSProblem:
 
 
 def init_sos_problem(
-    lin_cost: PolynomialExpression,
+    lin_cost: ScalarPolynomialExpression,
     constraints: tuple[PolynomialConstraint, ...],
     solver: SolverMixin,
     quad_cost: VectorExpression | None = None,

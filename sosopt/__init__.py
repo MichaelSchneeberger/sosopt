@@ -1,16 +1,20 @@
 from __future__ import annotations
 
+from sosopt.state.init import (
+    init_state as _init_state,
+)
+from sosopt.polymat.from_ import (
+    quadratic_coefficients as _quadratic_coefficients,
+    define_multiplier as _define_multiplier,
+    define_polynomial as _define_polynomial,
+    define_symmetric_matrix as _define_symmetric_matrix,
+    define_variable as _define_variable,
+)
 from sosopt.polynomialconstraints.from_ import (
     sos_constraint as _sos_constraint,
     zero_polynomial_constraint as _zero_polynomial_constraint,
     sos_matrix_constraint as _sos_matrix_constraint,
     psatz_putinar_constraint as _psatz_putinar_constraint,
-)
-from sosopt.polymat.from_ import (
-    define_multiplier as _define_multiplier,
-    define_polynomial as _define_polynomial,
-    define_symmetric_matrix as _define_symmetric_matrix,
-    define_variable as _define_variable,
 )
 from sosopt.solvers.cvxoptsolver import CVXOPTSolver
 from sosopt.solvers.moseksolver import MosekSolver
@@ -19,11 +23,14 @@ from sosopt.semialgebraicset import set_ as _set_
 from sosopt.sosproblem import init_sos_problem as _init_sos_problem
 # from sosopt.conversions import to_linear_cost as _to_linear_cost
 
+init_state = _init_state
+
 cvxopt_solver = CVXOPTSolver()
 cvx_opt_solver = cvxopt_solver      # depricated
 mosek_solver = MosekSolver()
 
 # Defining Optimization Variables
+quadratic_coefficients = _quadratic_coefficients
 define_variable = _define_variable
 define_polynomial = _define_polynomial
 define_symmetric_matrix = _define_symmetric_matrix
@@ -35,7 +42,7 @@ set_ = _set_
 # Defining Constraint
 zero_polynomial_constraint = _zero_polynomial_constraint
 sos_constraint = _sos_constraint
-sos_psd_constraint = _sos_matrix_constraint
+sos_psd_constraint = _sos_matrix_constraint      # depricated?
 sos_matrix_constraint = _sos_matrix_constraint
 sos_constraint_matrix = _sos_matrix_constraint      # depricated
 psatz_putinar_constraint = _psatz_putinar_constraint

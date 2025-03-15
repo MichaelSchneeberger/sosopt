@@ -23,9 +23,9 @@ class PolynomialMatrixVariable(MatrixExpression):
     @abstractmethod
     def monomials(self) -> MonomialVectorExpression: ...
 
-    @property
-    @abstractmethod
-    def polynomial_variables(self) -> VariableVectorExpression: ...
+    # @property
+    # @abstractmethod
+    # def polynomial_variables(self) -> VariableVectorExpression: ...
 
     @property
     @abstractmethod

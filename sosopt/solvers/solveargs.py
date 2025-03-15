@@ -1,19 +1,18 @@
 from typing import Iterable, NamedTuple
 
-from donotation import do
-
 from sosopt.utils.toquadraticsize import to_quadratic_size
 import statemonad
 
 import polymat
 from polymat.typing import (
-    State,
     ArrayRepr,
     MatrixExpression,
-    PolynomialExpression,
+    ScalarPolynomialExpression,
     VectorExpression,
     VariableVectorExpression,
 )
+
+from sosopt.state.state import State
 
 
 class SolverArgs(NamedTuple):
@@ -58,7 +57,7 @@ class SolverArgs(NamedTuple):
 
 def to_solver_args(
     indices: VariableVectorExpression | tuple[int, ...],
-    lin_cost: PolynomialExpression,
+    lin_cost: ScalarPolynomialExpression,
     quad_cost: VectorExpression | None = None,
     l_data: Iterable[tuple[str, VectorExpression]] | None = None,
     q_data: Iterable[tuple[str, VectorExpression]] | None = None,

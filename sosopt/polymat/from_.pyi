@@ -7,8 +7,10 @@ from polymat.typing import (
     MatrixExpression,
     VariableVectorExpression,
     MonomialVectorExpression,
+    SymmetricMatrixExpression,
 )
 
+from sosopt.state.state import State as SOSOptState
 from sosopt.polymat.polynomialvariable import (
     PolynomialMatrixVariable,
     PolynomialVariable,
@@ -21,6 +23,11 @@ from sosopt.polymat.decisionvariableexpression import (
     SingleValueDecisionVariableExpression,
 )
 
+def quadratic_coefficients(
+    expression: MatrixExpression,
+    variables: VariableVectorExpression,
+    monomials: MonomialVectorExpression | None = None,
+) -> SymmetricMatrixExpression[SOSOptState]: ...
 def define_multiplier(
     name: str,
     degree: int,
@@ -35,7 +42,6 @@ def define_polynomial(
 def define_polynomial(
     name: str,
     monomials: MonomialVectorExpression,
-    polynomial_variables: VariableVectorExpression,
 ) -> PolynomialVariable: ...
 @overload
 def define_polynomial(
@@ -46,7 +52,6 @@ def define_polynomial(
 def define_polynomial(
     name: str,
     monomials: MonomialVectorExpression,
-    polynomial_variables: VariableVectorExpression,
     n_rows: int,
 ) -> PolynomialVectorVariable: ...
 @overload
@@ -58,7 +63,6 @@ def define_polynomial(
 def define_polynomial(
     name: str,
     monomials: MonomialVectorExpression,
-    polynomial_variables: VariableVectorExpression,
     n_cols: int,
 ) -> PolynomialRowVectorVariable: ...
 @overload
@@ -71,7 +75,6 @@ def define_polynomial(
 def define_polynomial(
     name: str,
     monomials: MonomialVectorExpression,
-    polynomial_variables: VariableVectorExpression,
     n_rows: int,
     n_cols: int,
 ) -> PolynomialMatrixVariable: ...
@@ -84,7 +87,6 @@ def define_symmetric_matrix(
 def define_symmetric_matrix(
     name: str,
     monomials: MonomialVectorExpression,
-    polynomial_variables: VariableVectorExpression,
     size: int,
 ) -> PolynomialSymmetricMatrixVariable: ...
 @overload

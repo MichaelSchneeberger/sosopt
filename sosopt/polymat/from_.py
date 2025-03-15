@@ -1,9 +1,13 @@
 from __future__ import annotations
 from typing import Iterator
 
+from sosopt.polymat.expressiontree.init import init_quadratic_coefficients
 import statemonad
 
 import polymat
+from polymat.utils.getstacklines import get_frame_summary
+from polymat.expressiontree.init import init_to_symmetric_matrix
+from polymat.expression.init import init_expression
 from polymat.typing import (
     MatrixExpression,
     VariableVectorExpression,
@@ -14,12 +18,29 @@ from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.polymat.init import init_polynomial_variable
 
 
+def quadratic_coefficients(
+    expression: MatrixExpression,
+    variables: MatrixExpression,
+    monomials: MatrixExpression | None = None,
+):
+    return init_expression(
+        child=init_to_symmetric_matrix(
+            child=init_quadratic_coefficients(
+                child=expression,
+                variables=variables,
+                monomials=monomials,
+                stack=get_frame_summary(),
+            ),
+        ),
+    )
+
+
 def define_variable(
     name: DecisionVariableSymbol | str,
     size: int | MatrixExpression | None = None,
 ):
     """
-    Defines a decision variable of the SOS optimizaton problem.
+    Defines a decision variable of the SOS optimization problem.
     """
     
     if not isinstance(name, DecisionVariableSymbol):
@@ -29,25 +50,10 @@ def define_variable(
 
     return polymat.define_variable(name=symbol, size=size)
 
-    # if isinstance(size, MatrixExpression):
-    #     n_size = size.child
-    # else:
-    #     n_size = size
-
-    # child=init_define_variable(
-    #     symbol=symbol, size=n_size, stack=get_frame_summary()
-    # )
-
-    # return init_decision_variable_expression(
-    #     child=child,
-    #     symbol=symbol,
-    # )
-
 
 def define_polynomial(
     name: str,
     monomials: MonomialVectorExpression | None = None,
-    polynomial_variables: VariableVectorExpression | None = None,
     n_rows: int = 1,
     n_cols: int = 1,
 ):
@@ -107,15 +113,8 @@ def define_polynomial(
     ```
     """
 
-    match (monomials, polynomial_variables):
-        case (None, None):
-            # empty variable vector
-            polynomial_variables = polymat.from_variable_indices(tuple())
-            monomials = polymat.from_(1).to_monomial_vector()
-        case (None, _) | (_, None):
-            raise Exception(
-                "Both `monomials` and `polynomial_variables` must either be provided or set to None otherwise."
-            )
+    if monomials is None:
+        monomials = polymat.from_(1).to_monomial_vector()
         
     shape = n_rows, n_cols
 
@@ -161,7 +160,6 @@ def define_polynomial(
         name=name,
         monomials=monomials,
         coefficients=coefficients,
-        polynomial_variables=polynomial_variables,
         child=expr.child,
         shape=shape,
     )
@@ -226,7 +224,8 @@ def define_multiplier(
 
     def create_multiplier(state):
         state, multiplicand_degrees = polymat.to_degree(
-            multiplicand, variables=variables
+            multiplicand, 
+            variables=variables
         ).apply(state)
         max_degree_multiplicand = max(max(multiplicand_degrees))
         degrees = max_degree - max_degree_multiplicand
@@ -234,7 +233,6 @@ def define_multiplier(
         expr = define_polynomial(
             name=name,
             monomials=variables.combinations(degree_range).cache(),
-            polynomial_variables=variables,
         )
         return state, expr
 
@@ -245,18 +243,9 @@ def define_symmetric_matrix(
     name: str,
     size: int,
     monomials: MonomialVectorExpression | None = None,
-    polynomial_variables: VariableVectorExpression | None = None,
 ):
-    
-    match (monomials, polynomial_variables):
-        case (None, None):
-            # empty variable vector
-            polynomial_variables = polymat.from_variable_indices(tuple())
-            monomials = polymat.from_(1).to_monomial_vector()
-        case (None, _) | (_, None):
-            raise Exception(
-                "Both `monomials` and `polynomial_variables` must either be provided or set to None otherwise."
-            )
+    if monomials is None:
+        monomials = polymat.from_(1).to_monomial_vector()
 
     entries = {}
 
@@ -289,7 +278,6 @@ def define_symmetric_matrix(
         name=name,
         monomials=monomials,
         coefficients=params,
-        polynomial_variables=polynomial_variables,
         child=expr.child,
         shape=(size, size),
     )
