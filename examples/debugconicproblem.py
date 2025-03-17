@@ -20,7 +20,6 @@ w2 = ((x1 + 0.3) / 20) ** 2 + (x2 / 1.3) ** 2 + (x3 / 1.3) ** 2 - 1
 r_var = sosopt.define_polynomial(
     name='r',
     monomials=x.combinations(degrees=(1, 2)),
-    polynomial_variables=x,
 )
 # Fix the constant part of the polynomial to -1 to ensure numerical stability
 r = r_var - 1

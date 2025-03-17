@@ -16,7 +16,6 @@ w2 = ((x1 + 0.3) / 20) ** 2 + (x2 / 1.3) ** 2 + (x3 / 1.3) ** 2 - 1
 r_var = sosopt.define_polynomial(
     name="r",
     monomials=x.combinations(degrees=(1, 2)),
-    polynomial_variables=x,
 )
 r = r_var - 1
 
@@ -71,12 +70,12 @@ Y = np.matlib.repmat(ticksY.reshape(-1, 1), 1, n_col)
 
 # plot contour of zero-sublevel sets {x | w1(x) <= 0}, {x | w2(x) <= 0}, 
 # and {x | r(x) <= 0}
-Z_eq = np.vectorize(lambda x, y: w1_array(proj(x, y)))(X, Y)
-Z_eq = np.vectorize(lambda x, y: w2_array(proj(x, y)))(X, Y)
-Z_eq = np.vectorize(lambda x, y: r_array(proj(x, y)))(X, Y)
-ax.contour(X, Y, Z_eq, [0], linewidths=0.5, colors=["#A0B1BA"])
-ax.contour(X, Y, Z_eq, [0], linewidths=0.5, colors=["#A0B1BA"])
-ax.contour(X, Y, Z_eq, [0], linewidths=2, colors=["#A0B1BA"])
+Z_w1 = np.vectorize(lambda x, y: w1_array(proj(x, y)))(X, Y)
+Z_w2 = np.vectorize(lambda x, y: w2_array(proj(x, y)))(X, Y)
+Z_r = np.vectorize(lambda x, y: r_array(proj(x, y)))(X, Y)
+ax.contour(X, Y, Z_w1, [0], linewidths=0.5, colors=["#A0B1BA"])
+ax.contour(X, Y, Z_w2, [0], linewidths=0.5, colors=["#A0B1BA"])
+ax.contour(X, Y, Z_r, [0], linewidths=2, colors=["#A0B1BA"])
 
 # plot box-like set with red dashed lines
 x_min, x_max, y_min, y_max = -0.8, 0.2, -1.3, 1.3
@@ -85,5 +84,10 @@ ax.plot(np.array((x_min, x_max)), np.array((y_min, y_min)), **args)
 ax.plot(np.array((x_min, x_max)), np.array((y_max, y_max)), **args)
 ax.plot(np.array((x_min, x_min)), np.array((y_min, y_max)), **args)
 ax.plot(np.array((x_max, x_max)), np.array((y_min, y_max)), **args)
+
+ax.text(-0.77, 1.7, r'$\{x \mid w_1(x) = 0 \}$')
+ax.text(-1.9, 1.37, r'$\{x \mid w_2(x) = 0 \}$')
+ax.text(-1.9, -0.7, r'$\{x \mid r(x) = 0 \}$')
+ax.text(-0.7, 0.9, r'$\mathcal{X}_\text{Box}$', fontsize=16, color="#FF1F5B")
 
 pyplot.show()
