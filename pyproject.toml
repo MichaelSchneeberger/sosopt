@@ -1,6 +1,6 @@
 [project]
 name = "sosopt"
-version = "0.0.5"
+version = "0.0.6"
 description = 'SOSOpt is a library designed for solving sums-of-squares optimization problems.'
 authors = [
   {name="Michael Schneeberger", email="michael.schneeb@hotmail.com"},
