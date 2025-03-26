@@ -1,8 +1,9 @@
 from sosopt.polymat.polynomialvariable import (
+    PolynomialVariable as _PolynomialVariable,
     PolynomialMatrixVariable as _PolynomialMatrixVariable,
     PolynomialVectorVariable as _PolynomialVectorVariable,
     PolynomialRowVectorVariable as _PolynomialRowVectorVariable,
-    PolynomialVariable as _PolynomialVariable,
+    ScalarPolynomialVariable as _ScalarPolynomialVariable,
 )
 from sosopt.solvers.solverdata import (
     SolutionFound as _SolutionFound,
@@ -10,10 +11,11 @@ from sosopt.solvers.solverdata import (
     SolverData as _SolverData,
 )
 
+PolynomialVariable = _PolynomialVariable
 PolynomialMatrixVariable = _PolynomialMatrixVariable
 PolynomialVectorVariable = _PolynomialVectorVariable
 PolynomialRowVectorVariable = _PolynomialRowVectorVariable
-PolynomialVariable = _PolynomialVariable
+ScalarPolynomialVariable = _ScalarPolynomialVariable
 
 SolverData = _SolverData
 SolutionFound = _SolutionFound

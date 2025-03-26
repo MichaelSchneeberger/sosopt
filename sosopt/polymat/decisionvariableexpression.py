@@ -1,9 +1,9 @@
-from polymat.typing import (
+from polymat.abc import (
     VariableExpression,
 )
 
 
-class DecisionVariableExpression(VariableExpression):
+class DecisionVariableVectorSymbolExpression[_](VariableExpression):
     """
     Expression that is a polynomial variable, i.e. an expression that cannot be
     reduced further.
@@ -13,5 +13,5 @@ class DecisionVariableExpression(VariableExpression):
         yield self.symbol
 
 
-class SingleValueDecisionVariableExpression(DecisionVariableExpression):
+class DecisionVariableExpression[_](DecisionVariableVectorSymbolExpression):
     pass

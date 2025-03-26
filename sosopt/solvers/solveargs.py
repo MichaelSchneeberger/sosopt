@@ -132,7 +132,12 @@ def to_solver_args(
                 state, array = to_array(state=state, name=name, expr=expr)
                 eq_data_arrays.append(array)
 
-        variable_names = tuple(state.get_name(index) for index in indices_)
+        def gen_variable_names():
+            for index in indices_:
+                if name := state.get_name(index):
+                    yield name
+
+        variable_names = tuple(gen_variable_names())
 
         return state, SolverArgs(
             lin_cost=lin_cost_array,

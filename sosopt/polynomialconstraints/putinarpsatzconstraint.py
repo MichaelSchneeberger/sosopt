@@ -14,19 +14,19 @@ from polymat.typing import (
     ScalarPolynomialExpression,
 )
 
-from sosopt.polynomialconstraints.constraintprimitive.constraintprimitive import (
-    ConstraintPrimitive,
+from sosopt.polynomialconstraints.constraintprimitives.polynomialconstraintprimitive import (
+    PolynomialConstraintPrimitive,
 )
-from sosopt.utils.decisionvariablesmixin import to_decision_variable_symbols
-from sosopt.utils.polynomialvariablesmixin import (
+from sosopt.coneconstraints.decisionvariablesmixin import to_decision_variable_symbols
+from sosopt.polynomialconstraints.polynomialvariablesmixin import (
     PolynomialVariablesMixin,
-    to_polynomial_variables,
+    to_polynomial_variable_indices,
 )
 from sosopt.polymat.from_ import define_multiplier
-from sosopt.polymat.polynomialvariable import PolynomialVariable
+from sosopt.polymat.polynomialvariable import ScalarPolynomialVariable
 from sosopt.semialgebraicset import SemialgebraicSet
 from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
-from sosopt.polynomialconstraints.constraintprimitive.sumofsquaresprimitive import (
+from sosopt.polynomialconstraints.constraintprimitives.sumofsquaresprimitive import (
     init_sum_of_squares_primitive,
 )
 
@@ -34,8 +34,8 @@ from sosopt.polynomialconstraints.constraintprimitive.sumofsquaresprimitive impo
 @dataclassabc(frozen=True, slots=True)
 class PutinarPsatzConstraint(PolynomialVariablesMixin, PolynomialConstraint):
     name: str  # override
-    primitives: tuple[ConstraintPrimitive, ...]  # override
-    polynomial_variables: VariableVectorExpression  # override
+    primitives: tuple[PolynomialConstraintPrimitive, ...]  # override
+    polynomial_variable_indices: tuple[int, ...]  # override
 
     # the parametrized polynomial matrix that is rquired to be positive in each entry on the domain
     positive_matrix: MatrixExpression
@@ -47,7 +47,7 @@ class PutinarPsatzConstraint(PolynomialVariablesMixin, PolynomialConstraint):
     domain: SemialgebraicSet | None
 
     # multipliers used to build the SOS certificate for each entry in the matrix
-    multipliers: dict[str, PolynomialVariable]
+    multipliers: dict[str, ScalarPolynomialVariable]
 
     # SOS certificate required to prove the non-negativity of the target polynomials
     # (for each entry in the matrix) over the domain
@@ -60,8 +60,8 @@ class PutinarPsatzConstraint(PolynomialVariablesMixin, PolynomialConstraint):
 @dataclassabc(frozen=True, slots=True)
 class PutinarPsatzMatrixConstraint(PolynomialVariablesMixin, PolynomialConstraint):
     name: str  # override
-    primitives: tuple[ConstraintPrimitive, ...]  # override
-    polynomial_variables: VariableVectorExpression  # override
+    primitives: tuple[PolynomialConstraintPrimitive, ...]  # override
+    polynomial_variable_indices: tuple[int, ...]  # override
 
     # the parametrized polynomial matrix that is rquired to be positive in each entry on the domain
     positive_matrix: MatrixExpression
@@ -73,7 +73,7 @@ class PutinarPsatzMatrixConstraint(PolynomialVariablesMixin, PolynomialConstrain
     domain: SemialgebraicSet | None
 
     # multipliers used to build the SOS certificate for each entry in the matrix
-    multipliers: dict[tuple[int, int], dict[str, PolynomialVariable]]
+    multipliers: dict[tuple[int, int], dict[str, ScalarPolynomialVariable]]
 
     # SOS certificate required to prove the non-negativity of the target polynomials
     # (for each entry in the matrix) over the domain
@@ -85,7 +85,7 @@ class PutinarPsatzMatrixConstraint(PolynomialVariablesMixin, PolynomialConstrain
 
 def init_putinar_psatz_constraint(
     name: str,
-    positive_matrix: MatrixExpression,
+    expression: MatrixExpression,
     domain: SemialgebraicSet | None = None,
 ):
     def create_constraint(state: State):
@@ -100,17 +100,17 @@ def init_putinar_psatz_constraint(
         domain_polynomials = inequalities | equalities
 
         vector = polymat.v_stack(
-            (positive_matrix.reshape(-1, 1),) + tuple(domain_polynomials.values())
+            (expression.reshape(-1, 1),) + tuple(domain_polynomials.values())
         ).to_vector()
 
-        state, polynomial_variables = to_polynomial_variables(vector).apply(state)
+        state, polynomial_indices = to_polynomial_variable_indices(vector).apply(state)
 
         state, max_domain_degrees = polymat.to_degree(
-            expr=vector, variables=polynomial_variables
+            expr=vector, variables=polynomial_indices
         ).apply(state)
         max_domain_degree = max(max(max_domain_degrees))
 
-        state, shape = polymat.to_shape(positive_matrix).apply(state)
+        state, shape = polymat.to_shape(expression).apply(state)
         n_rows, n_cols = shape
 
         multipliers = {}
@@ -129,57 +129,54 @@ def init_putinar_psatz_constraint(
 
         for row in range(n_rows):
             for col in range(n_cols):
-                condition_entry = positive_matrix[row, col]
+                condition_entry = expression[row, col]
 
                 state, max_cond_degrees = polymat.to_degree(
                     condition_entry,
-                    variables=polynomial_variables,
+                    variables=polynomial_indices,
                 ).apply(state)
                 max_cond_degree = max(max(max_cond_degrees))
 
-                sos_polynomial_entry = condition_entry
+                sos_certificate = condition_entry
                 multipliers_entry = {}
 
                 for domain_name, domain_polynomial in domain_polynomials.items():
+                    multiplier_name = get_name(row, col, domain_name)
+
                     state, multiplier = define_multiplier(
-                        name=get_name(row, col, domain_name),
-                        # name=f"{name}_{row}_{col}_{domain_name}",
+                        name=multiplier_name,
                         degree=max(max_domain_degree, max_cond_degree),
                         multiplicand=domain_polynomial,
-                        variables=polynomial_variables,
+                        variables=polynomial_indices,
                     ).apply(state)
 
                     multipliers_entry[domain_name] = multiplier
 
-                    sos_polynomial_entry = (
-                        sos_polynomial_entry - multiplier * domain_polynomial
+                    sos_certificate = (
+                        sos_certificate - multiplier * domain_polynomial
                     )
 
                     if domain_name in inequalities:
                         constraint_primitives.append(
                             init_sum_of_squares_primitive(
-                                name=name,
+                                name=multiplier_name,
                                 expression=multiplier,
-                                decision_variable_symbols=tuple(
-                                    multiplier.iterate_symbols()
-                                ),
-                                polynomial_variables=polynomial_variables,
+                                decision_variable_symbols=tuple(multiplier.iterate_symbols()),
+                                polynomial_variable_indices=polynomial_indices,
                             )
                         )
 
                 multipliers[row, col] = multipliers_entry
-                sos_certificates[row, col] = sos_polynomial_entry
+                sos_certificates[row, col] = sos_certificate
 
-                state, decision_variables = to_decision_variable_symbols(
-                    sos_polynomial_entry
-                ).apply(state)
+                state, decision_variable_symbols = to_decision_variable_symbols(sos_certificate).apply(state)
 
                 constraint_primitives.append(
                     init_sum_of_squares_primitive(
                         name=name,
-                        expression=sos_polynomial_entry,
-                        decision_variable_symbols=decision_variables,
-                        polynomial_variables=polynomial_variables,
+                        expression=sos_certificate,
+                        polynomial_variable_indices=polynomial_indices,
+                        decision_variable_symbols=decision_variable_symbols,
                     )
                 )
 
@@ -188,8 +185,8 @@ def init_putinar_psatz_constraint(
                 constraint = PutinarPsatzConstraint(
                     name=name,
                     primitives=tuple(constraint_primitives),
-                    polynomial_variables=polynomial_variables,
-                    positive_matrix=positive_matrix,
+                    polynomial_variable_indices=polynomial_indices,
+                    positive_matrix=expression,
                     shape=shape,
                     domain=domain,
                     multipliers=multipliers[0, 0],
@@ -200,8 +197,8 @@ def init_putinar_psatz_constraint(
                 constraint = PutinarPsatzMatrixConstraint(
                     name=name,
                     primitives=tuple(constraint_primitives),
-                    polynomial_variables=polynomial_variables,
-                    positive_matrix=positive_matrix,
+                    polynomial_variable_indices=polynomial_indices,
+                    positive_matrix=expression,
                     shape=shape,
                     domain=domain,
                     multipliers=multipliers,

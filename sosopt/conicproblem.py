@@ -7,11 +7,11 @@ import statemonad
 
 from polymat.typing import ScalarPolynomialExpression, VectorExpression, State
 
+from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.conversions import to_linear_cost
 from sosopt.coneconstraints.coneconstraint import ConeConstraint
 from sosopt.coneconstraints.equalityconstraint import EqualityConstraint
 from sosopt.coneconstraints.semidefiniteconstraint import SemiDefiniteConstraint
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.solvers.solveargs import SolverArgs, to_solver_args
 from sosopt.solvers.solvermixin import SolverMixin
 from sosopt.solvers.solverdata import SolutionFound, SolutionNotFound, SolverData
@@ -62,10 +62,14 @@ class ConicProblem:
 
     def _to_variable_index_ranges(self, state: State):
         def gen_variable_index_ranges():
-            for variable in self.decision_variable_symbols:
+            for symbol in self.decision_variable_symbols:
                 # raises an exception if variable doesn't exist
-                index_range = state.get_index_range(variable)
-                yield variable, index_range
+                match state.get_index_range(symbol):
+                    case None:
+                        pass
+
+                    case index_range:
+                        yield symbol, index_range
 
         return dict(gen_variable_index_ranges())
 
@@ -73,9 +77,21 @@ class ConicProblem:
         def to_solver_args_with_state(state: State):
             variable_index_ranges = self._to_variable_index_ranges(state)
 
-            indices = tuple(
-                index for start, stop in variable_index_ranges.values() for index in range(start, stop)
-            )
+            def gen_decision_variable_indices():
+                for start, stop in variable_index_ranges.values():
+                    for index in range(start, stop):
+                        yield index
+
+                for constraint in self.constraints:
+                    yield from constraint.anonymous_variable_indices
+
+            indices = tuple(gen_decision_variable_indices())
+
+            # def gen_anonymous_variable_indices():
+            #     for constraint in self.constraints:
+            #         yield from constraint.anonymous_variable_indices
+
+            # print(tuple(gen_anonymous_variable_indices()))
 
             # filter positive semidefinite constraints
             s_data = tuple(

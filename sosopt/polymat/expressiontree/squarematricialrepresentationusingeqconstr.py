@@ -7,7 +7,6 @@ from polymat.sparserepr.data.monomial import add_monomials
 from polymat.sparserepr.data.polynomialmatrix import add_polynomial_to_polynomial_matrix_mutable
 from polymat.sparserepr.sparserepr import SparseRepr
 from polymat.sparserepr.init import init_sparse_repr_from_data
-from polymat.expressiontree.data.variables import VariableType, to_indices
 from polymat.expressiontree.nodes import (
     ExpressionNode,
     SingleChildExpressionNode,
@@ -16,18 +15,17 @@ from polymat.expressiontree.nodes import (
 from sosopt.state.state import State as BaseState
 
 
-class QuadraticCoefficients[State: BaseState](FrameSummaryMixin, SingleChildExpressionNode[State]):
-    # @property
-    # @abc.abstractmethod
-    # def name(self) -> str: ...
-
+class SquareMatricialRepresentationUsingEqConstr[State: BaseState](
+    FrameSummaryMixin, 
+    SingleChildExpressionNode[State],
+):
     @property
     @abc.abstractmethod
     def monomials(self) -> ExpressionNode[State]: ...
 
     @property
     @abc.abstractmethod
-    def variables(self) -> VariableType[State]: ...
+    def variables(self) -> SingleChildExpressionNode.VariableType: ...
 
     @property
     @abc.abstractmethod
@@ -40,7 +38,7 @@ class QuadraticCoefficients[State: BaseState](FrameSummaryMixin, SingleChildExpr
     def apply(self, state: State) -> tuple[State, SparseRepr]:
         state, child = self.child.apply(state=state)
         state, monomial_vector = self.monomials.apply(state=state)
-        state, indices = to_indices(state, self.variables)
+        state, indices = self.to_variable_indices(state, self.variables)
 
         if not (child.shape == (1, 1)):
             raise AssertionError(

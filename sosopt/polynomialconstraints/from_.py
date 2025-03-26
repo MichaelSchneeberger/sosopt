@@ -81,6 +81,6 @@ def psatz_putinar_constraint(
 
     return init_putinar_psatz_constraint(
         name,
-        positive_matrix=positive_matrix,
+        expression=positive_matrix,
         domain=domain,
     )

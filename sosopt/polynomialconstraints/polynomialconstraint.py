@@ -3,8 +3,8 @@ from __future__ import annotations
 from abc import abstractmethod
 
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
-from sosopt.polynomialconstraints.constraintprimitive.constraintprimitive import (
-    ConstraintPrimitive,
+from sosopt.polynomialconstraints.constraintprimitives.polynomialconstraintprimitive import (
+    PolynomialConstraintPrimitive,
 )
 
 
@@ -21,16 +21,17 @@ class PolynomialConstraint:
 
     @property
     @abstractmethod
-    def primitives(self) -> tuple[ConstraintPrimitive, ...]: ...
+    def primitives(self) -> tuple[PolynomialConstraintPrimitive, ...]: ...
 
     def eval(
-        self, substitutions: dict[DecisionVariableSymbol, tuple[float, ...]]
+        self, 
+        substitutions: dict[DecisionVariableSymbol, tuple[float, ...]]
     ) -> PolynomialConstraint | None:
         def gen_evaluated_primitives():
             for primitive in self.primitives:
                 evaluated_primitive = primitive.eval(substitutions)
 
-                # constraint still contains decision variables
+                # primitive contains decision variables after evaluation
                 if evaluated_primitive is not None:
                     yield evaluated_primitive
 

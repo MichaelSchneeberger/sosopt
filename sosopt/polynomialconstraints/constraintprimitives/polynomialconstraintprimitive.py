@@ -2,14 +2,18 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
-from polymat.typing import MatrixExpression
+from statemonad.typing import StateMonad
 
-from sosopt.coneconstraints.coneconstraint import ConeConstraint
-from sosopt.utils.decisionvariablesmixin import DecisionVariablesMixin
+from polymat.typing import MatrixExpression, State
+
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
+from sosopt.coneconstraints.decisionvariablesmixin import DecisionVariablesMixin
+from sosopt.coneconstraints.coneconstraint import ConeConstraint
 
 
-class ConstraintPrimitive(DecisionVariablesMixin):
+class PolynomialConstraintPrimitive(
+    DecisionVariablesMixin,
+):
     # abstract properties
     #####################
 
@@ -21,23 +25,24 @@ class ConstraintPrimitive(DecisionVariablesMixin):
     @abstractmethod
     def expression(self) -> MatrixExpression: ...
 
-    def copy(self, /, **others) -> ConstraintPrimitive: ...
+    def copy(self, /, **others) -> PolynomialConstraintPrimitive: ...
 
     # class method
     ##############
 
     @abstractmethod
-    def to_cone_constraint(self) -> ConeConstraint: ...
+    def to_cone_constraint(
+        self, settings: dict
+    ) -> StateMonad[State, ConeConstraint]: ...
 
     def eval(
         self, substitutions: dict[DecisionVariableSymbol, tuple[float, ...]]
-    ) -> ConstraintPrimitive | None:
-        def not_in_substitutions(p: DecisionVariableSymbol):
-            return p not in substitutions
-
-        # find symbols that are not getting substituted
+    ) -> PolynomialConstraintPrimitive | None:
+        # find variable symbols that is not getting substitued
         decision_variable_symbols = tuple(
-            filter(not_in_substitutions, self.decision_variable_symbols)
+            symbol
+            for symbol in self.decision_variable_symbols
+            if symbol not in substitutions
         )
 
         if len(decision_variable_symbols):
