@@ -2,6 +2,17 @@
 
 SOSOpt is a Python library designed for solving sums-of-squares (SOS) optimization problems.
 
+
+## Features
+
+* `polymat` integration: Extends the [`polymat`](https://github.com/MichaelSchneeberger/polymat) ecosystem by introducing a new variable type for decision variables.
+Native `polymat` variables are interpretated as polynomial variables, enabling seamless creation of expressions that mix both polnyomial and decision variables.
+* Pythonic code structure: Designed with a programming-oriented syntax, avoiding unnatural adaptations of Python dunder methods to match mathematical notation.
+* Data-oriented design: Key components such as decision variables, SOS constraints, and SOS problems are implemented as structured data types, facilitating efficient inspection and debugging.
+* Stateful Computation: The sparse internal structures are computed based on a state object. This eliminates any dependency on global variables and provides control over the sparse intermediate structures stored in memory for reuse.
+<!-- * Stateful computation: Built on the [`statemonad`](https://github.com/MichaelSchneeberger/state-monad) framework, ensuring that data objects requiring evaluation of `polymat` expressions are handled in a functional, state-aware manner. -->
+
+
 ## Installation
 
 You can install SOSOpt using pip:
@@ -29,7 +40,7 @@ The resulting SOS problem is defined as:
 
 $$\begin{array}{ll}
     \text{find} & Q_r \in \mathbb R^{m \times m} \\
-    \text{minimize} & \text{tr}( Q_r ) \\
+    \text{minimize} & \text{tr}( Q_r ) + \text{diag}( Q_r )^\top \text{diag}( Q_r ) \\
     \text{subject to} & r(x) < 0 \quad \forall x \in \mathcal X_\text{Box} \\
 \end{array}$$
 
@@ -68,7 +79,7 @@ print(f'r={sympy_repr}')
 
 # Apply Putinar's Positivstellensatz to ensure the box-like set, encoded by w1 and w2, 
 # is contained within the zero sublevel set of r(x).
-state, constraint = sosopt.psatz_putinar_constraint(
+state, constraint = sosopt.putinar_psatz_constraint(
     name="rpos",
     smaller_than_zero=r,
     domain=sosopt.set_(
@@ -80,14 +91,14 @@ state, constraint = sosopt.psatz_putinar_constraint(
 ).apply(state)
 
 # Minimize the volume surrogate of the zero-sublevel set of r(x)
-Qr_diag = r.to_gram_matrix(x).diag()
+Qr_diag = sosopt.gram_matrix(r, x).diag()
 
 # Define the SOS problem
 problem = sosopt.sos_problem(
     lin_cost=-Qr_diag.sum(),
     quad_cost=Qr_diag,
     constraints=(constraint,),
-    solver=sosopt.cvx_opt_solver,   # choose solver
+    solver=sosopt.cvxopt_solver,   # choose solver
     # solver=sosopt.mosek_solver,
 )
 
@@ -130,7 +141,7 @@ This figure illustrates the contour of the zero-sublevel sets of the resulting p
 - **Zero Polynomial***: Enforce a polynomial expression to be equal to zero using `sosopt.zero_polynomial_constraint`.
 - **Sum-of-Sqaures (SOS)***: Define a scalar polynomial expression within the SOS Cone using `sosopt.sos_constraint`.
 - **SOS Matrix***: Define a polynomial matrix expression within the SOS Matrix Cone using `sosopt.sos_matrix_constraint`.
-- **Putinar's P-satz***: Encode a positivity condition for a polynomial matrix expression on a semialgebraic set using `sosopt.psatz_putinar_constraint`.
+- **Putinar's P-satz***: Encode a positivity condition for a polynomial matrix expression on a semialgebraic set using `sosopt.putinar_psatz_constraint`.
 
 ### Defining the SOS Optimization Problem
 
