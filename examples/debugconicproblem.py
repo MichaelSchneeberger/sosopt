@@ -31,7 +31,7 @@ print(f'r={sympy_repr}')
 
 # Apply Putinar's Positivstellensatz to ensure the cylindrical constraints (w1 and w2) 
 # are contained within the zero sublevel set of r.
-state, constraint = sosopt.sos_constraint_putinar(
+state, constraint = sosopt.quadratic_module_constraint(
     name="rpos",
     smaller_than_zero=r,
     domain=sosopt.set_(
@@ -43,20 +43,18 @@ state, constraint = sosopt.sos_constraint_putinar(
 ).apply(state)
 
 # Minimize the volume surrogate of the zero-sublevel set of r
-Qr_diag = r.to_gram_matrix(x).diag()
+Qr_diag = sosopt.gram_matrix(r, x).diag()
 
 # Define the SOS problem
 problem = sosopt.sos_problem(
     lin_cost=-Qr_diag.sum(),
     quad_cost=Qr_diag,
     constraints=(constraint,),
-    solver=sosopt.cvx_opt_solver,   # choose solver
+    solver=sosopt.cvxopt_solver,   # choose solver
     # solver=sosopt.mosek_solver,
 )
 
-conic_problem = problem.to_conic_problem()
-
-state, args = conic_problem.to_solver_args().apply(state)
+state, args = problem.to_solver_args().apply(state)
 
 # Conic problem summary
 #######################

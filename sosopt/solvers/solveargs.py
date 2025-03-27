@@ -36,7 +36,7 @@ class SolverArgs(NamedTuple):
 
     def to_summary(self):
         def gen_summary():
-            yield f'Number of variables: {self.n_var}'
+            yield f'Number of decision variables: {self.n_var}'
             yield f'Quadratic cost: {self.quad_cost is not None}'
 
             if self.semidef_cone:

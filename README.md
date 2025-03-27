@@ -88,27 +88,37 @@ Q = sosopt.define_polynomial(
 The polynomial constraints in the SOS problem can be defined in **SOSOpt** as follows:
 
 - **Equality Constraint**: This constraint enforces a polynomial expression to be equal to zero.
+    The following constraint:
     ``` python
     r_zero_constraint = sosopt.zero_polynomial_constraint(
         name='r_zero',
         equal_to_zero=r,
     )
     ```
+    enforces the equality constraint:
+    $$r(x) = 0.$$
 - **SOS Constraint**: This constraint ensures that a scalar polynomial expression belongs to the SOS Cone.
+    The following constraint:
     ``` python
     r_sos_constraint = sosopt.sos_constraint(
         name='r_sos',
         greater_than_zero=r,
     )
     ```
-- **SOS Matrix Constraint**: The constraint ensures a polynomial matrix expression belongs to the SOS Matrix Cone.
+    enforces the SOS constraint:
+    $$r(x) \in \Sigma[x].$$
+- **SOS Matrix Constraint**: This constraint ensures a polynomial matrix expression belongs to the SOS Matrix Cone.
+    The following constraint:
     ``` python
     q_sos_constraint = sosopt.sos_matrix_constraint(
         name='q_sos',
         greater_than_zero=q,
     )
     ```
-- **Quadratic Module Constraint**: The constraint defines a non-negativity condition on a subset of the states space using a quadratic module.
+    enforces the SOS constraint:
+    $$v^\top q(x) v \in \Sigma[x, v].$$
+- **Quadratic Module Constraint**: This constraint defines a non-negativity condition on a subset of the states space using a quadratic module construction following Putinar's Positivstellensatz.
+    The following constraint:
     ``` python
     r_qm_constraint = sosopt.quadratic_module_constraint(
         name='r_qm',
@@ -118,6 +128,9 @@ The polynomial constraints in the SOS problem can be defined in **SOSOpt** as fo
         )
     )
     ```
+    enforces the SOS constraints:
+    $$\gamma_w(x) \in \Sigma[x]$$
+    $$r(x) + \gamma_w(x) w(x) \in \Sigma[x].$$
 
 ### Defining an SOS Problem
 
@@ -138,7 +151,7 @@ problem = sosopt.sos_problem(
     lin_cost=Q.trace(),
     quad_cost=Q.diag(),
     constraints=(r_sos_constraint,),
-    solver=solver,
+    solver=polymat.cvxopt_solver,
 )
 
 # solve SOS problem
@@ -188,7 +201,7 @@ However, for a large matrix $Q_p$ many additional variables need to be introduce
 To account for this, a hyristic can be enabled that preselect a specific value for $\alpha$.
 This heursitic constructs a gram matrix in a way that prioritizes nonzero entries corresponding to monomial in $Z(x)$ that involve multiple variables.
 In the above example, $\alpha=0$ is selected for $Q_p$.
-This heuristic can be enabled as follows:
+This heuristic is enabled by default and can be disabled as follows:
 
 ``` python
 problem = sosopt.sos_problem(
@@ -196,7 +209,7 @@ problem = sosopt.sos_problem(
     quad_cost=Q.diag(),
     constraints=(r_sos_constraint,),
     solver=solver,
-    sparse_gram =True,
+    sparse_gram =False,
 )
 ```
 
@@ -340,5 +353,7 @@ This figure illustrates the contour of the zero-sublevel sets of the resulting p
 Below are some references related to this project:
 
 * [PolyMat](https://github.com/MichaelSchneeberger/polymat) is a Python library designed for the representation and manipulation of multivariate polynomial matrices.
-* [Advanced safety filter](https://github.com/MichaelSchneeberger/advanced-safety-filter) includes Jupyter notebooks that model and simulate the concept of an advanced safety filter using SOSOpt.
-* [SumOfSqaures.py](https://github.com/yuanchenyang/SumOfSquares.py) is a simple sum-of-squares Python library built on `sympy`, leading to increased computation time when converting an SOS problem into a SDP.
+* [Advanced safety filter](https://github.com/MichaelSchneeberger/advanced-safety-filter) includes Jupyter notebooks that model and simulate the concept of an advanced safety filter using **SOSOpt**.
+* [SumOfSqaures.py](https://github.com/yuanchenyang/SumOfSquares.py) is a simple sum-of-squares Python library built on *sympy*, leading to increased computation time when converting an SOS problem into a SDP.
+* [SOSTOOLS](https://github.com/oxfordcontrol/SOSTOOLS) powerful SOS solver written in $MATLAB$.
+* [SumOfSqaures.jl](https://github.com/jump-dev/SumOfSquares.jl) powerful SOS solver written in $Julia$.

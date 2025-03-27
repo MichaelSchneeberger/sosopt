@@ -1,7 +1,10 @@
 import numpy as np
 import numpy.matlib
 from matplotlib import pyplot
+
 import polymat
+from polymat.typing import State
+
 import sosopt
 
 state = polymat.init_state()
@@ -10,8 +13,11 @@ variable_names = ("x_1", "x_2", "x_3")
 x1, x2, x3 = tuple(polymat.define_variable(name) for name in variable_names)
 x = polymat.v_stack((x1, x2, x3))
 
-w1 = ((x1 + 0.3) / 0.5) ** 2 + (x2 / 20) ** 2 + (x3 / 20) ** 2 - 1
-w2 = ((x1 + 0.3) / 20) ** 2 + (x2 / 1.3) ** 2 + (x3 / 1.3) ** 2 - 1
+# w1 = ((x1 + 0.3) / 0.5) ** 2 + (x2 / 20) ** 2 + (x3 / 20) ** 2 - 1
+# w2 = ((x1 + 0.3) / 20) ** 2 + (x2 / 1.3) ** 2 + (x3 / 1.3) ** 2 - 1
+
+w1 = ((x1 + 0.3) / 0.5) ** 2 - 1
+w2 = (x2 / 1.3) ** 2 + (x3 / 1.3) ** 2 - 1
 
 r_var = sosopt.define_polynomial(
     name="r",
@@ -22,7 +28,7 @@ r = r_var - 1
 state, sympy_repr = polymat.to_sympy(r).apply(state)
 print(f"r={sympy_repr}")
 
-state, constraint = sosopt.psatz_putinar_constraint(
+state, constraint = sosopt.quadratic_module_constraint(
     name="rpos",
     smaller_than_zero=r,
     domain=sosopt.set_(
@@ -33,13 +39,13 @@ state, constraint = sosopt.psatz_putinar_constraint(
     ),
 ).apply(state)
 
-Qr_diag = r.to_gram_matrix(x).diag()
+Qr_diag = sosopt.gram_matrix(r, x).diag()
 
 problem = sosopt.sos_problem(
     lin_cost=-Qr_diag.sum(),
     quad_cost=Qr_diag,
     constraints=(constraint,),
-    solver=sosopt.cvx_opt_solver,
+    solver=sosopt.cvxopt_solver,
 )
 
 state, sos_result = problem.solve().apply(state)
@@ -90,4 +96,8 @@ ax.text(-1.9, 1.37, r'$\{x \mid w_2(x) = 0 \}$')
 ax.text(-1.9, -0.7, r'$\{x \mid r(x) = 0 \}$')
 ax.text(-0.7, 0.9, r'$\mathcal{X}_\text{Box}$', fontsize=16, color="#FF1F5B")
 
+ax.set_xlabel('$x_1$')
+ax.set_ylabel('$x_2$')
+
 pyplot.show()
+# fig.savefig('sosoptexample.pdf', bbox_inches='tight')

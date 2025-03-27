@@ -10,12 +10,17 @@ from polymat.typing import (
 )
 
 from sosopt.coneconstraints.semidefiniteconstraint import init_semi_definite_constraint
-from sosopt.polymat.from_ import square_matricial_representation
+from sosopt.polymat.from_ import (
+    square_matricial_representation,
+    square_matricial_representation_sparse,
+)
 from sosopt.polynomialconstraints.constraintprimitives.polynomialconstraintprimitive import (
     PolynomialConstraintPrimitive,
 )
 from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
-from sosopt.polynomialconstraints.polynomialvariablesmixin import PolynomialVariablesMixin
+from sosopt.polynomialconstraints.polynomialvariablesmixin import (
+    PolynomialVariablesMixin,
+)
 
 
 @dataclassabc(frozen=True, slots=True)
@@ -27,8 +32,9 @@ class SumOfSquaresPrimitive(PolynomialVariablesMixin, PolynomialConstraintPrimit
 
     def gram_matrix(self, sparse_gram: bool):
         if sparse_gram:
-            return self.expression.to_gram_matrix(
-                self.polynomial_variable
+            return square_matricial_representation_sparse(
+                expression=self.expression,
+                variables=self.polynomial_variable,
             ).cache()
         else:
             return square_matricial_representation(
@@ -38,12 +44,12 @@ class SumOfSquaresPrimitive(PolynomialVariablesMixin, PolynomialConstraintPrimit
 
     def copy(self, /, **others):
         return replace(self, **others)
-    
+
     @override
     def to_cone_constraint(self, settings: dict):
         return init_semi_definite_constraint(
             name=self.name,
-            expression=self.gram_matrix(settings['sparse_gram']),
+            expression=self.gram_matrix(settings["sparse_gram"]),
             decision_variable_symbols=self.decision_variable_symbols,
         )
 

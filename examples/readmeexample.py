@@ -30,7 +30,7 @@ print(f'r={sympy_repr}')
 
 # Apply Putinar's Positivstellensatz to ensure the box-like set, encoded by w1 and w2, 
 # is contained within the zero sublevel set of r(x).
-state, constraint = sosopt.psatz_putinar_constraint(
+state, constraint = sosopt.quadratic_module_constraint(
     name="rpos",
     smaller_than_zero=r,
     domain=sosopt.set_(
@@ -42,14 +42,14 @@ state, constraint = sosopt.psatz_putinar_constraint(
 ).apply(state)
 
 # Minimize the volume surrogate of the zero-sublevel set of r(x)
-Qr_diag = r.to_gram_matrix(x).diag()
+Qr_diag = sosopt.gram_matrix(r, x).diag()
 
 # Define the SOS problem
 problem = sosopt.sos_problem(
     lin_cost=-Qr_diag.sum(),
     quad_cost=Qr_diag,
     constraints=(constraint,),
-    solver=sosopt.cvx_opt_solver,   # choose solver
+    solver=sosopt.cvxopt_solver,   # choose solver
     # solver=sosopt.mosek_solver,
 )
 

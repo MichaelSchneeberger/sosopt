@@ -77,6 +77,9 @@ class SOSProblem:
 
         return statemonad.get_map_put(_to_conic_problem)
 
+    def to_solver_args(self):
+        return self.to_conic_problem().flat_map(lambda p: p.to_solver_args())
+
     def solve(self):
         return self.to_conic_problem().flat_map(lambda p: p.solve())
 
