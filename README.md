@@ -206,7 +206,6 @@ $$
 
 parametrized by $\alpha$.
 To account for this, $\alpha$ can be selected as a decision variable of the optimization problem.
-% The value of $\alpha$ resulting from solving the SDP is not important, as we only want to show that there exist at least one value for $\alpha$, for which $Q_p$ is positive semi-definite.
 However, for a large matrix $Q_p$ many additional variables need to be introduced, resulting in a higher computational effort.
 To account for this, a heuristic can be enabled that preselect a specific value for $\alpha$.
 This heursitic constructs a gram matrix in a way that prioritizes nonzero entries corresponding to monomial in $Z(x)$ that involve multiple variables.
