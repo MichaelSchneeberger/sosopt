@@ -227,7 +227,7 @@ problem = sosopt.sos_problem(
 ## Operations
 
 
-### [Defining Optimization Variables](https://github.com/MichaelSchneeberger/sosopt/blob/main/sosopt/polymat/from_.py)
+### Defining Optimization Variables
 
 - **Decision variable**: Use `sosopt.define_variable` to create a decision variable for the SOS Problem. Any variables created with `polymat.define_variable` are treated as polynomial variables.
 - **Polynomial variable**: Define a polynomial matrix variable with entries that are parametrized polynomials, where the coefficients are decision variables, using `sosopt.define_polynomial`.

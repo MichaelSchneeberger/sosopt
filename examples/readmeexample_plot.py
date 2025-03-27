@@ -74,22 +74,24 @@ n_row, n_col = len(ticksY), len(ticksX)
 X = np.matlib.repmat(ticksX, n_row, 1)
 Y = np.matlib.repmat(ticksY.reshape(-1, 1), 1, n_col)
 
+def select_max(arrays):
+    def func(x, y):
+        def evaluate_arrays():
+            for array in arrays:
+                yield array(proj(x, y))
+        return max(evaluate_arrays())
+    return func
+
 # plot contour of zero-sublevel sets {x | w1(x) <= 0}, {x | w2(x) <= 0}, 
 # and {x | r(x) <= 0}
 Z_w1 = np.vectorize(lambda x, y: w1_array(proj(x, y)))(X, Y)
 Z_w2 = np.vectorize(lambda x, y: w2_array(proj(x, y)))(X, Y)
+Z_box = np.vectorize(select_max((w1_array, w2_array)))(X, Y)
 Z_r = np.vectorize(lambda x, y: r_array(proj(x, y)))(X, Y)
 ax.contour(X, Y, Z_w1, [0], linewidths=0.5, colors=["#A0B1BA"])
 ax.contour(X, Y, Z_w2, [0], linewidths=0.5, colors=["#A0B1BA"])
+ax.contour(X, Y, Z_box, [0], linewidths=2, colors=['r'], linestyles=['dashed'])
 ax.contour(X, Y, Z_r, [0], linewidths=2, colors=["#A0B1BA"])
-
-# plot box-like set with red dashed lines
-x_min, x_max, y_min, y_max = -0.8, 0.2, -1.3, 1.3
-args = {"color": "#FF1F5B", "linestyle": "dashed", "linewidth": 2}
-ax.plot(np.array((x_min, x_max)), np.array((y_min, y_min)), **args)
-ax.plot(np.array((x_min, x_max)), np.array((y_max, y_max)), **args)
-ax.plot(np.array((x_min, x_min)), np.array((y_min, y_max)), **args)
-ax.plot(np.array((x_max, x_max)), np.array((y_min, y_max)), **args)
 
 ax.text(-0.77, 1.7, r'$\{x \mid w_1(x) = 0 \}$')
 ax.text(-1.9, 1.37, r'$\{x \mid w_2(x) = 0 \}$')
