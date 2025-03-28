@@ -6,11 +6,10 @@ from statemonad.typing import StateMonad
 
 import polymat
 from polymat.typing import (
+    StrSymbol,
     State as BaseState,
     MatrixExpression,
 )
-
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
 
 
 class PolynomialVariablesMixin(ABC):
@@ -34,23 +33,15 @@ def to_polynomial_variable_indices[State: BaseState](
 
         # get indices in the same order as they appear in the variable vector
         state, variable_indices = polymat.to_variable_indices(
-            # condition.to_variable_vector()
             condition
         ).apply(state)
 
-        # state = yield from statemonad.get[State]()
-
         def gen_polynomial_indices():
             for index in variable_indices:
-                symbol = state.get_symbol(index=index)
+                match state.get_symbol(index=index):
+                    case StrSymbol():
+                        yield index
 
-                if not isinstance(symbol, DecisionVariableSymbol):
-                    yield index
-
-        indices = tuple(gen_polynomial_indices())
-
-        # vector = polymat.from_variable_indices(polynomial_indices).cache()
-
-        return state, indices
+        return state, tuple(set(gen_polynomial_indices()))
 
     return statemonad.get_map_put(_to_polynomial_variables)

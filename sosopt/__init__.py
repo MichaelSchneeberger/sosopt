@@ -4,12 +4,18 @@ from sosopt.state.init import (
     init_state as _init_state,
 )
 from sosopt.polymat.from_ import (
-    square_matricial_representation_sparse as _square_matricial_representation_sparse,
-    # half_newton_polytope as _half_newton_polytope,
     define_multiplier as _define_multiplier,
     define_polynomial as _define_polynomial,
     define_symmetric_matrix as _define_symmetric_matrix,
     define_variable as _define_variable,
+    square_matricial_representation as _sos_smr,
+    square_matricial_representation_sparse as _sos_smr_sparse,
+    quadratic_monomial_vector as _sos_monomial_basis,
+    quadratic_monomial_vector_sparse as _sos_monomial_basis_sparse,
+)
+from sosopt.coneconstraints.from_ import(
+    equality_constraint as _equality_constraint,
+    semi_definite_constraint as _semidefinite_constraint,
 )
 from sosopt.polynomialconstraints.from_ import (
     sos_constraint as _sos_constraint,
@@ -28,8 +34,11 @@ init_state = _init_state
 cvxopt_solver = CVXOPTSolver()
 mosek_solver = MosekSolver()
 
-gram_matrix = _square_matricial_representation_sparse
-# half_newton_polytope = _half_newton_polytope
+sos_smr = _sos_smr
+sos_smr_sparse = _sos_smr_sparse
+gram_matrix = _sos_smr_sparse
+sos_monomial_basis = _sos_monomial_basis
+sos_monomial_basis_sparse = _sos_monomial_basis_sparse
 
 # Defining Optimization Variables
 define_variable = _define_variable
@@ -40,7 +49,11 @@ define_multiplier = _define_multiplier
 # Defining Sets
 set_ = _set_
 
-# Defining Constraint
+# Defining Cone Constraints
+equality_constraint = _equality_constraint
+semidefinite_constraint = _semidefinite_constraint
+
+# Defining Polynomial Constraints
 zero_polynomial_constraint = _zero_polynomial_constraint
 sos_constraint = _sos_constraint
 sos_psd_constraint = _sos_matrix_constraint      # depricated?

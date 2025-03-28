@@ -1,5 +1,6 @@
 from typing import Iterator, overload
 
+from sosopt.polymat.symbols.auxiliaryvariablesymbol import AuxiliaryVariableSymbol
 from statemonad.typing import StateMonad
 
 from polymat.typing import (
@@ -11,22 +12,24 @@ from polymat.typing import (
 )
 
 # from sosopt.state.state import State as BaseState
-from sosopt.polymat.polynomialvariable import (
+from sosopt.polymat.sources.polynomialvariable import (
     PolynomialMatrixVariable,
     ScalarPolynomialVariable,
     PolynomialRowVectorVariable,
     PolynomialVectorVariable,
     PolynomialSymmetricMatrixVariable,
 )
-from sosopt.polymat.decisionvariableexpression import (
+from sosopt.polymat.sources.decisionvariableexpression import (
     DecisionVariableVectorSymbolExpression,
     DecisionVariableExpression,
 )
+
 
 def square_matricial_representation(
     expression: MatrixExpression,
     variables: VariableVectorExpression,
     monomials: MonomialVectorExpression | None = None,
+    auxilliary_variable_symbol: AuxiliaryVariableSymbol | None = None,
 ) -> SymmetricMatrixExpression: ...
 
 def square_matricial_representation_sparse(
@@ -45,13 +48,6 @@ def quadratic_monomial_vector_sparse(
     variables: VariableVectorExpression,
 ) -> MonomialVectorExpression: ...
 
-# def define_multiplier(
-#     name: str,
-#     degree: int,
-#     multiplicand: MatrixExpression,
-#     variables: VariableVectorExpression | tuple[int, ...],
-# ) -> StateMonad[BaseState, PolynomialMatrixVariable]: ...
-
 class define_multiplier[State: BaseState]:
     def __new__(
         _, 
@@ -60,51 +56,6 @@ class define_multiplier[State: BaseState]:
         multiplicand: MatrixExpression[State],
         variables: VariableVectorExpression[State] | tuple[int, ...],
     ) -> StateMonad[State, PolynomialMatrixVariable[State]]: ...
-
-# @overload
-# def define_polynomial(
-#     name: str,
-# ) -> ScalarPolynomialVariable: ...
-# @overload
-# def define_polynomial(
-#     name: str,
-#     monomials: MonomialVectorExpression,
-# ) -> ScalarPolynomialVariable: ...
-# @overload
-# def define_polynomial(
-#     name: str,
-#     n_rows: int,
-# ) -> PolynomialVectorVariable: ...
-# @overload
-# def define_polynomial(
-#     name: str,
-#     monomials: MonomialVectorExpression,
-#     n_rows: int,
-# ) -> PolynomialVectorVariable: ...
-# @overload
-# def define_polynomial(
-#     name: str,
-#     n_cols: int,
-# ) -> PolynomialRowVectorVariable: ...
-# @overload
-# def define_polynomial(
-#     name: str,
-#     monomials: MonomialVectorExpression,
-#     n_cols: int,
-# ) -> PolynomialRowVectorVariable: ...
-# @overload
-# def define_polynomial(
-#     name: str,
-#     n_rows: int,
-#     n_cols: int,
-# ) -> PolynomialMatrixVariable: ...
-# @overload
-# def define_polynomial(
-#     name: str,
-#     monomials: MonomialVectorExpression,
-#     n_rows: int,
-#     n_cols: int,
-# ) -> PolynomialMatrixVariable: ...
 
 class define_polynomial[State: BaseState]:
     @overload
@@ -138,18 +89,6 @@ class define_polynomial[State: BaseState]:
         _, name: str, monomials: MonomialVectorExpression, n_rows: int, n_cols: int
     ) -> PolynomialMatrixVariable[State]: ...
 
-# @overload
-# def define_symmetric_matrix(
-#     name: str,
-#     size: int,
-# ) -> PolynomialSymmetricMatrixVariable: ...
-# @overload
-# def define_symmetric_matrix(
-#     name: str,
-#     monomials: MonomialVectorExpression,
-#     size: int,
-# ) -> PolynomialSymmetricMatrixVariable: ...
-
 class define_symmetric_matrix[State: BaseState]:
     @overload
     def __new__(
@@ -159,16 +98,6 @@ class define_symmetric_matrix[State: BaseState]:
     def __new__(
         _, name: str, monomials: MonomialVectorExpression, size: int,
     ) -> PolynomialSymmetricMatrixVariable[State]: ...
-
-# @overload
-# def define_variable(
-#     name: str,
-# ) -> DecisionVariableExpression: ...
-# @overload
-# def define_variable(
-#     name: str,
-#     size: int | MatrixExpression | None = None,
-# ) -> DecisionVariableVectorSymbolExpression: ...
 
 class define_variable[State: BaseState]:
     @overload

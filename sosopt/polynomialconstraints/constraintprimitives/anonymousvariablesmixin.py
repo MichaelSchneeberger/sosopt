@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from sosopt.polymat.symbols.auxiliaryvariablesymbol import AuxiliaryVariableSymbol
 import statemonad
 
 import polymat
@@ -21,11 +22,10 @@ def to_anonymous_variable_indices(
 
         def gen_anonymous_variable_indices():
             for index in variable_indices:
-                symbol = state.get_symbol(index=index)
 
-                # anonymous variables do not have a symbol
-                if symbol is None:
-                    yield index
+                match state.get_symbol(index=index):
+                    case AuxiliaryVariableSymbol():
+                        yield index
 
         return state, tuple(gen_anonymous_variable_indices())
     

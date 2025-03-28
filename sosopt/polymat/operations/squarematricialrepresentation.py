@@ -6,6 +6,7 @@ import polymat
 from polymat.abc import FrameSummaryMixin, ExpressionNode, SingleChildExpressionNode
 from polymat.typing import SparseRepr
 
+from sosopt.polymat.symbols.auxiliaryvariablesymbol import AuxiliaryVariableSymbol
 from sosopt.state.state import State
 
 
@@ -20,10 +21,10 @@ class SquareMatricialRepresentation(FrameSummaryMixin, SingleChildExpressionNode
 
     @property
     @abc.abstractmethod
-    def ignore_unmatched(self) -> bool: ...
+    def auxilliary_variable_symbol(self) -> AuxiliaryVariableSymbol | None: ...
 
     def __str__(self):
-        return f"quadratic_in({self.child}, {self.variables})"
+        return f"sos_smr({self.child}, {self.variables})"
 
     @override
     def apply(self, state: State) -> tuple[State, SparseRepr]:
@@ -50,40 +51,47 @@ class SquareMatricialRepresentation(FrameSummaryMixin, SingleChildExpressionNode
         # group all combinations of monomial pairs that result in the same monomial when multiplied together
         monomials_prod = {}
         for (row, row_monom), (col, col_monom) in itertools.product(enumerate(monomials), repeat=2):
-            if col <= row and abs(monomial_degree(row_monom) - monomial_degree(col_monom)) <= 1:
+            if col <= row:
+                # if abs(monomial_degree(row_monom) - monomial_degree(col_monom)) <= 1:
+                # print(f'{row_monom=}, {col_monom=}')
                 monom = sort_monomial(add_monomials(row_monom, col_monom))
                 if monom not in monomials_prod:
                     monomials_prod[monom] = []
                 monomials_prod[monom].append((row, col))
 
         data = {}
+        current_symbol_index = state.n_indices
 
         for monomial, monomial_indices in monomials_prod.items():
             if 1 < len(monomial_indices):
-                anonymous_indices = []
-                for index in monomial_indices[1:]:
-                    state, (anonymous_index, _) = state.register(
-                        size=1,
-                        stack=self.stack,
-                    )
-                    anonymous_indices.append(anonymous_index)
 
+                start_symbol_index = current_symbol_index
+
+                for index in monomial_indices[1:]:
                     add_polynomial(
                         mutable=data,
                         index=index,
-                        polynomial={((anonymous_index, 1),): 1},
+                        polynomial={((current_symbol_index, 1),): 1},
                     )
+
+                    current_symbol_index += 1
 
                 add_polynomial(
                     mutable=data,
                     index=monomial_indices[0],
-                    polynomial={((index, 1),): -1 for index in anonymous_indices},
+                    polynomial={((index, 1),): -1 for index in range(start_symbol_index, current_symbol_index)},
                 )
+
+        state, _ = state.register(
+            size=current_symbol_index - state.n_indices,
+            symbol=self.auxilliary_variable_symbol,
+            stack=self.stack,
+        )
 
         polynomial = child.at(0, 0)
 
         if polynomial:
-            for monomial, value in polynomial.items():  # type: ignore
+            for monomial, value in polynomial.items():
                 x_monomial = tuple(
                     (index, count) 
                     for index, count in monomial 
@@ -111,44 +119,6 @@ class SquareMatricialRepresentation(FrameSummaryMixin, SingleChildExpressionNode
                     polynomial={p_monomial: value},
                 )
 
-                # print(x_monomial)
-                
-                # monomial_indices = monomials_prod[x_monomial]
-
-                # match monomial_indices:
-                #     case (index,):
-                #         add_polynomial_to_polynomial_matrix_mutable(
-                #             mutable=data,
-                #             index=index,
-                #             polynomial={p_monomial: value},
-                #         )
-
-                #     case _:
-                #         # left, right = split_monomial_indices(x_monomial)
-                #         # row = monomials.index(left)
-                #         # col = monomials.index(right)
-                #         # diag_index = row, col
-
-                #         anonymous_indices = []
-                #         for index in monomial_indices[1:]:
-                #             state, (anonymous_index, _) = state.register(
-                #                 size=1,
-                #                 stack=self.stack,
-                #             )
-                #             anonymous_indices.append(anonymous_index)
-
-                #             add_polynomial_to_polynomial_matrix_mutable(
-                #                 mutable=data,
-                #                 index=index,
-                #                 polynomial={((anonymous_index, 1),): 1},
-                #             )
-
-                #         add_polynomial_to_polynomial_matrix_mutable(
-                #             mutable=data,
-                #             index=monomial_indices[0],
-                #             polynomial={((index, 1),): -1 for index in anonymous_indices} | {p_monomial: value},
-                #         )
-
         size = monomial_vector.shape[0]
         polymatrix = polymat.init_sparse_repr_from_data(
             data=data,
@@ -156,3 +126,41 @@ class SquareMatricialRepresentation(FrameSummaryMixin, SingleChildExpressionNode
         )
 
         return state, polymatrix
+
+        # print(x_monomial)
+        
+        # monomial_indices = monomials_prod[x_monomial]
+
+        # match monomial_indices:
+        #     case (index,):
+        #         add_polynomial_to_polynomial_matrix_mutable(
+        #             mutable=data,
+        #             index=index,
+        #             polynomial={p_monomial: value},
+        #         )
+
+        #     case _:
+        #         # left, right = split_monomial_indices(x_monomial)
+        #         # row = monomials.index(left)
+        #         # col = monomials.index(right)
+        #         # diag_index = row, col
+
+        #         anonymous_indices = []
+        #         for index in monomial_indices[1:]:
+        #             state, (anonymous_index, _) = state.register(
+        #                 size=1,
+        #                 stack=self.stack,
+        #             )
+        #             anonymous_indices.append(anonymous_index)
+
+        #             add_polynomial_to_polynomial_matrix_mutable(
+        #                 mutable=data,
+        #                 index=index,
+        #                 polynomial={((anonymous_index, 1),): 1},
+        #             )
+
+        #         add_polynomial_to_polynomial_matrix_mutable(
+        #             mutable=data,
+        #             index=monomial_indices[0],
+        #             polynomial={((index, 1),): -1 for index in anonymous_indices} | {p_monomial: value},
+        #         )

@@ -9,3 +9,8 @@ class State(PolyMatState):
     @abstractmethod
     def auxilliary_equations(self) -> tuple[PolynomialType, ...]:
         ...
+
+    @property
+    @abstractmethod
+    def sparse_smr(self) -> bool:
+        ...

@@ -9,24 +9,25 @@ from polymat.typing import (
     MonomialVectorExpression,
 )
 
-from sosopt.polymat.decisionvariableexpression import (
+from sosopt.polymat.symbols.auxiliaryvariablesymbol import AuxiliaryVariableSymbol
+from sosopt.polymat.sources.decisionvariableexpression import (
     DecisionVariableVectorSymbolExpression,
 )
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
-from sosopt.polymat.polynomialvariable import (
+from sosopt.polymat.symbols.decisionvariablesymbol import DecisionVariableSymbol
+from sosopt.polymat.sources.polynomialvariable import (
     PolynomialMatrixVariable,
     ScalarPolynomialVariable,
 )
-from sosopt.polymat.expressiontree.quadraticmonomialvector import (
-    QuadraticMonomialVector,
+from sosopt.polymat.operations.sosmonomialbasis import (
+    SOSMonomialBasis,
 )
-from sosopt.polymat.expressiontree.quadraticmonomialvectorsparse import (
-    QuadraticMonomialVectorSparse,
+from sosopt.polymat.operations.sosmonomialbasissparse import (
+    SOSMonomialBasisSparse,
 )
-from sosopt.polymat.expressiontree.squarematricialrepresentation import (
+from sosopt.polymat.operations.squarematricialrepresentation import (
     SquareMatricialRepresentation,
 )
-from sosopt.polymat.expressiontree.squarematricialrepresentationsparse import (
+from sosopt.polymat.operations.squarematricialrepresentationsparse import (
     SquareMatricialRepresentationSparse,
 )
 
@@ -99,12 +100,12 @@ def init_polynomial_variable(
         )
 
 
-@dataclassabc(frozen=True, repr=False)
+@dataclassabc(frozen=True, slots=True, repr=False)
 class SquareMatricialRepresentationImpl(SquareMatricialRepresentation):
     child: ExpressionNode
     monomials: ExpressionNode
     variables: SquareMatricialRepresentation.VariableType
-    ignore_unmatched: bool
+    auxilliary_variable_symbol: AuxiliaryVariableSymbol | None
     stack: tuple[FrameSummary, ...]
 
 
@@ -113,7 +114,7 @@ def init_square_matricial_representation(
     variables: SquareMatricialRepresentation.VariableType,
     stack: tuple[FrameSummary, ...],
     monomials: ExpressionNode | None = None,
-    ignore_unmatched: bool = False,
+    auxilliary_variable_symbol: AuxiliaryVariableSymbol | None = None,
 ):
     if monomials is None:
         monomials = init_quadratic_monomial_vector(child=child, variables=variables)
@@ -122,17 +123,16 @@ def init_square_matricial_representation(
         child=child,
         variables=variables,
         monomials=monomials,
-        ignore_unmatched=ignore_unmatched,
+        auxilliary_variable_symbol=auxilliary_variable_symbol,
         stack=stack,
     )
 
 
-@dataclassabc(frozen=True, repr=False)
+@dataclassabc(frozen=True, slots=True, repr=False)
 class SquareMatricialRepresentationSparseImpl(SquareMatricialRepresentationSparse):
     child: ExpressionNode
     monomials: ExpressionNode
     variables: ExpressionNode.VariableType
-    ignore_unmatched: bool
     stack: tuple[FrameSummary, ...]
 
 
@@ -141,7 +141,6 @@ def init_square_matricial_representation_sparse(
     variables: ExpressionNode.VariableType,
     stack: tuple[FrameSummary, ...],
     monomials: ExpressionNode | None = None,
-    ignore_unmatched: bool = False,
 ):
     if monomials is None:
         monomials = init_quadratic_monomial_vector_sparse(
@@ -152,20 +151,19 @@ def init_square_matricial_representation_sparse(
         child=child,
         variables=variables,
         monomials=monomials,
-        ignore_unmatched=ignore_unmatched,
         stack=stack,
     )
 
 
-@dataclassabc(frozen=True, repr=False)
-class QuadraticMonomialVectorImpl(QuadraticMonomialVector):
+@dataclassabc(frozen=True, slots=True)
+class QuadraticMonomialVectorImpl(SOSMonomialBasis):
     child: ExpressionNode
-    variables: QuadraticMonomialVector.VariableType
+    variables: SOSMonomialBasis.VariableType
 
 
 def init_quadratic_monomial_vector(
     child: ExpressionNode,
-    variables: QuadraticMonomialVector.VariableType,
+    variables: SOSMonomialBasis.VariableType,
 ):
     return QuadraticMonomialVectorImpl(
         child=child,
@@ -174,7 +172,7 @@ def init_quadratic_monomial_vector(
 
 
 @dataclassabc(frozen=True, slots=True)
-class QuadraticMonomialVectorSparseImpl(QuadraticMonomialVectorSparse):
+class QuadraticMonomialVectorSparseImpl(SOSMonomialBasisSparse):
     child: ExpressionNode
     variables: ExpressionNode.VariableType
 

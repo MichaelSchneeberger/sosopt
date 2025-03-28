@@ -13,13 +13,13 @@ from polymat.sparserepr.sparserepr import SparseRepr
 from polymat.state.state import State
 
 
-class QuadraticMonomialVector(SingleChildExpressionNode):
+class SOSMonomialBasis(SingleChildExpressionNode):
     @property
     @abc.abstractmethod
     def variables(self) -> SingleChildExpressionNode.VariableType: ...
 
     def __str__(self):
-        return f"quadratic_monomials({self.child}, {self.variables})"
+        return f"sos_monomial_basis({self.child}, {self.variables})"
 
     # overwrites the abstract method of `ExpressionBaseMixin`
     @override
@@ -46,19 +46,16 @@ class QuadraticMonomialVector(SingleChildExpressionNode):
         max_deg = max(math.ceil(d / 2) for d in monomial_degrees)
 
         def gen_min_max_degree_per_index():
-            for var_index in indices:
-
+            for index in indices:
                 def gen_degrees_per_variable():
                     for monomial in monomials:
-                        for index, power in monomial:
-                            if index == var_index:
-                                yield power
-                    yield 0
+                        monomial_dict = dict(monomial)
+                        yield monomial_dict.get(index, 0)
 
                 min_deg = min(math.floor(v / 2) for v in gen_degrees_per_variable())
                 max_deg = max(math.ceil(v / 2) for v in gen_degrees_per_variable())
 
-                yield var_index, (min_deg, max_deg)
+                yield index, (min_deg, max_deg)
 
         min_max_degree_per_index = dict(gen_min_max_degree_per_index())
 
@@ -71,12 +68,13 @@ class QuadraticMonomialVector(SingleChildExpressionNode):
 
             def gen_filtered_monomials():
                 monomial = sort_monomial(tuple(Counter(index_combination).items()))
+                monomial_dict = dict(monomial)
 
                 def is_candidate():
-                    for var_index, count in monomial:
-                        min_deg, max_deg = min_max_degree_per_index[var_index]
-
-                        if not (min_deg <= count <= max_deg):
+                    for index, (min_deg, max_deg) in min_max_degree_per_index.items():
+                        degree = monomial_dict.get(index, 0)
+                        
+                        if not (min_deg <= degree <= max_deg):
                             return False
 
                     return True

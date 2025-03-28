@@ -9,7 +9,7 @@ from polymat.typing import ScalarPolynomialExpression, VectorExpression, State
 
 from sosopt.conicproblem import ConicProblem
 from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
+from sosopt.polymat.symbols.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.solvers.solvermixin import SolverMixin
 
 
@@ -24,8 +24,6 @@ class SOSProblem:
     quad_cost: VectorExpression | None
     constraints: tuple[PolynomialConstraint | ConeConstraint, ...]
     solver: SolverMixin
-    # conic_problem: ConicProblem
-    settings: dict
 
     def copy(self, /, **others):
         return replace(self, **others)
@@ -48,22 +46,17 @@ class SOSProblem:
 
     def to_conic_problem(self):
         def _to_conic_problem(state: State):
-            cone_constraints = []
 
-            # def gen_cone_constraints():
+            cone_constraints = []
             for constraint in self.constraints:
                 match constraint:
                     case PolynomialConstraint():
                         for primitive in constraint.primitives:
-                            state, cone_constraint = primitive.to_cone_constraint(
-                                settings=self.settings
-                            ).apply(state)
+                            state, cone_constraint = primitive.to_cone_constraint().apply(state)
                             cone_constraints.append(cone_constraint)
 
                     case ConeConstraint():
                         cone_constraints.append(constraint)
-
-            # cone_constraints = tuple(gen_cone_constraints())
 
             problem = ConicProblem(
                 lin_cost=self.lin_cost,
@@ -72,7 +65,6 @@ class SOSProblem:
                 constraints=tuple(cone_constraints),
             )
 
-            # return statemonad.from_[State](problem)
             return state, problem
 
         return statemonad.get_map_put(_to_conic_problem)
@@ -89,22 +81,11 @@ def init_sos_problem(
     constraints: tuple[PolynomialConstraint | ConeConstraint, ...],
     solver: SolverMixin,
     quad_cost: VectorExpression | None = None,
-    settings: dict | None = None,
-    sparse_gram: bool | None = None,
 ):
-
-    if sparse_gram is None:
-        sparse_gram = True
-
-    if settings is None:
-        settings = {
-            'sparse_gram': sparse_gram,
-        }
 
     return SOSProblem(
         lin_cost=lin_cost,
         quad_cost=quad_cost,
         constraints=constraints,
         solver=solver,
-        settings=settings,
     )

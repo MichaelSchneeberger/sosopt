@@ -5,17 +5,15 @@ import statemonad
 
 from polymat.typing import VectorExpression, State
 
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
-from sosopt.coneconstraints.anonymousvariablesmixin import to_anonymous_variable_indices
-from sosopt.coneconstraints.coneconstraint import ConeConstraint
+from sosopt.polymat.symbols.conedecisionvariablesymbol import ConeDecisionVariableSymbol
+from sosopt.coneconstraints.coneconstraint import ConeConstraint, to_decision_variable_symbols
 
 
 @dataclassabc(frozen=True, slots=True)
 class EqualityConstraint(ConeConstraint):
     name: str
     expression: VectorExpression
-    decision_variable_symbols: tuple[DecisionVariableSymbol, ...]
-    anonymous_variable_indices: tuple[int, ...]
+    decision_variable_symbols: tuple[ConeDecisionVariableSymbol, ...]
 
     def to_vector(self) -> VectorExpression:
         return self.expression
@@ -27,16 +25,16 @@ class EqualityConstraint(ConeConstraint):
 def init_equality_constraint(
     name: str,
     expression: VectorExpression,
-    decision_variable_symbols: tuple[DecisionVariableSymbol, ...],
+    decision_variable_symbols: tuple[ConeDecisionVariableSymbol, ...] | None = None,
 ):
-    def _init_equality_constraint(state: State):
-        state, anonymous_variable_indices = to_anonymous_variable_indices(expression).apply(state)
+    def _init_equality_constraint(state: State, decision_variable_symbols=decision_variable_symbols):
+        if decision_variable_symbols is None:
+            state, decision_variable_symbols = to_decision_variable_symbols(expression).apply(state)
  
         return state, EqualityConstraint(
             name=name,
             expression=expression,
             decision_variable_symbols=decision_variable_symbols,
-            anonymous_variable_indices=anonymous_variable_indices,
         )
 
     return statemonad.get_map_put(_init_equality_constraint)

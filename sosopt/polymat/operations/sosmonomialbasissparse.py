@@ -11,7 +11,7 @@ from polymat.sparserepr.sparserepr import SparseRepr
 from polymat.state.state import State
 
 
-class QuadraticMonomialVectorSparse(SingleChildExpressionNode):
+class SOSMonomialBasisSparse(SingleChildExpressionNode):
     """
     Constructs the monomial vector Z(x) corresponding to the quadratic form of the polynomial.
     Given a vector of variables, this class generates the set of monomials involved in the

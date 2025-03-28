@@ -12,10 +12,10 @@ from polymat.typing import (
 )
 
 # from sosopt.state.state import State as BaseState
-from sosopt.polymat.decisionvariableexpression import (
+from sosopt.polymat.sources.decisionvariableexpression import (
     DecisionVariableVectorSymbolExpression,
 )
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
+from sosopt.polymat.symbols.decisionvariablesymbol import DecisionVariableSymbol
 
 class PolynomialVariable[State: BaseState](MatrixExpression):
     name: str

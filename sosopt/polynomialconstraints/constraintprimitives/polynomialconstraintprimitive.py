@@ -6,8 +6,8 @@ from statemonad.typing import StateMonad
 
 from polymat.typing import MatrixExpression, State
 
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
-from sosopt.coneconstraints.decisionvariablesmixin import DecisionVariablesMixin
+from sosopt.polymat.symbols.decisionvariablesymbol import DecisionVariableSymbol
+from sosopt.polynomialconstraints.constraintprimitives.decisionvariablesmixin import DecisionVariablesMixin
 from sosopt.coneconstraints.coneconstraint import ConeConstraint
 
 
@@ -32,7 +32,7 @@ class PolynomialConstraintPrimitive(
 
     @abstractmethod
     def to_cone_constraint(
-        self, settings: dict
+        self,
     ) -> StateMonad[State, ConeConstraint]: ...
 
     def eval(

@@ -5,13 +5,13 @@ from typing import override
 
 from dataclassabc import dataclassabc
 
-from polymat.typing import VariableVectorExpression, ScalarPolynomialExpression
+from polymat.typing import ScalarPolynomialExpression
 
 from sosopt.coneconstraints.equalityconstraint import init_equality_constraint
 from sosopt.polynomialconstraints.constraintprimitives.polynomialconstraintprimitive import (
     PolynomialConstraintPrimitive,
 )
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
+from sosopt.polymat.symbols.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.polynomialconstraints.polynomialvariablesmixin import PolynomialVariablesMixin
 
 
@@ -26,11 +26,11 @@ class ZeroPolynomialPrimitive(PolynomialVariablesMixin, PolynomialConstraintPrim
         return replace(self, **others)
     
     @override
-    def to_cone_constraint(self, settings: dict):
+    def to_cone_constraint(self):
         return init_equality_constraint(
             name=self.name,
             expression=self.expression.to_linear_coefficients(self.polynomial_variable).T,
-            decision_variable_symbols=self.decision_variable_symbols,
+            # decision_variable_symbols=self.decision_variable_symbols,
         )
 
 

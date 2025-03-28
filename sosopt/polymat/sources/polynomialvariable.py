@@ -9,7 +9,7 @@ from polymat.typing import (
     VariableExpression,
 )
 
-from sosopt.polymat.decisionvariableexpression import DecisionVariableVectorSymbolExpression
+from sosopt.polymat.sources.decisionvariableexpression import DecisionVariableVectorSymbolExpression
 
 
 class PolynomialVariable[_](MatrixExpression):

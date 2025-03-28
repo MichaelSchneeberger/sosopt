@@ -7,7 +7,8 @@ import statemonad
 
 from polymat.typing import ScalarPolynomialExpression, VectorExpression, State
 
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
+from sosopt.polymat.symbols.conedecisionvariablesymbol import ConeDecisionVariableSymbol
+# from sosopt.polymat.symbols.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.conversions import to_linear_cost
 from sosopt.coneconstraints.coneconstraint import ConeConstraint
 from sosopt.coneconstraints.equalityconstraint import EqualityConstraint
@@ -20,7 +21,7 @@ from sosopt.solvers.solverdata import SolutionFound, SolutionNotFound, SolverDat
 @dataclass(frozen=True)
 class ConicProblemResult:
     solver_data: SolverData
-    symbol_values: dict[DecisionVariableSymbol, tuple[float, ...]]
+    symbol_values: dict[ConeDecisionVariableSymbol, tuple[float, ...]]
 
 
 @dataclass(frozen=True)
@@ -34,7 +35,7 @@ class ConicProblem:
         return replace(self, **others)
 
     @cached_property
-    def decision_variable_symbols(self) -> tuple[DecisionVariableSymbol, ...]:
+    def decision_variable_symbols(self) -> tuple[ConeDecisionVariableSymbol, ...]:
         def gen_decision_variable_symbols():
             for constraint in self.constraints:
                 yield from constraint.decision_variable_symbols
@@ -60,13 +61,13 @@ class ConicProblem:
                     .map(create_conic_problem)
                 )
 
-    def _to_variable_index_ranges(self, state: State):
+    def _variable_index_ranges(self, state: State):
         def gen_variable_index_ranges():
             for symbol in self.decision_variable_symbols:
                 # raises an exception if variable doesn't exist
                 match state.get_index_range(symbol):
                     case None:
-                        pass
+                        raise Exception(f'Symbol {symbol} not registered')
 
                     case index_range:
                         yield symbol, index_range
@@ -75,24 +76,6 @@ class ConicProblem:
 
     def to_solver_args(self):
         def to_solver_args_with_state(state: State):
-            variable_index_ranges = self._to_variable_index_ranges(state)
-
-            def gen_decision_variable_indices():
-                for start, stop in variable_index_ranges.values():
-                    for index in range(start, stop):
-                        yield index
-
-                for constraint in self.constraints:
-                    yield from constraint.anonymous_variable_indices
-
-            indices = tuple(gen_decision_variable_indices())
-
-            # def gen_anonymous_variable_indices():
-            #     for constraint in self.constraints:
-            #         yield from constraint.anonymous_variable_indices
-
-            # print(tuple(gen_anonymous_variable_indices()))
-
             # filter positive semidefinite constraints
             s_data = tuple(
                 (constraint.name, constraint.to_vector())
@@ -114,6 +97,13 @@ class ConicProblem:
                 if isinstance(constraint, EqualityConstraint)
             )
 
+            def gen_decision_variable_indices():
+                for start, stop in self._variable_index_ranges(state).values():
+                    for index in range(start, stop):
+                        yield index
+
+            indices = tuple(gen_decision_variable_indices())
+
             return to_solver_args(
                 indices=indices,
                 lin_cost=self.lin_cost,
@@ -129,7 +119,7 @@ class ConicProblem:
     def solve(self, solver_args: SolverArgs | None = None):
         def solve_and_retrieve_symbol_values(
                 solver_args: SolverArgs,
-                variable_index_ranges: dict[DecisionVariableSymbol, tuple[int, int]]
+                variable_index_ranges: dict[ConeDecisionVariableSymbol, tuple[int, int]]
         ):
             solver_data = self.solver.solve(solver_args)
 
@@ -162,7 +152,7 @@ class ConicProblem:
             )
 
         def solve_with_state(state: State, solver_args=solver_args):
-            variable_index_ranges = self._to_variable_index_ranges(state)
+            variable_index_ranges = self._variable_index_ranges(state)
 
             if solver_args is None:
                 state, solver_args = self.to_solver_args().apply(state)

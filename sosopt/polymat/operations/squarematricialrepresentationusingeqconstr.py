@@ -27,9 +27,9 @@ class SquareMatricialRepresentationUsingEqConstr[State: BaseState](
     @abc.abstractmethod
     def variables(self) -> SingleChildExpressionNode.VariableType: ...
 
-    @property
-    @abc.abstractmethod
-    def ignore_unmatched(self) -> bool: ...
+    # @property
+    # @abc.abstractmethod
+    # def ignore_unmatched(self) -> bool: ...
 
     def __str__(self):
         return f"quadratic_in({self.child}, {self.variables})"

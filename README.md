@@ -6,7 +6,7 @@
 ## Features
 
 * *PolyMat* integration: Extends the [*PolyMat*](https://github.com/MichaelSchneeberger/polymat) ecosystem by introducing a new variable type for decision variables.
-Native *PolyMat* variables are interpretated as polynomial variables, enabling seamless creation of expressions that mix both polnyomial and decision variables.
+<!-- Native *PolyMat* variables are interpretated as polynomial variables, enabling seamless creation of expressions that mix both polnyomial and decision variables. -->
 * High-performance: While languages like *Matlab* (via *SOSTOOLS*) and *Julia* (via *SumOfSqaures.jl*) offer powerful SOS solvers, Python lack a comparable native implementation. **SOSOpt** fills this gap by providing a high-performance SOS optimization library.
 * Multiple Evaluations: Supports advanced workflows, including multiple evaluations of SOS problems and efficient substitutions of decision variables in a bilinear SOS formulations.
 <!-- * Data-oriented design: Key components such as decision variables, SOS constraints, and SOS problems are implemented as structured data types, facilitating efficient inspection and debugging. -->
@@ -60,7 +60,7 @@ theta_2 = sosopt.define_variable('theta_2')
 r = theta_0 + theta_1 * x + theta_2 * x**2
 ```
 
-Alternatively, the construction of a fully parametrized polynomial -- involving the specificatioin of a decision variable for each coefficient of the polynomial -- is automated using the `sosopt.define_polynomial` function:
+Alternatively, the construction of a fully parametrized polynomial -- involving the specification of a decision variable for each coefficient of the polynomial -- is automated using the `sosopt.define_polynomial` function:
 
 ``` python
 # creates a monomial vector [1 x x^2]
@@ -79,21 +79,33 @@ Furthermore, a parametrized polynomial matrix can be created by additionally spe
 Q = sosopt.define_polynomial(
     name='Q', 
     monomials=monomials,
-    rows=n, cols=m,
+    n_rows=n, n_cols=m,
 )
 ```
 
+
 ### Polynomial Constraints
+
+Compared to other SOS libraries, **SOSOpt** defines standalone constraints, not requiring a link to a concrete SOS problem.
+In *SOSTOOLS*, a `Program` object is used to define the SOS constraint `sosineq(Program, r);`.
+In *SumOfSqaures.jl*, a `model` object is used to define the SOS constraint `@constraint(model, r >= 0)`.
+The `state` object takes a comparable role of such an object as a container of shared data.
+However, in **SOSOpt**, the usage of an SOS constraint returned by the function `sosopt.sos_constraint` is not restricted to a single SOS program, making this approach more modular when working with different SOS problems.
+The state object is created as follows.
+
+``` python
+state = sosopt.init_state()
+```
 
 The polynomial constraints in the SOS problem can be defined in **SOSOpt** as follows:
 
 - **Equality Constraint**: This constraint enforces a polynomial expression to be equal to zero.
     The following constraint:
     ``` python
-    r_zero_constraint = sosopt.zero_polynomial_constraint(
+    state, r_zero_constraint = sosopt.zero_polynomial_constraint(
         name='r_zero',
         equal_to_zero=r,
-    )
+    ).apply(state)
     ```
     enforces the equality constraint:
 
@@ -101,10 +113,10 @@ The polynomial constraints in the SOS problem can be defined in **SOSOpt** as fo
 - **SOS Constraint**: This constraint ensures that a scalar polynomial expression belongs to the SOS Cone.
     The following constraint:
     ``` python
-    r_sos_constraint = sosopt.sos_constraint(
+    state, r_sos_constraint = sosopt.sos_constraint(
         name='r_sos',
         greater_than_zero=r,
-    )
+    ).apply(state)
     ```
     enforces the SOS constraint:
 
@@ -112,10 +124,10 @@ The polynomial constraints in the SOS problem can be defined in **SOSOpt** as fo
 - **SOS Matrix Constraint**: This constraint ensures a polynomial matrix expression belongs to the SOS Matrix Cone.
     The following constraint:
     ``` python
-    q_sos_constraint = sosopt.sos_matrix_constraint(
+    state, q_sos_constraint = sosopt.sos_matrix_constraint(
         name='q_sos',
         greater_than_zero=q,
-    )
+    ).apply(state)
     ```
     enforces the SOS constraint:
 
@@ -123,13 +135,13 @@ The polynomial constraints in the SOS problem can be defined in **SOSOpt** as fo
 - **Quadratic Module Constraint**: This constraint defines a non-negativity condition on a subset of the states space using a quadratic module construction following Putinar's Positivstellensatz.
     The following constraint:
     ``` python
-    r_qm_constraint = sosopt.quadratic_module_constraint(
+    state, r_qm_constraint = sosopt.quadratic_module_constraint(
         name='r_qm',
         greater_than_zero=r,
         domain=sosopt.set_(
             smaller_than_zero={'w': w},
         )
-    )
+    ).apply(state)
     ```
     enforces the SOS constraints:
 
@@ -145,12 +157,6 @@ An SOS problem is defined using the `sosopt.sos_problem` function taking as argu
 - `constraints`: SOS and equality constraints
 - `solver`: SDP solver selection (*CVXOPT* or *MOSEK*)
 
-Compared to other SOS libraries, **SOSOpt** defines standalone constraints, not requiring a link to a concrete SOS problem.
-In *SOSTOOLS*, a `Program` object is used to define the SOS constraint `sosineq(Program, r);`.
-In *SumOfSqaures.jl*, a `model` object is used to define the SOS constraint `@constraint(model, r >= 0)`.
-The `context` object takes a comparable role of such an object as a container of shared data.
-However, in \textit{SOSOpt}, the usage of an SOS constraint returned by the function `sosopt.sos_constraint` is not restricted to a single SOS program, making this approach more modular when working with different SOS problems.
-
 ``` python
 problem = sosopt.sos_problem(
     lin_cost=Q.trace(),
@@ -160,7 +166,7 @@ problem = sosopt.sos_problem(
 )
 
 # solve SOS problem
-context, result = problem.solve().apply(context)
+state, result = problem.solve().apply(state)
 ```
 
 The `solve` method converts the SOS problem to an SDP, solves the SDP using the provided solver, and maps the result to a dictionary `result.symbol_values`.
@@ -210,16 +216,10 @@ However, for a large matrix $Q_p$ many additional variables need to be introduce
 To account for this, a heuristic can be enabled that preselect a specific value for $\alpha$.
 This heursitic constructs a gram matrix in a way that prioritizes nonzero entries corresponding to monomial in $Z(x)$ that involve multiple variables.
 In the above example, $\alpha=0$ is selected for $Q_p$.
-This heuristic is enabled by default and can be disabled as follows:
+This heuristic is enabled by default and can be disabled when initializing the state object:
 
 ``` python
-problem = sosopt.sos_problem(
-    lin_cost=Q.trace(),
-    quad_cost=Q.diag(),
-    constraints=(r_sos_constraint,),
-    solver=solver,
-    sparse_gram =False,
-)
+state = sosopt.init_state(sparse_smr=False)
 ```
 
 
@@ -234,12 +234,30 @@ problem = sosopt.sos_problem(
 - **Multipliers***: Given a reference polynomial, create a polynomial variable intended for multiplication with the reference polynomial, ensuring that the resulting polynomial does not exceed a specified degree using `sosopt.define_multiplier`. 
 
 
+### Operations on Polynomial Expressions
+
+- **SOS Monomial Basis**: Construct a monomial vector $Z(x)$ for the quadratic form of the polynomial $p(x) = Z(x)^\top Q Z(x)$.
+    ``` python
+    p_monom = sosopt.sos_monomial_basis(r, x)
+    # Matrix([[1], [x], [x**2]])
+    ```
+- **SOS Monomial Basis**: Construct a sparse monomial vector $Z(x)$ for the quadratic form of the polynomial $p(x) = Z(x)^\top Q Z(x)$.
+    ``` python
+    p_monom = sosopt.sos_monomial_basis_sparse(r, x)
+    # Matrix([[1], [x], [x**2]])
+    ```
+`sosopt.sos_monomial_basis`
+`sosopt.sos_monomial_basis_sparse`
+- **Square Matricial Representation**: `sosopt.sos_smr`
+`sosopt.sos_smr_sparse`
+
+
 ### Defining Sets
 
 - **Semialgebraic set**: Define a semialgebraic set from a collection scalar polynomial expressions with `sosopt.set_`.
 
 
-### Defining Constraint
+### Defining Constraints
 
 - **Zero Polynomial***: Enforce a polynomial expression to be equal to zero using `sosopt.zero_polynomial_constraint`.
 - **Sum-of-Sqaures (SOS)***: Define a scalar polynomial expression within the SOS Cone using `sosopt.sos_constraint`.
@@ -287,7 +305,7 @@ import sosopt
 
 # Initialize the state object, which is passed through all operations related to solving
 # the SOS problem
-state = polymat.init_state()
+state = sosopt.init_state()
 
 # Define polynomial variables and stack them into a vector
 variable_names = ("x_1", "x_2", "x_3")
@@ -314,7 +332,7 @@ print(f'r={sympy_repr}')
 
 # Apply Putinar's Positivstellensatz to ensure the box-like set, encoded by w1 and w2, 
 # is contained within the zero sublevel set of r(x).
-state, constraint = sosopt.putinar_psatz_constraint(
+state, constraint = sosopt.quadratic_module_constraint(
     name="rpos",
     smaller_than_zero=r,
     domain=sosopt.set_(

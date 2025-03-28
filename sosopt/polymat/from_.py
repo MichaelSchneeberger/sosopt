@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Iterator
 
+from sosopt.polymat.symbols.auxiliaryvariablesymbol import AuxiliaryVariableSymbol
 import statemonad
 
 import polymat
@@ -13,7 +14,7 @@ from polymat.typing import (
     MonomialVectorExpression,
 )
 
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
+from sosopt.polymat.symbols.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.polymat.init import (
     init_polynomial_variable,
     init_quadratic_monomial_vector,
@@ -27,6 +28,7 @@ def square_matricial_representation(
     expression: MatrixExpression,
     variables: MatrixExpression,
     monomials: MatrixExpression | None = None,
+    auxilliary_variable_symbol: AuxiliaryVariableSymbol | None = None,
 ):
     return init_expression(
         child=init_to_symmetric_matrix(
@@ -34,6 +36,7 @@ def square_matricial_representation(
                 child=expression,
                 variables=variables,
                 monomials=monomials,
+                auxilliary_variable_symbol=auxilliary_variable_symbol,
                 stack=get_frame_summary(),
             ),
         ),
@@ -100,8 +103,9 @@ def define_variable(
 def define_polynomial(
     name: str,
     monomials: MonomialVectorExpression | None = None,
-    n_rows: int = 1,
-    n_cols: int = 1,
+    n_rows: int | None = None,
+    n_cols: int | None = None,
+    # shape: tuple[int, int] | MatrixExpression | None = None
 ):
     """
     Defines a polynomial matrix variable as a `polymat.typing.MatrixExpression`,
@@ -159,6 +163,38 @@ def define_polynomial(
     ```
     """
 
+    match (n_rows, n_cols):
+        case (None, None):
+            n_rows, n_cols = 1, 1
+        case (None, _):
+            n_rows = 1
+        case (_, None):
+            n_cols = 1
+        case _:
+            pass
+
+    # match (n_rows, n_cols, shape):
+    #     case (None, None, None):
+    #         n_rows, n_cols = 1, 1
+    #     case (None, None, (n_rows, n_cols)):
+    #         pass
+    #     case (None, None, MatrixExpression()):
+    #         state, degrees = polymat.to_shape(shape).apply(state)
+    #     case (None, _, None):
+    #         n_rows = 1
+    #     case (_, None, None):
+    #         n_cols = 1
+    #     case _:
+    #         pass
+
+    # if isinstance(degree, MatrixExpression):
+    #     # Compute the degree of the denominator s(x)
+    #     state, degrees = polymat.to_degree(degree, variables=variables).apply(state)
+    #     degree = degrees[0][0]
+
+    # else:
+    #     assert isinstance(degree, int), f"Degree {degree} must be of type Int."
+
     if monomials is None:
         monomials = polymat.from_(1).to_monomial_vector()
 
@@ -179,6 +215,7 @@ def define_polynomial(
 
             def gen_cols():
                 for col in range(n_cols):
+                    
                     param = define_variable(
                         name=get_name(row, col),
                         size=monomials,

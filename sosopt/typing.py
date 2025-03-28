@@ -1,4 +1,4 @@
-from sosopt.polymat.polynomialvariable import (
+from sosopt.polymat.sources.polynomialvariable import (
     PolynomialVariable as _PolynomialVariable,
     PolynomialMatrixVariable as _PolynomialMatrixVariable,
     PolynomialVectorVariable as _PolynomialVectorVariable,

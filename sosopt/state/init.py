@@ -2,7 +2,7 @@ from dataclasses import replace
 from typing import override
 from dataclassabc import dataclassabc
 
-from polymat.symbol import Symbol
+from polymat.typing import Symbol
 from polymat.sparserepr.data.polynomial import PolynomialType
 
 from sosopt.state.state import State
@@ -25,15 +25,23 @@ class StateImpl(State):
 
     auxilliary_equations: tuple[PolynomialType, ...]
 
+    sparse_smr: bool
+
     @override
     def copy(self, /, **changes):
         return replace(self, **changes)
 
 
-def init_state():
+def init_state(
+        sparse_smr: bool | None = None,
+):
+    if sparse_smr is None:
+        sparse_smr = True
+
     return StateImpl(
         n_indices=0,
         indices={},
         cache={},
         auxilliary_equations=tuple(),
+        sparse_smr=sparse_smr,
     )

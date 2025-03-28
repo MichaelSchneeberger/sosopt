@@ -1,13 +1,14 @@
 from abc import abstractmethod
 from typing import Iterable
 from polymat.typing import (
+    State as BaseState,
     ExpressionNode,
     VariableExpression,
     VariableVectorExpression,
 )
 
-from sosopt.state.state import State as BaseState
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
+# from sosopt.state.state import State as BaseState
+from sosopt.polymat.symbols.decisionvariablesymbol import DecisionVariableSymbol
 
 class DecisionVariableVectorSymbolExpression[State: BaseState](
     VariableVectorExpression

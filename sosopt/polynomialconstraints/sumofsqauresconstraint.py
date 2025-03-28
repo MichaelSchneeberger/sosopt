@@ -3,12 +3,13 @@ from dataclasses import replace
 
 from dataclassabc import dataclassabc
 
+from sosopt.state.state import State
 import statemonad
 
 import polymat
-from polymat.typing import MatrixExpression, State
+from polymat.typing import MatrixExpression
 
-from sosopt.coneconstraints.decisionvariablesmixin import to_decision_variable_symbols
+from sosopt.polynomialconstraints.constraintprimitives.decisionvariablesmixin import to_decision_variable_symbols
 from sosopt.polynomialconstraints.constraintprimitives.sumofsquaresprimitive import (
     init_sum_of_squares_primitive,
 )
@@ -63,6 +64,7 @@ def init_sum_of_squares_constraint(
                         expression=condition_entry,
                         decision_variable_symbols=decision_variable_symbols,
                         polynomial_variable_indices=polynomial_indices,
+                        sparse_smr=state.sparse_smr,
                     )
                 )
 

@@ -4,12 +4,11 @@ from dataclasses import replace
 
 from dataclassabc import dataclassabc
 
+from sosopt.state.state import State
 import statemonad
 
 import polymat
 from polymat.typing import (
-    State,
-    VariableVectorExpression,
     MatrixExpression,
     ScalarPolynomialExpression,
 )
@@ -17,13 +16,13 @@ from polymat.typing import (
 from sosopt.polynomialconstraints.constraintprimitives.polynomialconstraintprimitive import (
     PolynomialConstraintPrimitive,
 )
-from sosopt.coneconstraints.decisionvariablesmixin import to_decision_variable_symbols
+from sosopt.polynomialconstraints.constraintprimitives.decisionvariablesmixin import to_decision_variable_symbols
 from sosopt.polynomialconstraints.polynomialvariablesmixin import (
     PolynomialVariablesMixin,
     to_polynomial_variable_indices,
 )
 from sosopt.polymat.from_ import define_multiplier
-from sosopt.polymat.polynomialvariable import ScalarPolynomialVariable
+from sosopt.polymat.sources.polynomialvariable import ScalarPolynomialVariable
 from sosopt.semialgebraicset import SemialgebraicSet
 from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
 from sosopt.polynomialconstraints.constraintprimitives.sumofsquaresprimitive import (
@@ -163,6 +162,7 @@ def init_putinar_psatz_constraint(
                                 expression=multiplier,
                                 decision_variable_symbols=tuple(multiplier.iterate_symbols()),
                                 polynomial_variable_indices=polynomial_indices,
+                                sparse_smr=state.sparse_smr,
                             )
                         )
 
@@ -177,6 +177,7 @@ def init_putinar_psatz_constraint(
                         expression=sos_certificate,
                         polynomial_variable_indices=polynomial_indices,
                         decision_variable_symbols=decision_variable_symbols,
+                        sparse_smr=state.sparse_smr,
                     )
                 )
 

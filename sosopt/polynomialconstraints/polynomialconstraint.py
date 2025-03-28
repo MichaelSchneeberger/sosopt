@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
+from sosopt.polymat.symbols.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.polynomialconstraints.constraintprimitives.polynomialconstraintprimitive import (
     PolynomialConstraintPrimitive,
 )

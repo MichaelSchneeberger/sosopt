@@ -2,13 +2,18 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
-from polymat.typing import MatrixExpression, VectorExpression
-from sosopt.coneconstraints.anonymousvariablesmixin import AnonymousVariablesMixin
-from sosopt.coneconstraints.decisionvariablesmixin import DecisionVariablesMixin
-from sosopt.polymat.decisionvariablesymbol import DecisionVariableSymbol
+import statemonad
+
+import polymat
+from polymat.typing import MatrixExpression, VectorExpression, State
+
+# from sosopt.coneconstraints.anonymousvariablesmixin import AnonymousVariablesMixin
+# from sosopt.coneconstraints.decisionvariablesmixin import DecisionVariablesMixin
+from sosopt.polymat.symbols.conedecisionvariablesymbol import ConeDecisionVariableSymbol
+# from sosopt.polymat.symbols.decisionvariablesymbol import DecisionVariableSymbol
 
 
-class ConeConstraint(AnonymousVariablesMixin, DecisionVariablesMixin):
+class ConeConstraint:
     # abstract properties
     #####################
 
@@ -20,10 +25,10 @@ class ConeConstraint(AnonymousVariablesMixin, DecisionVariablesMixin):
     @abstractmethod
     def expression(self) -> MatrixExpression: ...
 
-    # @property
-    # @abstractmethod
-    # def anonymous_variable_indices(self) -> tuple[int, ...]:
-    #     ...
+    @property
+    @abstractmethod
+    def decision_variable_symbols(self) -> tuple[ConeDecisionVariableSymbol, ...]:
+        ...
 
     # abstract methods
     ##################
@@ -33,7 +38,7 @@ class ConeConstraint(AnonymousVariablesMixin, DecisionVariablesMixin):
 
     def eval(
         self, 
-        substitutions: dict[DecisionVariableSymbol, tuple[float, ...]]
+        substitutions: dict[ConeDecisionVariableSymbol, tuple[float, ...]]
     ) -> ConeConstraint | None:
         # find variable symbols that is not getting substitued
         decision_variable_symbols = tuple(
@@ -52,3 +57,18 @@ class ConeConstraint(AnonymousVariablesMixin, DecisionVariablesMixin):
 
     @abstractmethod
     def to_vector(self) -> VectorExpression: ...
+
+
+def to_decision_variable_symbols(expr: MatrixExpression):
+    def _to_decision_variable_symbols(state: State):
+        state, variable_indices = polymat.to_variable_indices(expr).apply(state)
+
+        def gen_decision_variable_symbol():
+            for index in variable_indices:
+                match symbol := state.get_symbol(index=index):
+                    case ConeDecisionVariableSymbol():
+                        yield symbol
+
+        return state, tuple(set(gen_decision_variable_symbol()))
+
+    return statemonad.get_map_put(_to_decision_variable_symbols)
