@@ -17,7 +17,7 @@ from sosopt.polynomialconstraints.polynomialvariablesmixin import PolynomialVari
 
 @dataclassabc(frozen=True, slots=True)
 class ZeroPolynomialPrimitive(PolynomialVariablesMixin, PolynomialConstraintPrimitive):
-    name: str
+    name: str | None
     expression: ScalarPolynomialExpression
     polynomial_variable_indices: tuple[int, ...]
     decision_variable_symbols: tuple[DecisionVariableSymbol, ...]
@@ -35,7 +35,7 @@ class ZeroPolynomialPrimitive(PolynomialVariablesMixin, PolynomialConstraintPrim
 
 
 def init_zero_polynomial_primitive(
-    name: str,
+    name: str | None,
     expression: ScalarPolynomialExpression,
     polynomial_variable_indices: tuple[int, ...],
     decision_variable_symbols: tuple[DecisionVariableSymbol, ...],

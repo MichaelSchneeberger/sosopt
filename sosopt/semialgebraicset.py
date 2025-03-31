@@ -15,6 +15,28 @@ def set_(
     greater_than_zero: dict[str, VectorExpression] = {},
     smaller_than_zero: dict[str, VectorExpression] = {},
 ):
+    """
+    Define a semialgebraic set from a collection scalar polynomial expressions.
+
+    Args:
+        equal_zero: A dictionary of polynomial expressions which evaluate to zero 
+            on the set.
+        greater_than_zero: A dictionary of polynomial expressions which evaluate
+            to a positive number on the set.
+        smaller_than_zero: A dictionary of polynomial expressions which evaluate
+            to a negative number on the set.
+
+    Returns:
+        (SemialgebraicSet): A semi-algebraic set
+
+    Example:
+        ``` python
+        sosopt.set_(
+            smaller_than_zero={'w1': w1, 'w2': w2},
+        )
+        ```
+    """
+
     inequalities = greater_than_zero | {n: -p for n, p in smaller_than_zero.items()}
 
     return SemialgebraicSet(

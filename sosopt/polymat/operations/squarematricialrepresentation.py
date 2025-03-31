@@ -59,8 +59,14 @@ class SquareMatricialRepresentation(FrameSummaryMixin, SingleChildExpressionNode
                     monomials_prod[monom] = []
                 monomials_prod[monom].append((row, col))
 
+        if self.auxilliary_variable_symbol in state.indices:
+            start, _ = state.indices[self.auxilliary_variable_symbol]
+            current_symbol_index = start
+
+        else:
+            current_symbol_index = state.n_indices
+
         data = {}
-        current_symbol_index = state.n_indices
 
         for monomial, monomial_indices in monomials_prod.items():
             if 1 < len(monomial_indices):
@@ -82,11 +88,19 @@ class SquareMatricialRepresentation(FrameSummaryMixin, SingleChildExpressionNode
                     polynomial={((index, 1),): -1 for index in range(start_symbol_index, current_symbol_index)},
                 )
 
-        state, _ = state.register(
-            size=current_symbol_index - state.n_indices,
-            symbol=self.auxilliary_variable_symbol,
-            stack=self.stack,
-        )
+        size = current_symbol_index - state.n_indices
+
+        if self.auxilliary_variable_symbol in state.indices:
+            start, stop = state.indices[self.auxilliary_variable_symbol]
+
+            assert current_symbol_index == stop, f'{current_symbol_index} does not equal {stop}'
+
+        else:
+            state, _ = state.register(
+                size=current_symbol_index - state.n_indices,
+                symbol=self.auxilliary_variable_symbol,
+                stack=self.stack,
+            )
 
         polynomial = child.at(0, 0)
 

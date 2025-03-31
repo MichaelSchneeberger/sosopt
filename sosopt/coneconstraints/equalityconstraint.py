@@ -11,7 +11,7 @@ from sosopt.coneconstraints.coneconstraint import ConeConstraint, to_decision_va
 
 @dataclassabc(frozen=True, slots=True)
 class EqualityConstraint(ConeConstraint):
-    name: str
+    name: str | None
     expression: VectorExpression
     decision_variable_symbols: tuple[ConeDecisionVariableSymbol, ...]
 
@@ -23,7 +23,7 @@ class EqualityConstraint(ConeConstraint):
 
 
 def init_equality_constraint(
-    name: str,
+    name: str | None,
     expression: VectorExpression,
     decision_variable_symbols: tuple[ConeDecisionVariableSymbol, ...] | None = None,
 ):

@@ -13,6 +13,8 @@ from polymat.typing import (
 from sosopt.coneconstraints.semidefiniteconstraint import init_semi_definite_constraint
 from sosopt.polymat.symbols.auxiliaryvariablesymbol import AuxiliaryVariableSymbol
 from sosopt.polymat.from_ import (
+    sos_monomial_basis,
+    sos_monomial_basis_sparse,
     square_matricial_representation,
     square_matricial_representation_sparse,
 )
@@ -38,16 +40,31 @@ class SumOfSquaresPrimitive(PolynomialVariablesMixin, PolynomialConstraintPrimit
         return AuxiliaryVariableSymbol(self.name)
 
     @functools.cached_property
+    def monomial_basis(self):
+        if self.sparse_smr:
+            return sos_monomial_basis_sparse(
+                expression=self.expression,
+                variables=self.polynomial_variable,
+            ).cache()
+        else:
+            return sos_monomial_basis(
+                expression=self.expression,
+                variables=self.polynomial_variable,
+            ).cache()
+
+    @functools.cached_property
     def smr(self):
         if self.sparse_smr:
             return square_matricial_representation_sparse(
                 expression=self.expression,
+                monomials=self.monomial_basis,
                 variables=self.polynomial_variable,
             ).cache()
         else:
             return square_matricial_representation(
                 expression=self.expression,
                 variables=self.polynomial_variable,
+                monomials=self.monomial_basis,
                 auxilliary_variable_symbol=self.auxilliary_variable_symbol,
             ).cache()
 

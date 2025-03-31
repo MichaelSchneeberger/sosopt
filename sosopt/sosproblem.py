@@ -82,6 +82,31 @@ def init_sos_problem(
     solver: SolverMixin,
     quad_cost: VectorExpression | None = None,
 ):
+    """
+    Defines an SOS problem.
+
+    Args:
+        lin_cost: Scalar expression $c(\theta)$ defining the linear cost.
+        constraints: SOS and equality constraints
+        solver: SDP solver selection (*CVXOPT* or *MOSEK*)
+        quad_cost: Vector expression $q(\theta)$ defining the quadratic cost $q(\theta)^\top q(\theta)$.
+
+    Returns:
+        (SOS Problem): A Sum-of-Squares (SOS) Problem
+
+    Example:
+        ``` python
+        problem = sosopt.sos_problem(
+            lin_cost=Q.trace(),
+            quad_cost=Q.diag(),
+            constraints=(r_sos_constraint,),
+            solver=polymat.cvxopt_solver,
+        )
+
+        # solve SOS problem
+        state, result = problem.solve().apply(state)
+        ```
+    """
 
     return SOSProblem(
         lin_cost=lin_cost,

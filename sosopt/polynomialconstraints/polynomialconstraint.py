@@ -13,9 +13,9 @@ class PolynomialConstraint:
     A constraints implements helper methods that can be used to define the cost function
     """
 
-    @property
-    @abstractmethod
-    def name(self) -> str: ...
+    # @property
+    # @abstractmethod
+    # def name(self) -> str: ...
 
     def copy(self, /, **others) -> PolynomialConstraint: ...
 

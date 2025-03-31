@@ -10,8 +10,8 @@ from sosopt.polymat.from_ import (
     define_variable as _define_variable,
     square_matricial_representation as _sos_smr,
     square_matricial_representation_sparse as _sos_smr_sparse,
-    quadratic_monomial_vector as _sos_monomial_basis,
-    quadratic_monomial_vector_sparse as _sos_monomial_basis_sparse,
+    sos_monomial_basis as _sos_monomial_basis,
+    sos_monomial_basis_sparse as _sos_monomial_basis_sparse,
 )
 from sosopt.coneconstraints.from_ import(
     equality_constraint as _equality_constraint,
@@ -21,7 +21,7 @@ from sosopt.polynomialconstraints.from_ import (
     sos_constraint as _sos_constraint,
     zero_polynomial_constraint as _zero_polynomial_constraint,
     sos_matrix_constraint as _sos_matrix_constraint,
-    psatz_putinar_constraint as _psatz_putinar_constraint,
+    quadratic_module_constraint as _psatz_putinar_constraint,
 )
 from sosopt.solvers.cvxoptsolver import CVXOPTSolver
 from sosopt.solvers.moseksolver import MosekSolver

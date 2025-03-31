@@ -112,19 +112,18 @@ class SquareMatricialRepresentationImpl(SquareMatricialRepresentation):
 def init_square_matricial_representation(
     child: ExpressionNode,
     variables: SquareMatricialRepresentation.VariableType,
-    stack: tuple[FrameSummary, ...],
     monomials: ExpressionNode | None = None,
     auxilliary_variable_symbol: AuxiliaryVariableSymbol | None = None,
 ):
     if monomials is None:
-        monomials = init_quadratic_monomial_vector(child=child, variables=variables)
+        monomials = init_sos_monomial_basis(child=child, variables=variables)
 
     return SquareMatricialRepresentationImpl(
         child=child,
         variables=variables,
         monomials=monomials,
         auxilliary_variable_symbol=auxilliary_variable_symbol,
-        stack=stack,
+        stack=SquareMatricialRepresentation.get_frame_summary(),
     )
 
 
@@ -139,11 +138,10 @@ class SquareMatricialRepresentationSparseImpl(SquareMatricialRepresentationSpars
 def init_square_matricial_representation_sparse(
     child: ExpressionNode,
     variables: ExpressionNode.VariableType,
-    stack: tuple[FrameSummary, ...],
     monomials: ExpressionNode | None = None,
 ):
     if monomials is None:
-        monomials = init_quadratic_monomial_vector_sparse(
+        monomials = init_sos_monomial_basis_sparse(
             child=child, variables=variables
         )
 
@@ -151,7 +149,7 @@ def init_square_matricial_representation_sparse(
         child=child,
         variables=variables,
         monomials=monomials,
-        stack=stack,
+        stack=SquareMatricialRepresentationSparse.get_frame_summary(),
     )
 
 
@@ -161,7 +159,7 @@ class QuadraticMonomialVectorImpl(SOSMonomialBasis):
     variables: SOSMonomialBasis.VariableType
 
 
-def init_quadratic_monomial_vector(
+def init_sos_monomial_basis(
     child: ExpressionNode,
     variables: SOSMonomialBasis.VariableType,
 ):
@@ -177,7 +175,7 @@ class QuadraticMonomialVectorSparseImpl(SOSMonomialBasisSparse):
     variables: ExpressionNode.VariableType
 
 
-def init_quadratic_monomial_vector_sparse(
+def init_sos_monomial_basis_sparse(
     child: ExpressionNode,
     variables: ExpressionNode.VariableType,
 ):

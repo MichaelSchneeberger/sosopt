@@ -11,7 +11,7 @@ from sosopt.coneconstraints.coneconstraint import ConeConstraint, to_decision_va
 
 @dataclassabc(frozen=True, slots=True)
 class SemiDefiniteConstraint(ConeConstraint):
-    name: str
+    name: str | None
     expression: SymmetricMatrixExpression
     decision_variable_symbols: tuple[ConeDecisionVariableSymbol, ...]
 
@@ -23,7 +23,7 @@ class SemiDefiniteConstraint(ConeConstraint):
 
 
 def init_semi_definite_constraint(
-    name: str,
+    name: str | None,
     expression: SymmetricMatrixExpression,
     decision_variable_symbols: tuple[ConeDecisionVariableSymbol, ...] | None = None,
 ):

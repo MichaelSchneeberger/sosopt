@@ -31,7 +31,7 @@ from sosopt.polynomialconstraints.constraintprimitives.sumofsquaresprimitive imp
 
 
 @dataclassabc(frozen=True, slots=True)
-class PutinarPsatzConstraint(PolynomialVariablesMixin, PolynomialConstraint):
+class QuadraticModuleConstraint(PolynomialVariablesMixin, PolynomialConstraint):
     name: str  # override
     primitives: tuple[PolynomialConstraintPrimitive, ...]  # override
     polynomial_variable_indices: tuple[int, ...]  # override
@@ -57,7 +57,7 @@ class PutinarPsatzConstraint(PolynomialVariablesMixin, PolynomialConstraint):
 
 
 @dataclassabc(frozen=True, slots=True)
-class PutinarPsatzMatrixConstraint(PolynomialVariablesMixin, PolynomialConstraint):
+class QuadraticModuleMatrixConstraint(PolynomialVariablesMixin, PolynomialConstraint):
     name: str  # override
     primitives: tuple[PolynomialConstraintPrimitive, ...]  # override
     polynomial_variable_indices: tuple[int, ...]  # override
@@ -82,7 +82,7 @@ class PutinarPsatzMatrixConstraint(PolynomialVariablesMixin, PolynomialConstrain
         return replace(self, **others)
 
 
-def init_putinar_psatz_constraint(
+def init_quadratic_module_constraint(
     name: str,
     expression: MatrixExpression,
     domain: SemialgebraicSet | None = None,
@@ -143,7 +143,7 @@ def init_putinar_psatz_constraint(
                     multiplier_name = get_name(row, col, domain_name)
 
                     state, multiplier = define_multiplier(
-                        name=multiplier_name,
+                        name=f'{multiplier_name}_m',
                         degree=max(max_domain_degree, max_cond_degree),
                         multiplicand=domain_polynomial,
                         variables=polynomial_indices,
@@ -183,7 +183,7 @@ def init_putinar_psatz_constraint(
 
         match shape:
             case (1, 1):
-                constraint = PutinarPsatzConstraint(
+                constraint = QuadraticModuleConstraint(
                     name=name,
                     primitives=tuple(constraint_primitives),
                     polynomial_variable_indices=polynomial_indices,
@@ -195,7 +195,7 @@ def init_putinar_psatz_constraint(
                 )
 
             case _:
-                constraint = PutinarPsatzMatrixConstraint(
+                constraint = QuadraticModuleMatrixConstraint(
                     name=name,
                     primitives=tuple(constraint_primitives),
                     polynomial_variable_indices=polynomial_indices,

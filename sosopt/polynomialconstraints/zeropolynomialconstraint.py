@@ -17,7 +17,7 @@ from sosopt.polynomialconstraints.polynomialvariablesmixin import PolynomialVari
 
 @dataclassabc(frozen=True, slots=True)
 class ZeroPolynomialConstraint(PolynomialVariablesMixin, PolynomialConstraint):
-    name: str
+    name: str | None
     primitives: tuple[PolynomialConstraintPrimitive, ...]
     polynomial_variable_indices: tuple[int, ...]
 
@@ -32,7 +32,7 @@ class ZeroPolynomialConstraint(PolynomialVariablesMixin, PolynomialConstraint):
 
 
 def init_zero_polynomial_constraint(
-    name: str,
+    name: str | None,
     zero_matrix: MatrixExpression,
 ):
 
@@ -47,7 +47,6 @@ def init_zero_polynomial_constraint(
             for col in range(n_cols):
                 condition_entry = zero_matrix[row, col]
 
-                # state, (decision_variable_symbols, anonymous_indices) = to_decision_variable_symbols(condition_entry).apply(state)
                 state, decision_variable_symbols = to_decision_variable_symbols(condition_entry).apply(state)
 
                 constraint_primitives.append(
@@ -56,7 +55,6 @@ def init_zero_polynomial_constraint(
                         expression=condition_entry,
                         polynomial_variable_indices=polynomial_indices,
                         decision_variable_symbols=decision_variable_symbols,
-                        # anonymous_variable_indices=anonymous_indices,
                     )
                 )
 

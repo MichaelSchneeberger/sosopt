@@ -17,9 +17,9 @@ class ConeConstraint:
     # abstract properties
     #####################
 
-    @property
-    @abstractmethod
-    def name(self) -> str: ...
+    # @property
+    # @abstractmethod
+    # def name(self) -> str: ...
 
     @property
     @abstractmethod

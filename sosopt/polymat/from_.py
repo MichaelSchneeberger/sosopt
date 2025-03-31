@@ -1,28 +1,29 @@
 from __future__ import annotations
-from typing import Iterator
 
-from sosopt.polymat.symbols.auxiliaryvariablesymbol import AuxiliaryVariableSymbol
 import statemonad
 
 import polymat
-from polymat.utils.getstacklines import get_frame_summary
-from polymat.expressiontree.init import init_to_symmetric_matrix
-from polymat.expression.init import init_expression
 from polymat.typing import (
     MatrixExpression,
     VariableVectorExpression,
     MonomialVectorExpression,
 )
 
+from sosopt.polymat.symbols.auxiliaryvariablesymbol import AuxiliaryVariableSymbol
 from sosopt.polymat.symbols.decisionvariablesymbol import DecisionVariableSymbol
 from sosopt.polymat.init import (
     init_polynomial_variable,
-    init_quadratic_monomial_vector,
-    init_quadratic_monomial_vector_sparse,
+    init_sos_monomial_basis,
+    init_sos_monomial_basis_sparse,
     init_square_matricial_representation,
     init_square_matricial_representation_sparse,
 )
 
+
+# square_matricial_representation = init_square_matricial_representation
+# square_matricial_representation_sparse = init_square_matricial_representation_sparse
+# sos_monomial_basis = init_sos_monomial_basis
+# sos_monomial_basis_sparse = init_sos_monomial_basis_sparse
 
 def square_matricial_representation(
     expression: MatrixExpression,
@@ -30,17 +31,18 @@ def square_matricial_representation(
     monomials: MatrixExpression | None = None,
     auxilliary_variable_symbol: AuxiliaryVariableSymbol | None = None,
 ):
-    return init_expression(
-        child=init_to_symmetric_matrix(
-            child=init_square_matricial_representation(
-                child=expression,
-                variables=variables,
-                monomials=monomials,
-                auxilliary_variable_symbol=auxilliary_variable_symbol,
-                stack=get_frame_summary(),
-            ),
+    """
+    Performs an SOS decomposition to retrieve the SMR from a polynomial expression.
+    """
+        
+    return polymat.from_(
+        init_square_matricial_representation(
+            child=expression,
+            variables=variables,
+            monomials=monomials,
+            auxilliary_variable_symbol=auxilliary_variable_symbol,
         ),
-    )
+    ).symmetric()
 
 
 def square_matricial_representation_sparse(
@@ -48,36 +50,53 @@ def square_matricial_representation_sparse(
     variables: MatrixExpression,
     monomials: MatrixExpression | None = None,
 ):
-    return init_expression(
-        child=init_to_symmetric_matrix(
-            child=init_square_matricial_representation_sparse(
-                child=expression,
-                variables=variables,
-                monomials=monomials,
-                stack=get_frame_summary(),
-            ),
-        ),
-    )
-
-
-def quadratic_monomial_vector(
-    expression: MatrixExpression,
-    variables: MatrixExpression,
-):
-    return init_expression(
-        child=init_quadratic_monomial_vector(
+    """
+    Performs a sparse SOS decomposition to retrieve the SMR from a polynomial expression.
+    """
+    return polymat.from_(
+        init_square_matricial_representation_sparse(
             child=expression,
             variables=variables,
+            monomials=monomials,
         ),
-    )
+    ).symmetric()
 
 
-def quadratic_monomial_vector_sparse(
+def sos_monomial_basis(
     expression: MatrixExpression,
     variables: MatrixExpression,
 ):
-    return init_expression(
-        child=init_quadratic_monomial_vector_sparse(
+    """
+    Defines an SOS monomial basis $Z(x)$ used for SOS decomposition.
+
+    Args:
+        expression: Defines the expression $p(x)$ that can be written
+            as $p(x) = Z(x)^T Q Z(x)$ for some a monomial vector $Z(x)$.
+        variables: Defines the polynomial variables.
+    """
+
+    return polymat.from_(
+        init_sos_monomial_basis(
+            child=expression,
+            variables=variables,
+        )
+    )
+
+
+def sos_monomial_basis_sparse(
+    expression: MatrixExpression,
+    variables: MatrixExpression,
+):
+    """
+    Defines a SOS monomial basis $Z(x)$ used for the sparse SOS decomposition.
+
+    Args:
+        expression: Defines the expression $p(x)$ that can be written
+            as $p(x) = Z(x)^T Q Z(x)$ for some a monomial vector $Z(x)$.
+        variables: Defines the polynomial variables.
+    """
+    return polymat.from_(
+        init_sos_monomial_basis_sparse(
             child=expression,
             variables=variables,
         ),
@@ -89,7 +108,23 @@ def define_variable(
     size: int | MatrixExpression | None = None,
 ):
     """
-    Defines a decision variable of the SOS optimization problem.
+    Defines a decision variable for the SOS Problem.
+
+    Args:
+        name: The name assigned to the variable. This name needs to be unique.
+        size: The size of the decision variables. This is either given by an integer or derived
+            from the shape of a polynomial expression.
+
+    Returns:
+        (VariableVectorSymbolExpression): A polynomial variable expression
+
+    Example:
+        ``` python
+        like = polymat.from_(np.ones((3, 2)))
+
+        # creates a variable of size 6
+        x = sosopt.define_variable('x', size=like)
+        ```
     """
 
     if not isinstance(name, DecisionVariableSymbol):
@@ -105,147 +140,106 @@ def define_polynomial(
     monomials: MonomialVectorExpression | None = None,
     n_rows: int | None = None,
     n_cols: int | None = None,
-    # shape: tuple[int, int] | MatrixExpression | None = None
+    like: MatrixExpression | None = None,
 ):
     """
-    Defines a polynomial matrix variable as a `polymat.typing.MatrixExpression`,
-    where the coefficients of the polynomials are decision variables. The polynomial
-    matrix is represented by a combination of monomials, decision variable coefficients,
-    and polynomial variables.
+    Defines of a fully parametrized polynomial -- involving the specification of a decision variable 
+    for each coefficient of the polynomial.
 
-    Parameters:
-    ----------
-    name : str
-        The name assigned to the polynomial matrix variable.
-    monomials : MonomialVectorExpression, optional
-        A vector of monomials that determines the structure of the polynomial matrix. If None,
-        monomials are assumed to be a single element 1.
-    polynomial_variables : VariableVectorExpression, optional
-        A vector of polynomial variables used to define the polynomial matrix. If None,
-        no polynomial variables are considered, reducing the polynomial variable to a constant variable.
-    n_rows : int, optional
-        The number of rows of the resulting polynomial matrix.
-    n_cols : int, optional
-        The number of columns of the resulting polynomial matrix.
+    Args:
+        name: The name assigned to the parametrized polynomial. This defines the name of the 
+            decision variable for each coefficient of the polynomial.
+        monomials: Optional monomial vector that determines the structure of the polynomial matrix. If None,
+            monomials are assumed to be a single element 1.
+        n_rows: The number of rows of the resulting polynomial matrix.
+        n_cols: The number of columns of the resulting polynomial matrix.
+        like: Copy the number of rows and columns from the given polynomial expression.
 
     Returns:
-    --------
-    PolynomialMatrix:
-        A matrix of polynomial expressions where the coefficients are decision variables.
-        This matrix is equipped with its monomial terms, coefficients, and polynomial variables.
+        (StateMonad[MatrixExpression]): A polynomial expression where the coefficients are decision variables.
 
     Example:
-    --------
-    ```python
-    x = polymat.define_variable('x')
+        ``` python
+        x = polymat.define_variable('x')
 
-    # Define a polynomial matrix variable 'p' with specific monomials and polynomial variables
-    p = sosopt.define_polynomial(
-        name='p',
-        monomials=x.combinations((0, 1, 2)),  # Monomial vector for degrees 0, 1, and 2
-        polynomial_variables=x,               # Polynomial variables used in 'p'
-    )
+        # Define a parametrized polynomial specified by a monomial vector
+        state, r = sosopt.define_polynomial(
+            name='r',
+            monomials=x.combinations((0, 1, 2)),
+        ).apply(state)
 
-    # Convert polynomial matrix 'p' to sympy representation and print
-    state, p_sympy = polymat.to_sympy(p).apply(state)
-    # Expected output: p_sympy = p_0 + p_1*x + p_2*x**2
-    print(f'{p_sympy=}')
-
-    # Convert and print the monomial vector
-    state, monom_sympy = polymat.to_sympy(p.monomials.T).apply(state)
-    # Expected output: monom_sympy = Matrix([[1, x, x**2]])
-    print(f'{monom_sympy=}')
-
-    # Convert and print the coefficient vector
-    state, coeff_sympy = polymat.to_sympy(p.to_coefficient_vector().T).apply(state)
-    # Expected output: coeff_sympy = Matrix([[p_0, p_1, p_2]])
-    print(f'{coeff_sympy=}')
-    ```
+        # returns a polymat vector [r_0, r_1, r_2] containing the coefficients
+        r.coefficient
+        ```
     """
-
-    match (n_rows, n_cols):
-        case (None, None):
-            n_rows, n_cols = 1, 1
-        case (None, _):
-            n_rows = 1
-        case (_, None):
-            n_cols = 1
-        case _:
-            pass
-
-    # match (n_rows, n_cols, shape):
-    #     case (None, None, None):
-    #         n_rows, n_cols = 1, 1
-    #     case (None, None, (n_rows, n_cols)):
-    #         pass
-    #     case (None, None, MatrixExpression()):
-    #         state, degrees = polymat.to_shape(shape).apply(state)
-    #     case (None, _, None):
-    #         n_rows = 1
-    #     case (_, None, None):
-    #         n_cols = 1
-    #     case _:
-    #         pass
-
-    # if isinstance(degree, MatrixExpression):
-    #     # Compute the degree of the denominator s(x)
-    #     state, degrees = polymat.to_degree(degree, variables=variables).apply(state)
-    #     degree = degrees[0][0]
-
-    # else:
-    #     assert isinstance(degree, int), f"Degree {degree} must be of type Int."
 
     if monomials is None:
         monomials = polymat.from_(1).to_monomial_vector()
 
-    shape = n_rows, n_cols
+    def _define_polynomial(state):
 
-    match shape:
-        case (1, 1):
-            get_name = lambda r, c: name  # noqa: E731
-        case (1, _):
-            get_name = lambda r, c: f"{name}_{c + 1}"  # noqa: E731
-        case (_, 1):
-            get_name = lambda r, c: f"{name}_{r + 1}"  # noqa: E731
-        case _:
-            get_name = lambda r, c: f"{name}_{r + 1}_{c + 1}"  # noqa: E731
+        match (n_rows, n_cols, like):
+            case None, None, None:
+                shape = 1, 1
+            case None, None, MatrixExpression():
+                state, shape = polymat.to_shape(like).apply(state)
+            case None, int() as nc, None:
+                shape = (1, nc)
+            case int() as nr, None, None:
+                shape = (nr, 1)
+            case int() as nr, int() as nc, _:
+                shape = (nr, nc)
+            case _:
+                ValueError("Invalid shape specification")
 
-    def gen_rows():
-        for row in range(n_rows):
+        match shape:
+            case (1, 1):
+                get_name = lambda r, c: name  # noqa: E731
+            case (1, _):
+                get_name = lambda r, c: f"{name}_{c + 1}"  # noqa: E731
+            case (_, 1):
+                get_name = lambda r, c: f"{name}_{r + 1}"  # noqa: E731
+            case _:
+                get_name = lambda r, c: f"{name}_{r + 1}_{c + 1}"  # noqa: E731
 
-            def gen_cols():
-                for col in range(n_cols):
-                    
-                    param = define_variable(
-                        name=get_name(row, col),
-                        size=monomials,
-                    )
+        def gen_rows():
+            for row in range(shape[0]):
 
-                    yield param, param.T @ monomials
+                def gen_cols():
+                    for col in range(shape[1]):
+                        
+                        param = define_variable(
+                            name=get_name(row, col),
+                            size=monomials,
+                        )
 
-            params, polynomials = tuple(zip(*gen_cols()))
+                        yield param, param.T @ monomials
 
-            if 1 < len(polynomials):
-                expr = polymat.h_stack(polynomials)
-            else:
-                expr = polynomials[0]
+                params, polynomials = tuple(zip(*gen_cols()))
 
-            yield params, expr
+                if 1 < len(polynomials):
+                    expr = polymat.h_stack(polynomials)
+                else:
+                    expr = polynomials[0]
 
-    coefficients, row_vectors = tuple(zip(*gen_rows()))
+                yield params, expr
 
-    if 1 < len(row_vectors):
-        expr = polymat.v_stack(row_vectors)
-    else:
-        expr = row_vectors[0]
+        coefficients, row_vectors = tuple(zip(*gen_rows()))
 
-    return init_polynomial_variable(
-        name=name,
-        monomials=monomials,
-        coefficients=coefficients,
-        child=expr.child,
-        shape=shape,
-    )
+        if 1 < len(row_vectors):
+            expr = polymat.v_stack(row_vectors)
+        else:
+            expr = row_vectors[0]
+
+        return state, init_polynomial_variable(
+            name=name,
+            monomials=monomials,
+            coefficients=coefficients,
+            child=expr.child,
+            shape=shape,
+        )
+    
+    return statemonad.get_map_put(_define_polynomial)
 
 
 def define_multiplier(
@@ -258,46 +252,34 @@ def define_multiplier(
     Defines a polynomial multiplier intended to be multiplied with a given polynomial
     (the multiplicand), ensuring that the resulting product does not exceed a specified degree.
 
-    Parameters:
-    ----------
-    name : str
-        The name assigned to the multiplier polynomial variable.
-    degree : int
-        The maximum allowed degree for the product of the multiplicand and multiplier.
-    multiplicand : MatrixExpression
-        The polynomial to be multiplied with the multiplier.
-    variables : VariableVectorExpression
-        The polynomial variables used to determine the degree of the resulting polynomial.
-
-    Example:
-    --------
-    ```python
-    P = polymat.from_([
-        [x**2 - 2*x + 2, x],
-        [x, x**2],
-    ])
-
-    state, m = sosopt.define_multiplier(
-        name='m',           # name of the polynomial variable
-        degree=4,           # maximum degree of the product P*m
-        multiplicand=P,
-        variables=x,        # polynomial variables determining the degree
-    ).apply(state)
-
-    state, m_sympy = polymat.to_sympy(m).apply(state)
-
-    # Expected output: m_sympy = m_0 + m_1*x + m_2*x**2
-    print(f'{m_sympy=}')
-    ```
+    Args:
+        name: The name assigned to the multiplier polynomial variable. This defines the name of the 
+            decision variable for each coefficient of the multiplier.
+        degree: The maximum allowed degree for the product of the multiplicand and multiplier.
+        multiplicand: The polynomial to be multiplied with the multiplier.
+        variables: The polynomial variables used to determine the degree of the resulting polynomial.
 
     Returns:
-    --------
-    Multiplier:
-        A polynomial expression parameterized as a decision variable, representing the multiplier
-        constrained by the specified degree.
+        (StateMonad[ScalarPolynomialExpression]): A polynomial expression parameterized as a decision variable, 
+            representing the multiplier constrained by the specified degree.
+
+    Example:
+        ```python
+        Q = polymat.from_([
+            [x**2 - 2*x + 2, x],
+            [x, x**2],
+        ])
+
+        state, m = sosopt.define_multiplier(
+            name='m',           # name of the polynomial variable
+            degree=4,           # maximum degree of the product P*m
+            multiplicand=Q,
+            variables=x,        # polynomial variables determining the degree
+        ).apply(state)
+        ```
     """
 
-    def create_multiplier(state, degree=degree):
+    def _define_multiplier(state, degree=degree):
         if isinstance(degree, MatrixExpression):
             # Compute the degree of the denominator s(x)
             state, degrees = polymat.to_degree(degree, variables=variables).apply(state)
@@ -338,7 +320,7 @@ def define_multiplier(
         )
         return state, expr
 
-    return statemonad.get_map_put(create_multiplier)
+    return statemonad.get_map_put(_define_multiplier)
 
 
 def define_symmetric_matrix(
@@ -346,44 +328,61 @@ def define_symmetric_matrix(
     size: int,
     monomials: MonomialVectorExpression | None = None,
 ):
+    """
+    Defines of a symmetric n x n matrix.
+
+    Args:
+        name: The name assigned to the parametrized polynomial. This defines the name of the 
+            decision variable for each coefficient of the polynomial.
+        monomials: Optional monomial vector that determines the structure of the polynomial matrix. If None,
+            monomials are assumed to be a single element 1.
+        size: The number of rows of the resulting polynomial matrix.
+
+    Returns:
+        (StateMonad[MatrixExpression]): A polynomial expression where the coefficients are decision variables.
+    """
+
     if monomials is None:
         monomials = polymat.from_(1).to_monomial_vector()
 
-    entries = {}
+    def _define_symmetric_matrix(state, monomials=monomials):
+        entries = {}
 
-    def gen_rows():
-        for row in range(size):
+        def gen_rows():
+            for row in range(size):
 
-            def gen_cols():
-                for col in range(size):
-                    if row <= col:
-                        param = define_variable(
-                            name=f"{name}_{row + 1}_{col + 1}",
-                            size=monomials,
-                        )
-                        entry = param, param.T @ monomials
+                def gen_cols():
+                    for col in range(size):
+                        if row <= col:
+                            param = define_variable(
+                                name=f"{name}_{row + 1}_{col + 1}",
+                                size=monomials,
+                            )
+                            entry = param, param.T @ monomials
 
-                        entries[row, col] = entry
+                            entries[row, col] = entry
 
-                        yield entry
-                    else:
-                        yield entries[col, row]
+                            yield entry
+                        else:
+                            yield entries[col, row]
 
-            params, polynomials = tuple(zip(*gen_cols()))
-            yield params, polymat.h_stack(polynomials)
+                params, polynomials = tuple(zip(*gen_cols()))
+                yield params, polymat.h_stack(polynomials)
 
-    params, row_vectors = tuple(zip(*gen_rows()))
+        params, row_vectors = tuple(zip(*gen_rows()))
 
-    expr = polymat.v_stack(row_vectors)
+        expr = polymat.v_stack(row_vectors)
 
-    return init_polynomial_variable(
-        name=name,
-        monomials=monomials,
-        coefficients=params,
-        child=expr.child,
-        shape=(size, size),
-    )
+        return state, init_polynomial_variable(
+            name=name,
+            monomials=monomials,
+            coefficients=params,
+            child=expr.child,
+            shape=(size, size),
+        )
+    
+    return statemonad.get_map_put(_define_symmetric_matrix)
 
 
-def v_stack(expressions: Iterator[MatrixExpression]) -> MatrixExpression:
-    return polymat.v_stack(expressions)
+# def v_stack(expressions: Iterator[MatrixExpression]) -> MatrixExpression:
+#     return polymat.v_stack(expressions)
