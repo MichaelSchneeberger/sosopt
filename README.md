@@ -25,9 +25,9 @@ pip install sosopt
 
 
 
-<!-- ## Documentation
+## Documentation
 
-See [Documentation](https://michaelschneeberger.github.io/sosopt/latest/) for the most recently library version. -->
+Full documentation and usage examples are available at: [https://michaelschneeberger.github.io/sosopt/latest/](https://michaelschneeberger.github.io/sosopt/latest/)
 
 
 

@@ -13,9 +13,9 @@ To see this, consider the polynomial $p(x) = x_1^4 + x_1^2 x_2^2 + x_2^4$, which
 
 $$
 Q_p = \begin{bmatrix}
-1 & 0 & -\alpha \\ 
-0 & 1 + 2 \alpha & 0 \\ 
--\alpha & 0 & 1
+1 & 0 & -\alpha/2 \\ 
+0 & 1 + \alpha & 0 \\ 
+-\alpha/2 & 0 & 1
 \end{bmatrix}
 $$
 
