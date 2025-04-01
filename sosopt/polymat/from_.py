@@ -231,13 +231,15 @@ def define_polynomial(
         else:
             expr = row_vectors[0]
 
-        return state, init_polynomial_variable(
+        expr = init_polynomial_variable(
             name=name,
             monomials=monomials,
             coefficients=coefficients,
             child=expr.child,
             shape=shape,
         )
+
+        return state, expr
     
     return statemonad.get_map_put(_define_polynomial)
 
@@ -314,10 +316,11 @@ def define_multiplier(
             case _:
                 variable = polymat.from_variable_indices(variables)
 
-        expr = define_polynomial(
+        state, expr = define_polynomial(
             name=name,
             monomials=variable.combinations(degree_range).cache(),
-        )
+        ).apply(state)
+        
         return state, expr
 
     return statemonad.get_map_put(_define_multiplier)

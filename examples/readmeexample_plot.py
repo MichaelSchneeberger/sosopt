@@ -3,11 +3,10 @@ import numpy.matlib
 from matplotlib import pyplot
 
 import polymat
-from polymat.typing import State
 
 import sosopt
 
-state = polymat.init_state()
+state = sosopt.init_state()
 
 variable_names = ("x_1", "x_2", "x_3")
 x1, x2, x3 = tuple(polymat.define_variable(name) for name in variable_names)
@@ -19,10 +18,10 @@ x = polymat.v_stack((x1, x2, x3))
 w1 = ((x1 + 0.3) / 0.5) ** 2 - 1
 w2 = (x2 / 1.3) ** 2 + (x3 / 1.3) ** 2 - 1
 
-r_var = sosopt.define_polynomial(
+state, r_var = sosopt.define_polynomial(
     name="r",
     monomials=x.combinations(degrees=(1, 2)),
-)
+).apply(state)
 r = r_var - 1
 
 state, sympy_repr = polymat.to_sympy(r).apply(state)

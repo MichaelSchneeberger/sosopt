@@ -3,7 +3,7 @@ import sosopt
 
 # Initialize the state object, which is passed through all operations related to solving
 # the SOS problem
-state = polymat.init_state()
+state = sosopt.init_state()
 
 # Define polynomial variables and stack them into a vector
 variable_names = ("x_1", "x_2", "x_3")
@@ -16,10 +16,10 @@ w1 = ((x1 + 0.3) / 0.5) ** 2 + (x2 / 20) ** 2 + (x3 / 20) ** 2 - 1
 w2 = ((x1 + 0.3) / 20) ** 2 + (x2 / 1.3) ** 2 + (x3 / 1.3) ** 2 - 1
 
 # Define a polynomial where the coefficients are decision variables in the SOS problem
-r_var = sosopt.define_polynomial(
+state, r_var = sosopt.define_polynomial(
     name='r',
     monomials=x.combinations(degrees=(1, 2)),
-)
+).apply(state)
 # Fix the constant part of the polynomial to -1 to ensure numerical stability
 r = r_var - 1
 
