@@ -32,7 +32,8 @@ def set_(
     Example:
         ``` python
         sosopt.set_(
-            smaller_than_zero={'w1': w1, 'w2': w2},
+            smaller_than_zero={'w': w},
+            equal_zero={'V': V},
         )
         ```
     """

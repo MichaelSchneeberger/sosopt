@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from donotation import do
+import statemonad
 
 import polymat
 from polymat.typing import (
@@ -84,7 +84,6 @@ def sos_constraint(
     )
 
 
-@do()
 def sos_matrix_constraint(
     name: str,
     greater_than_zero: SymmetricMatrixExpression | None = None,
@@ -120,14 +119,20 @@ def sos_matrix_constraint(
     else:
         raise Exception("SOS constraint requires condition.")
 
-    shape = yield from polymat.to_shape(condition)
+    def _sos_matrix_constraint(state):
 
-    x = polymat.define_variable(f"{name}_x", size=shape[0])
+        state, shape = polymat.to_shape(condition).apply(state)
 
-    return sos_constraint(
-        name=name,
-        greater_than_zero=x.T @ condition @ x,
-    )
+        x = polymat.define_variable(f"{name}_x", size=shape[0])
+
+        constraint = sos_constraint(
+            name=name,
+            greater_than_zero=x.T @ condition @ x,
+        )
+        
+        return state, constraint
+
+    return statemonad.get_map_put(_sos_matrix_constraint)
 
 
 def quadratic_module_constraint(
