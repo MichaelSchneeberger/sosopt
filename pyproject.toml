@@ -1,6 +1,6 @@
 [project]
 name = "sosopt"
-version = "0.0.8"
+version = "1.0.0"
 description = 'SOSOpt is a library designed for solving sums-of-squares optimization problems.'
 authors = [
   {name="Michael Schneeberger", email="michael.schneeb@hotmail.com"},
@@ -11,7 +11,6 @@ dependencies = [
   "scipy>=1.14.0",
   "sympy>=1.13.0",
   "dataclassabc>=0.0.13",
-  "donotation>=0.0.10",
   "statemonad>=0.0.5",
   "polymat>=0.0.7",
   "cvxopt>=1.3.2",
