@@ -1,3 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://github.com/MichaelSchneeberger/sosopt/1.0.0/</loc>
+         <lastmod>2025-04-02</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/MichaelSchneeberger/sosopt/1.0.0/api/</loc>
+         <lastmod>2025-04-02</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/MichaelSchneeberger/sosopt/1.0.0/changelog/</loc>
+         <lastmod>2025-04-02</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/MichaelSchneeberger/sosopt/1.0.0/examples/boxconstraints/</loc>
+         <lastmod>2025-04-02</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/MichaelSchneeberger/sosopt/1.0.0/tutorials/bilinearproblem/</loc>
+         <lastmod>2025-04-02</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/MichaelSchneeberger/sosopt/1.0.0/tutorials/gettingstarted/</loc>
+         <lastmod>2025-04-02</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/MichaelSchneeberger/sosopt/1.0.0/tutorials/sosdecomposition/</loc>
+         <lastmod>2025-04-02</lastmod>
+    </url>
 </urlset>
