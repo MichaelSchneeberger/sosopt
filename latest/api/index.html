@@ -631,13 +631,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#defining-constraints" class="md-nav__link">
+  <a href="#defining-polynomial-constraints" class="md-nav__link">
     <span class="md-ellipsis">
-      Defining Constraints
+      Defining Polynomial Constraints
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Defining Constraints">
+    <nav class="md-nav" aria-label="Defining Polynomial Constraints">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -671,6 +671,39 @@
   <a href="#sosopt.polynomialconstraints.from_.quadratic_module_constraint" class="md-nav__link">
     <span class="md-ellipsis">
       quadratic_module_constraint
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#defining-sdp-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining SDP constraints
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Defining SDP constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sosopt.coneconstraints.from_.semi_definite_constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      semi_definite_constraint
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sosopt.coneconstraints.from_.equality_constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      equality_constraint
     </span>
   </a>
   
@@ -2301,7 +2334,7 @@ to a negative number on the set.</p>
             </details>
     </div>
 
-</div><h2 id="defining-constraints">Defining Constraints</h2>
+</div><h2 id="defining-polynomial-constraints">Defining Polynomial Constraints</h2>
 
 
 <div class="doc doc-object doc-function">
@@ -3093,6 +3126,315 @@ This argument is ignore if greater_than_zero is not None.</p>
         <span class="n">name</span><span class="p">,</span>
         <span class="n">expression</span><span class="o">=</span><span class="n">positive_matrix</span><span class="p">,</span>
         <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div><h2 id="defining-sdp-constraints">Defining SDP constraints</h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="sosopt.coneconstraints.from_.semi_definite_constraint" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">sosopt</span><span class="o">.</span><span class="n">coneconstraints</span><span class="o">.</span><span class="n">from_</span><span class="o">.</span><span class="n">semi_definite_constraint</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>This constraint ensures that a symmetric matrix belongs to the positive semidefinite Cone.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The name of the constraint. </p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>greater_than_zero</code>
+            </td>
+            <td>
+                  <code><span title="polymat.typing.SymmetricMatrixExpression">SymmetricMatrixExpression</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The symmetric matrix that must be positive semi-definite.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="StateMonad">StateMonad</span>[<span title="SemiDefiniteConstraint">SemiDefiniteConstraint</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A polynomial constraint</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <pre><code class="language-python">state, q_psd_constraint = sosopt.semidefinite_constraint(
+    name='q_psd',
+    greater_than_zero=q,
+).apply(state)
+</code></pre>
+</details>
+
+            <details class="quote">
+              <summary>Source code in <code>sosopt\coneconstraints\from_.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">semi_definite_constraint</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">greater_than_zero</span><span class="p">:</span> <span class="n">SymmetricMatrixExpression</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This constraint ensures that a symmetric matrix belongs to the positive semidefinite Cone.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: The name of the constraint. </span>
+<span class="sd">        greater_than_zero: The symmetric matrix that must be positive semi-definite.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (StateMonad[SemiDefiniteConstraint]): A polynomial constraint</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ``` python</span>
+<span class="sd">        state, q_psd_constraint = sosopt.semidefinite_constraint(</span>
+<span class="sd">            name=&#39;q_psd&#39;,</span>
+<span class="sd">            greater_than_zero=q,</span>
+<span class="sd">        ).apply(state)</span>
+<span class="sd">        ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">init_semi_definite_constraint</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">expression</span><span class="o">=</span><span class="n">greater_than_zero</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="sosopt.coneconstraints.from_.equality_constraint" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">sosopt</span><span class="o">.</span><span class="n">coneconstraints</span><span class="o">.</span><span class="n">from_</span><span class="o">.</span><span class="n">equality_constraint</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>This constraint ensures that all entries of the polynomial expression are zero.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The name of the constraint. </p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>equal_to_zero</code>
+            </td>
+            <td>
+                  <code><span title="polymat.typing.VectorExpression">VectorExpression</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The polynomial expression that must be zero.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="StateMonad">StateMonad</span>[<span title="EqualityConstraint">EqualityConstraint</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A polynomial constraint</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <pre><code class="language-python">state, eq_constraint = sosopt.equality_constraint(
+    name='eq',
+    greater_than_zero=eq,
+).apply(state)
+</code></pre>
+</details>
+
+            <details class="quote">
+              <summary>Source code in <code>sosopt\coneconstraints\from_.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">equality_constraint</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">equal_to_zero</span><span class="p">:</span> <span class="n">VectorExpression</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This constraint ensures that all entries of the polynomial expression are zero.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: The name of the constraint. </span>
+<span class="sd">        equal_to_zero: The polynomial expression that must be zero.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (StateMonad[EqualityConstraint]): A polynomial constraint</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ``` python</span>
+<span class="sd">        state, eq_constraint = sosopt.equality_constraint(</span>
+<span class="sd">            name=&#39;eq&#39;,</span>
+<span class="sd">            greater_than_zero=eq,</span>
+<span class="sd">        ).apply(state)</span>
+<span class="sd">        ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">init_equality_constraint</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">expression</span><span class="o">=</span><span class="n">equal_to_zero</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
