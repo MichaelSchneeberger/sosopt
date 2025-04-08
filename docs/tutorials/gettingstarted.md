@@ -17,6 +17,16 @@ $$
 where $c(\theta)$, $q(\theta)$, $p_k(x; \theta)$, and $l(\theta)$ are polynomial expression in polynomial variable $x$ and decision variable $\theta$.
 When solving the SOS problem, an exception is raised when one of these polynomial expression does not depend linearly on the decision variable $\theta$.
 
+Compared to other SOS libraries, **SOSOpt** defines standalone constraints, not requiring a link to a concrete SOS problem.
+In *SOSTOOLS*, a `Program` object is used to define the SOS constraint `sosineq(Program, r);`.
+In *SumOfSqaures.jl*, a `model` object is used to define the SOS constraint `@constraint(model, r >= 0)`.
+The `state` object takes a comparable role of such an object as a container of shared data.
+However, in **SOSOpt**, the usage of an SOS constraint returned by the function `sosopt.sos_constraint` is not restricted to a single SOS program, making this approach more modular when working with different SOS problems.
+The state object is created as follows.
+
+``` python
+state = sosopt.init_state()
+```
 
 
 ## Variables
@@ -24,10 +34,14 @@ When solving the SOS problem, an exception is raised when one of these polynomia
 The polynomial variable $x$ and decision variable $\theta$ are both build within the *PolyMat* ecosystem.
 By convention, native *PolyMat* variables -- created via `polymat.define_variable` -- are interpretated as polynomial variables.
 In contrast, decision variables are introduced by extending the *PolyMat* framework with a new variable type.
-The following example defines a decision variable $\theta$ consisting of three components and uses it to construct a polynomial expression in the previously defined polynomial variable $x$.
+The following example defines a polynomial variable $x$ and a decision variable $\theta$ consisting of three components and uses them to construct a polynomial expression.
 
 ``` python
 import sosopt
+import polymat
+
+# define a polynomial variable
+x = polymat.define_variable('x')
 
 # define three decision variables
 theta_0 = sosopt.define_variable('theta_0')
@@ -45,7 +59,7 @@ Alternatively, the construction of a fully parametrized polynomial -- involving 
 monomials = x.combinations(degrees=range(3))
 
 # creates a parametrized polynomial r = r_0 + r_1 x + r_2 x^2
-r = sosopt.define_polynomial(name='r', monomials=monomials)
+state, r = sosopt.define_polynomial(name='r', monomials=monomials).apply(state)
 
 # returns a polymat vector [r_0, r_1, r_2] containing the coefficients
 r.coefficient
@@ -63,17 +77,6 @@ Q = sosopt.define_polynomial(
 
 
 ## Polynomial Constraints
-
-Compared to other SOS libraries, **SOSOpt** defines standalone constraints, not requiring a link to a concrete SOS problem.
-In *SOSTOOLS*, a `Program` object is used to define the SOS constraint `sosineq(Program, r);`.
-In *SumOfSqaures.jl*, a `model` object is used to define the SOS constraint `@constraint(model, r >= 0)`.
-The `state` object takes a comparable role of such an object as a container of shared data.
-However, in **SOSOpt**, the usage of an SOS constraint returned by the function `sosopt.sos_constraint` is not restricted to a single SOS program, making this approach more modular when working with different SOS problems.
-The state object is created as follows.
-
-``` python
-state = sosopt.init_state()
-```
 
 The polynomial constraints in the SOS problem can be defined in **SOSOpt** as follows:
 
@@ -201,6 +204,8 @@ state, result = problem.solve().apply(state)
 ```
 
 The `solve` method converts the SOS problem to an SDP, solves the SDP using the provided solver, and maps the result to a dictionary `result.symbol_values`.
+
+See [examples/boxconstraints](../examples/boxconstraints.md) for a full example on how to define and solve an SOS problem.
 
 
 

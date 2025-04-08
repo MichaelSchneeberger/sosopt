@@ -12,9 +12,6 @@ variable_names = ("x_1", "x_2", "x_3")
 x1, x2, x3 = tuple(polymat.define_variable(name) for name in variable_names)
 x = polymat.v_stack((x1, x2, x3))
 
-# w1 = ((x1 + 0.3) / 0.5) ** 2 + (x2 / 20) ** 2 + (x3 / 20) ** 2 - 1
-# w2 = ((x1 + 0.3) / 20) ** 2 + (x2 / 1.3) ** 2 + (x3 / 1.3) ** 2 - 1
-
 w1 = ((x1 + 0.3) / 0.5) ** 2 - 1
 w2 = (x2 / 1.3) ** 2 + (x3 / 1.3) ** 2 - 1
 
@@ -49,29 +46,14 @@ problem = sosopt.sos_problem(
 
 state, sos_result = problem.solve().apply(state)
 
+# Plot Preparations
+###################
+
 # materialize polynomials w1(x), w2(x), and r(x), allowing to evaluate these
 # polynomials for specified vectors
 state, w1_array = polymat.to_array(w1, x).apply(state)
 state, w2_array = polymat.to_array(w2, x).apply(state)
 state, r_array = polymat.to_array(r.eval(sos_result.symbol_values), x).apply(state)
-
-
-# Plot results
-##############
-
-pyplot.close()
-fig = pyplot.figure(figsize=(6, 6))
-ax = fig.subplots()
-
-# define 2D projection for plotting
-proj = lambda x, y: np.array((x, y, 0)).reshape(-1, 1)
-
-# create mesh (i_d, i_q)
-ticksX = np.arange(-2, 1, 0.04)
-ticksY = np.arange(-2, 2, 0.04)
-n_row, n_col = len(ticksY), len(ticksX)
-X = np.matlib.repmat(ticksX, n_row, 1)
-Y = np.matlib.repmat(ticksY.reshape(-1, 1), 1, n_col)
 
 def select_max(arrays):
     def func(x, y):
@@ -81,12 +63,30 @@ def select_max(arrays):
         return max(evaluate_arrays())
     return func
 
-# plot contour of zero-sublevel sets {x | w1(x) <= 0}, {x | w2(x) <= 0}, 
-# and {x | r(x) <= 0}
+# define 2D projection for plotting
+def proj(x, y):
+    return np.array((x, y, 0)).reshape(-1, 1)
+
+# create mesh (i_d, i_q)
+ticksX = np.arange(-2, 1, 0.04)
+ticksY = np.arange(-2, 2, 0.04)
+n_row, n_col = len(ticksY), len(ticksX)
+X = np.matlib.repmat(ticksX, n_row, 1)
+Y = np.matlib.repmat(ticksY.reshape(-1, 1), 1, n_col)
+
 Z_w1 = np.vectorize(lambda x, y: w1_array(proj(x, y)))(X, Y)
 Z_w2 = np.vectorize(lambda x, y: w2_array(proj(x, y)))(X, Y)
 Z_box = np.vectorize(select_max((w1_array, w2_array)))(X, Y)
 Z_r = np.vectorize(lambda x, y: r_array(proj(x, y)))(X, Y)
+
+# Plot results
+##############
+
+pyplot.close()
+fig = pyplot.figure(figsize=(6, 6))
+ax = fig.subplots()
+
+# plot contour of zero-sublevel sets {x | w1(x) <= 0}, {x | w2(x) <= 0}, and {x | r(x) <= 0}
 ax.contour(X, Y, Z_w1, [0], linewidths=0.5, colors=["#A0B1BA"])
 ax.contour(X, Y, Z_w2, [0], linewidths=0.5, colors=["#A0B1BA"])
 ax.contour(X, Y, Z_box, [0], linewidths=2, colors=['r'], linestyles=['dashed'])
@@ -101,4 +101,3 @@ ax.set_xlabel('$x_1$')
 ax.set_ylabel('$x_2$')
 
 pyplot.show()
-# fig.savefig('sosoptexample.pdf', bbox_inches='tight')

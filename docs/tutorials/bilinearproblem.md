@@ -8,10 +8,12 @@ This transformation is performed by calling the `eval` method on the SOS problem
 ``` python
 # defines decision variable substitutions
 symbol_values = {
-    r.symbol: (1, 0, 1)
+    u.symbol: (0, -1, -1),
 }
 
 # create an SOS problem that is linear in its decision variable
 # by substituting a group of decision variables
 problem = problem.eval(symbol_values)
 ```
+
+See [examples/bilinearproblem](../examples/bilinearproblem.md) for a full example on how to evaluate a bilinear SOS problem.

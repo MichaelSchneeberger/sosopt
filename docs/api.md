@@ -11,9 +11,7 @@
 ## Operations on Polynomial Expressions
 
 ### ::: sosopt.polymat.from_.sos_monomial_basis
-### ::: sosopt.polymat.from_.sos_monomial_basis_sparse
-### ::: sosopt.polymat.from_.square_matricial_representation
-### ::: sosopt.polymat.from_.square_matricial_representation_sparse
+### ::: sosopt.polymat.from_.gram_matrix
 
 
 ## Defining Sets

@@ -1,0 +1,58 @@
+site_name: SOSOpt
+site_url: https://github.com/MichaelSchneeberger/sosopt
+
+repo_name: MichaelSchneeberger/sosopt
+repo_url: https://github.com/MichaelSchneeberger/sosopt
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - toc.integrate
+
+extra:
+  version:
+    provider: mike
+
+plugins:
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_root_heading: true
+            show_signature: false      # Show function signature
+            show_signature_annotations: false  # Show parameter types
+            show_source: true        # Show source code links (optional)
+  - mike:
+      # These fields are all optional; the defaults are as below...
+      alias_type: symlink
+      canonical_version: latest  # Default version
+      redirect_template: null
+      deploy_prefix: ''
+      canonical_version: null
+      version_selector: true
+      css_dir: css
+      javascript_dir: js
+  - mermaid2
+
+nav:
+  - Home: index.md
+  - Tutorials:
+    - Getting Started: tutorials/gettingstarted.md
+    - SOS Decomposition and SDP Conversion: tutorials/sosdecomposition.md
+    - Bilinear Problem: tutorials/bilinearproblem.md
+  - Examples:
+    - Envelope for Box Constraints: examples/boxconstraints.md
+    - SOS Decomposition: examples/sosdecomposition.md
+    - Bilinear SOS Problem: examples/bilinearproblem.md
+  - API Reference: api.md
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.snippets
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
