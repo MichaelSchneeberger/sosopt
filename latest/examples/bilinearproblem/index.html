@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://github.com/MichaelSchneeberger/sosopt/latest/tutorials/sosdecomposition/">
+        <link rel="canonical" href="https://github.com/MichaelSchneeberger/sosopt/latest/examples/bilinearproblem/">
       
       
-        <link rel="prev" href="../gettingstarted/">
+        <link rel="prev" href="../sosdecomposition/">
       
       
-        <link rel="next" href="../bilinearproblem/">
+        <link rel="next" href="../../api/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>SOS Decomposition and SDP Conversion - SOSOpt</title>
+        <title>Bilinear SOS Problem - SOSOpt</title>
       
     
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#sos-decomposition-and-conic-problem-conversion" class="md-skip">
+        <a href="#bilinear-sos-problem" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SOS Decomposition and SDP Conversion
+              Bilinear SOS Problem
             
           </span>
         </div>
@@ -166,13 +166,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../gettingstarted/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../tutorials/gettingstarted/" class="md-tabs__link">
           
   
   
@@ -188,11 +186,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../examples/boxconstraints/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../boxconstraints/" class="md-tabs__link">
           
   
   
@@ -296,29 +296,24 @@
       
   
   
-    
   
   
-  
     
     
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
             
   
   
@@ -331,7 +326,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Tutorials
@@ -345,7 +340,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gettingstarted/" class="md-nav__link">
+      <a href="../../tutorials/gettingstarted/" class="md-nav__link">
         
   
   
@@ -365,32 +360,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    SOS Decomposition and SDP Conversion
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../tutorials/sosdecomposition/" class="md-nav__link">
         
   
   
@@ -401,44 +374,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#sos-decomposition" class="md-nav__link">
-    <span class="md-ellipsis">
-      SOS Decomposition
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#conic-problem-conversion" class="md-nav__link">
-    <span class="md-ellipsis">
-      Conic Problem Conversion
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -451,7 +386,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../bilinearproblem/" class="md-nav__link">
+      <a href="../../tutorials/bilinearproblem/" class="md-nav__link">
         
   
   
@@ -478,24 +413,29 @@
       
   
   
+    
   
   
+  
     
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -508,7 +448,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Examples
@@ -522,7 +462,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/boxconstraints/" class="md-nav__link">
+      <a href="../boxconstraints/" class="md-nav__link">
         
   
   
@@ -545,7 +485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/sosdecomposition/" class="md-nav__link">
+      <a href="../sosdecomposition/" class="md-nav__link">
         
   
   
@@ -565,10 +505,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../examples/bilinearproblem/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -579,6 +528,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -632,149 +582,194 @@
   
 
 
-<h1 id="sos-decomposition-and-conic-problem-conversion">SOS Decomposition and Conic Problem Conversion</h1>
-<h2 id="sos-decomposition">SOS Decomposition</h2>
-<p>SOS problems are solved by converting them into conic optimization problems.
-This conversion involves decomposing SOS polynomials into their Square Matricial Representation (SMR).
-For a given polynomial <span class="arithmatex">\(p(x)\)</span>, the SMR is defined as:</p>
+<h1 id="bilinear-sos-problem">Bilinear SOS Problem</h1>
+<p>This example ensures stability of a dynamical system</p>
 <div class="arithmatex">\[
-p(x) = Z(x)^\top Q_p Z(x), \quad Q_p≽0,
+\dot x = f(x) + G(x) u(x) = \begin{bmatrix}x_2 + x_1^2 - x_1^3 \\ 0\end{bmatrix} + \begin{bmatrix}0 \\ 1\end{bmatrix} u(x)
 \]</div>
-<p>where the monomial vector <span class="arithmatex">\(Z(x)\)</span> includes all monomials up to degree <span class="arithmatex">\(\lceil \text{deg}(p)/2 \rceil\)</span>, and <span class="arithmatex">\(Q_p\)</span> is the <em>Gram matrix</em>.</p>
-<p>This representation is not unqiue, as different entries in <span class="arithmatex">\(Q_p\)</span> may correspond to identical monomial products.
-To illustrate this, consider the polynomial <span class="arithmatex">\(p(x) = 1 + x_1^2 - x_1 x_2^2 + x_2^4\)</span>.
-Given the monomial vector <span class="arithmatex">\(Z(x) = [1 \quad x_1 \quad x_2 \quad x_1 x_2 \quad x_2^2]^\top\)</span>, the corresponding Gram matrix is parametrized by <span class="arithmatex">\(\alpha_1\)</span>, <span class="arithmatex">\(\alpha_2\)</span>, and <span class="arithmatex">\(\alpha_3\)</span>:</p>
+<p>by finding a polynomial Lyapunov function <span class="arithmatex">\(V(x)\)</span>.
+This involves finding a positive definite scalar polynomial <span class="arithmatex">\(V(x)\)</span> (i.e., <span class="arithmatex">\(V(x) &gt; 0\)</span> for <span class="arithmatex">\(x \neq 0\)</span> and <span class="arithmatex">\(V(0) = 0\)</span>), which satisfies for all <span class="arithmatex">\(x\)</span>:</p>
 <div class="arithmatex">\[
-Q_p = \begin{bmatrix}
-1 &amp; 0 &amp; 0 &amp; \alpha_1 &amp; \alpha_2 \\ 
-0 &amp; 1 &amp; -\alpha_1 &amp; 0 &amp; \alpha_3 \\ 
-0 &amp; -\alpha_1 &amp; -2\alpha_2 &amp; -0.5 -\alpha_3 &amp; 0 \\
-\alpha_1 &amp; 0 &amp; -0.5 - \alpha_3 &amp; 0 &amp; 0 \\
-\alpha_2 &amp; \alpha_3 &amp; 0 &amp; 0 &amp; 1 \\
-\end{bmatrix}.
+\dot V(x) = \nabla V(x)^\top \left ( f(x) + G(x) u(x) \right ) &lt; 0.
 \]</div>
-<p>To account for this non-uniqueness, the parameters <span class="arithmatex">\(\alpha_k\)</span> can be introduces as a decision variables of the resulting conic problem, thereby parametrizing the entire family of decompositions.
-If there exists a parametrization <span class="arithmatex">\(\alpha_1\)</span>, <span class="arithmatex">\(\alpha_2\)</span>, and <span class="arithmatex">\(\alpha_3\)</span> such that <span class="arithmatex">\(Q_p ≽ 0\)</span>, then <span class="arithmatex">\(p(x)\)</span> is proven to be an SOS polynomial.</p>
-<p>For a large Gram matrix <span class="arithmatex">\(Q_p\)</span> many additional decision variables <span class="arithmatex">\(\alpha_k\)</span> can significantly increase computational effort.
-To mitigate this, a heuristic can be applied to preselect specific values for <span class="arithmatex">\(\alpha_k\)</span>, converting the problem without introducing new decision variables.</p>
-<p>In the above example, this heuristic selects <span class="arithmatex">\(\alpha_1=0\)</span>, <span class="arithmatex">\(\alpha_2=0\)</span>, and <span class="arithmatex">\(\alpha_3=0\)</span>.
-However, this selection can make the SOS problem infeasible.
-To disable this heuristic (enabled by default) set <code>sparse_smr</code> argument to <code>False</code> when initializing the state object:</p>
-<!-- This heuristic is enabled by default and can be disabled when initializing the state object: -->
+<p>Given the Square Matricial Representation (SMR)</p>
+<div class="arithmatex">\[
+V(x) = Z(x)^\top Q_V Z(x),
+\]</div>
+<p>the SOS problem encoding these condition is selected as:</p>
+<div class="arithmatex">\[
+\begin{array}{ll}
+    \text{find} &amp; Q_V \\
+    \text{minimize} &amp; \text{tr}( Q_V ) \\
+    \text{subject to} &amp; \nabla V(x)^\top \left ( f(x) + G(x) u(x) \right ) + 0.1 x^\top x \leq 0 \quad \forall x \\
+    &amp; V(x) - 0.1 x^\top x \geq 0 \quad \forall x.
+\end{array}
+\]</div>
+<pre><code class="language-python">import matplotlib.pyplot as pyplot
+import numpy.matlib
+import numpy as np
+from scipy.integrate import odeint
 
-<pre><code class="language-python">state = sosopt.init_state(sparse_smr=False)
-</code></pre>
-<p>An SOS decomposition of <span class="arithmatex">\(p(x)\)</span> can be computed by solving the following feasibility problem, which involves a single SOS constraint.
-The following code snipped also prints the symbol of the decision variables associated with the SOS problem.
-Since the polynomial <span class="arithmatex">\(p(x)\)</span> does not contain any decision variables, and the SOS decomposition introduces new decision variables only during the conversion to a conic problem, the resulting SOS problem does not define any decision variables.  </p>
-<pre><code class="language-python"># Define polynomial variables
-state_variables = tuple(polymat.define_variable(name) for name in ('x1', 'x2'))
-x1, x2 = state_variables
+import polymat
+
+import sosopt
+from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
+
+
+context = sosopt.init_state()
+
+# Define a tuple of Python strings representing the state variables of the system model.
+state_variable_names = ('x1', 'x2')
+
+# Create symbolic state variables using polymat
+state_variables = tuple(polymat.define_variable(name) for name in state_variable_names)
 x = polymat.v_stack(state_variables)
+n_states = len(state_variables)
 
-# Create polynomial and SOS constraint
-p = x1**2 - x1*x2**2 + x2**4 + 1
+# Unpack the state variables into individual Python variables
+x1, x2 = state_variables
 
-state, sos_constraint = sosopt.sos_constraint(
-    name=&quot;p&quot;,
-    greater_than_zero=p,
-).apply(state)
+n_inputs = 1
 
-# Formulate SOS problem (feasibility formulation)
+f = polymat.from_((
+    (x2 + x1**2 - x1**3,),
+    (0,),
+))
+
+G = polymat.from_((
+    (0,),
+    (1,),
+))
+
+degree = 2
+
+# Define a single CLF
+V_monom = x.combinations(degrees=(degree,))
+# V_monom = x.combinations(degrees=range(degree+1))
+context, V = sosopt.define_polynomial(
+    name=&quot;V&quot;, 
+    monomials=V_monom,
+).apply(context)
+dV = V.diff(x).T.cache()
+
+# Define the numerator p(x) of the rational controller
+context, u = sosopt.define_polynomial(
+    name=&quot;u&quot;, 
+    monomials=x.combinations(degrees=range(degree)),
+    n_rows=n_inputs,
+).apply(context)
+
+G_at_p = (G @ u).cache()
+
+
+x_dot = (f + G_at_p).cache()
+
+constraints: list[PolynomialConstraint] = []
+
+context, v_pos_condition = sosopt.sos_constraint(
+    name=&quot;V_pos&quot;,
+    greater_than_zero=V - 0.1*x.T@x,
+).apply(context)
+constraints.append(v_pos_condition)
+
+# Control Lyapunov Function (CLF) condition
+context, clf_condition = sosopt.quadratic_module_constraint(
+    name=&quot;clf&quot;,
+    greater_than_zero=-(dV.T @ x_dot) - 0.1*x.T@x,
+    domain=sosopt.set_(
+        smaller_than_zero={'w': x.T@x - 4},
+    )
+).apply(context)
+constraints.append(clf_condition)
+
+
+# Initialize the algorithm with an initial guess
+init_values = (
+    (u, -x1-x2),
+)
+
+symbol_values = {}
+
+for expr, value_expr in init_values:
+    if isinstance(value_expr, (float, int)):
+        value_expr = polymat.from_polynomial(value_expr)
+
+    context, result = sosopt.to_symbol_values(expr, value_expr).apply(context)
+
+    symbol_values |= result
+
+# symbol_values = {
+#     'p': (0, -1, -1),
+#     's': (1,)
+# }
+
 sos_problem = sosopt.sos_problem(
-    constraints=(sos_constraint,),
+    lin_cost=sosopt.gram_matrix(V, x).trace(),
+    constraints=tuple(constraints),
     solver=sosopt.cvxopt_solver,
 )
 
-# No decision variables are defined so far
-# Output: empty tuple
-print(sos_problem.decision_variable_symbols)
+sos_problem_eval = sos_problem.eval(symbol_values)
 
-# Solve SOS problem
-context, sos_result = sos_problem.solve().apply(context)
+state, sos_result = sos_problem_eval.solve().apply(context)
+
+symbol_values = symbol_values | sos_result.symbol_values
+
+# Plot Preparations
+###################
+
+# Helper function to project the 3-dimensional state onto 2 dimensions
+def map_to_xy(x, y):
+    return np.array((x, y) + (0,) * (n_states - 2)).reshape(-1, 1)
+
+context, f_array = polymat.to_array(f, x).apply(context)
+context, G_array = polymat.to_array(G, x).apply(context)
+context, u_array = polymat.to_array(u.eval(symbol_values), x).apply(context)
+context, V_array = polymat.to_array(V.eval(symbol_values), x).apply(context)
+
+def get_x_dot(x, _):
+    x = np.array(x).reshape(-1, 1)
+    u = u_array(x)
+    xdot = f_array(x) + G_array(x) @ u
+    return np.squeeze(xdot)
+
+x0 = [1, 0]
+t_sim, dt_sim = 100, 100e-4
+n_samples = int(t_sim/dt_sim)
+t = np.linspace(0, t_sim, n_samples)
+trajectory = odeint(get_x_dot, x0, t)
+
+ticks = np.arange(-2.1, 2.1, 0.04)
+X = np.matlib.repmat(ticks, len(ticks), 1)
+Y = X.T
+
+ZV = np.vectorize(lambda x, y: V_array(map_to_xy(x, y)))(X, Y)
+
+# Plot results
+##############
+
+pyplot.close()
+fig = pyplot.figure(figsize=(8, 8))
+ax = fig.subplots()
+
+pyplot.plot(trajectory[:, 0], trajectory[:, 1], color='C0')
+
+ax.contour(X, Y, ZV, [0.1, 1, 10, 100], linewidths=0.5, colors=['#17202A'], linestyles=['dashed'])
+
+ax.text(0.9, 0, r'$x_0$', color='C0')
+ax.text(0.5, -0.53, r'$x(t)$', color='C0')
+ax.text(0.25, 0.5, r'$\{ x \mid V(x) = 1 \}$', color='#17202A')
+
+x_min, x_max, y_min, y_max = -1.5, 1.5, -1.5, 1.5
+ax.set_xlim(x_min, x_max)
+ax.set_ylim(y_min, y_max)
+
+ax.set_xlabel(r'$x_1$')
+ax.set_ylabel(r'$x_2$')
+
+pyplot.show()
+
 </code></pre>
-<p>The parametrized Gram matrix can be accessed through a field <code>gram_matrix</code> of the SOS constraint object <code>sos_constraint</code>.
-Once the feasibility problem is solved, the Gram matrix can be extracted by evaluating its parameters with the solution of the SOS problem.</p>
-<pre><code class="language-python"># Evaluate the decomposition variables with the results of the SOS problem
-q = sos_constraint.gram_matrix.eval(sos_result.symbol_values)
-
-# Convert the polynomial expression to sympy for printing
-state, q_sympy = polymat.to_sympy(q).apply(state)
-</code></pre>
-<p>The resulting Gram matrix is given as:</p>
-<div class="arithmatex">\[
-Q_p = \left[\begin{matrix}1 &amp; 0 &amp; 0 &amp; 7.41873902278933 \cdot 10^{-18} &amp; -0.130274885256573\\0 &amp; 1 &amp; -7.41873902278933 \cdot 10^{-18} &amp; 0 &amp; -0.499945142290247\\0 &amp; -7.41873902278933 \cdot 10^{-18} &amp; 0.260549770513145 &amp; -5.48577097532754 \cdot 10^{-5} &amp; 0\\7.41873902278933 \cdot 10^{-18} &amp; 0 &amp; -5.48577097532754 \cdot 10^{-5} &amp; 0 &amp; 0\\-0.130274885256573 &amp; -0.499945142290247 &amp; 0 &amp; 0 &amp; 1\end{matrix}\right]
-\]</div>
-<p>See <a href="../../examples/sosdecomposition/">examples/sosdecomposition</a> for a full example on how to recover the SOS decomposition of a polynomial <span class="arithmatex">\(p(x)\)</span>.</p>
-<h2 id="conic-problem-conversion">Conic Problem Conversion</h2>
-<p>Solving the SOS problem using <code>sos_problem.solve()</code> involves two transformations:</p>
-<ol>
-<li>Conversion of the SOS problem to a conic optimization problem</li>
-<li>Representation of the conic problem in solver-specific array form</li>
-</ol>
-<p>We can perform just the first conversion using <code>sos_problem.to_conic_problem()</code> method.
-This step introduces decomposition variables associated with the SOS constraints.</p>
-<pre><code class="language-python"># Convert to conic problem (introduces decomposition variables)
-state, conic_problem = sos_problem.to_conic_problem().apply(state)
-
-# SOS decomposition decision variables are defined
-# Output: ('p')
-print(conic_problem.decision_variable_symbols)
-</code></pre>
-<p>The conic problem defines a symbol <em>p</em>, which corresponds to the three decision variables <span class="arithmatex">\(\alpha_1\)</span>, <span class="arithmatex">\(\alpha_2\)</span>, and <span class="arithmatex">\(\alpha_3\)</span> introduced during the conversion.</p>
-<p>The second transformation can be partially performed using the <code>cone_problem.to_solver_args()</code> method.</p>
-<pre><code class="language-python"># Convert to argument provided to the conic solver
-state, solver_args = conic_problem.to_solver_args().apply(state)
-
-# Inspect conic problem after SOS decomposition
-# Output:
-# Number of decision variables: 3
-# Quadratic cost: False
-# Semidefinite constraints: 1
-#   1. 5x5
-# Equality constraints: 0
-# Variables: {'p_0': 5, 'p_1': 6, 'p_2': 7}
-print(solver_args.to_summary())
-
-# Inspect semidefinite cone and equality arrays used by the conic solvers
-print(solver_args.semidef_cone)
-print(solver_args.equality)
-</code></pre>
-<p>The <code>to_summary()</code> method provides a high-level overview of the conic problem.
-Additionally, the arrays corresponding to semidefinite and equality constraints can be accessed via the <code>semidef_cone</code> and <code>equality</code> attributes.</p>
-<p>Finally, the conic problem can be solve, and the result printed:</p>
-<pre><code class="language-python"># Solving the conic problem yields the same results
-state, conic_result = conic_problem.solve().apply(state)
-
-# Print the result
-# Outputs: {'p': (1.483747804557867e-17, -0.26054977051314515, -0.9998902845804934)}
-print(conic_result.symbol_values)
-</code></pre>
-<!-- Finally, we can compute the SOS decomposition non-uniquely through the following procedure:
-
-<!-- ``` python
-# Retrieve monomial basis and SMR from the SOS constraint
-Z = constraint.primitives[0].sos_monomial_basis
-Qp = constraint.primitives[0].sos_smr
-
-# Evaluate the decomposition variables with the results of the SOS problem
-Qp_eval = Qp.eval(sos_result.symbol_values)
-
-# Output matrix as nested tuples
-state, Qp_np = polymat.to_tuple(Qp_eval).map(np.array).apply(state)
-
-# Use SVD decomposition instead of Cholesky decomposition
-_, S, V = np.linalg.svd(Qp_np)
-
-# Vector of polynomials
-q = polymat.from_(np.diag(np.sqrt(S)) @ V) @ Z
-```
-
-$$
-\left[\begin{matrix}- 0.842676173311175 x_{1} + 0.87081565437922 x_{2}^{2} - 0.219583175233309\\0.967686064293247 - 0.252158047606349 x_{1}\\- 0.475723854731912 x_{1} - 0.491609698936151 x_{2}^{2} - 0.123963341868085\\- 0.00010747125133889 x_{1} x_{2} + 0.510440761022419 x_{2}\\0.000107471251338855 x_{1} x_{2} + 2.26276401618244 \cdot 10^{-8} x_{2}\end{matrix}\right]
-$$
-
-The original polynomial can be recoverd by $p(x) = q(x)^\top q(x)$. -->
 
 
 
