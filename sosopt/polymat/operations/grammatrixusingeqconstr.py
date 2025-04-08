@@ -15,7 +15,7 @@ from polymat.expressiontree.nodes import (
 from sosopt.state.state import State as BaseState
 
 
-class SquareMatricialRepresentationUsingEqConstr[State: BaseState](
+class GramMatrixUsingEqConstr[State: BaseState](
     FrameSummaryMixin, 
     SingleChildExpressionNode[State],
 ):

@@ -48,8 +48,6 @@ class CVXOptSolutionFound(CVXOptSolverData, SolutionFound):
 
 class CVXOPTSolver(SolverMixin):
     def solve(self, info: SolverArgs):
-        q = cvxopt.matrix(info.lin_cost[1].T)
-
         inequality_constraints = info.nonneg_orthant + info.second_order_cone + info.semidef_cone
 
         if inequality_constraints:
@@ -73,6 +71,8 @@ class CVXOPTSolver(SolverMixin):
         else:
             b = None
             A = None
+
+        q = cvxopt.matrix(info.lin_cost[1].T)
 
         if info.quad_cost is None:
             return_val = cvxopt.solvers.conelp(

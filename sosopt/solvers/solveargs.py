@@ -26,8 +26,9 @@ class SolverArgs(NamedTuple):
     semidef_cone: tuple[ArrayRepr, ...]
     equality: tuple[ArrayRepr, ...]
 
-    # for debugging
     indices: tuple[int, ...]
+
+    # for debugging
     variable_names: tuple[str, ...]
 
     @property
@@ -39,31 +40,35 @@ class SolverArgs(NamedTuple):
             yield f'Number of decision variables: {self.n_var}'
             yield f'Quadratic cost: {self.quad_cost is not None}'
 
+            yield f'Semidefinite constraints: {len(self.semidef_cone)}'
             if self.semidef_cone:
-                yield 'Semidefinite constraints:'
-                for array in self.semidef_cone:
+                for index, array in enumerate(self.semidef_cone):
                     size = to_quadratic_size(array.n_eq)
-                    yield f'- {size}x{size}'
+                    yield f'  {index+1}. {size}x{size}'
 
+            yield f'Equality constraints: {len(self.equality)}'
             if self.equality:
-                yield 'Equality constraints:'
-                for array in self.equality:
-                    yield f'- {array.n_eq}'
+                for index, array in enumerate(self.equality):
+                    yield f'  {index+1}. {array.n_eq}'
 
-            yield f'Variables: {self.variable_names}'
+            variables = dict(zip(self.variable_names, self.indices))
+            yield f'Variables: {variables}'
 
         return '\n'.join(gen_summary())
 
 
 def to_solver_args(
     indices: VariableVectorExpression | tuple[int, ...],
-    lin_cost: ScalarPolynomialExpression,
+    lin_cost: ScalarPolynomialExpression | None = None,
     quad_cost: VectorExpression | None = None,
     l_data: Iterable[tuple[str, VectorExpression]] | None = None,
     q_data: Iterable[tuple[str, VectorExpression]] | None = None,
     s_data: Iterable[tuple[str, VectorExpression]] | None = None,
     eq_data: Iterable[tuple[str, VectorExpression]] | None = None,
 ):
+    if lin_cost is None:
+        lin_cost = polymat.from_polynomial(0)
+
     def create_solver_args(state: State):
         match indices:
             case VariableVectorExpression():

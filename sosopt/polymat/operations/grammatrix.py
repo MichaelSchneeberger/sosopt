@@ -10,7 +10,7 @@ from sosopt.polymat.symbols.auxiliaryvariablesymbol import AuxiliaryVariableSymb
 from sosopt.state.state import State
 
 
-class SquareMatricialRepresentation(FrameSummaryMixin, SingleChildExpressionNode[State]):
+class GramMatrix(FrameSummaryMixin, SingleChildExpressionNode[State]):
     @property
     @abc.abstractmethod
     def monomials(self) -> ExpressionNode[State]: ...

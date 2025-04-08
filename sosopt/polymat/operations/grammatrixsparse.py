@@ -12,7 +12,7 @@ from polymat.state.state import State
 from polymat.utils.getstacklines import FrameSummaryMixin, to_operator_traceback
 
 
-class SquareMatricialRepresentationSparse(FrameSummaryMixin, SingleChildExpressionNode):
+class GramMatrixSparse(FrameSummaryMixin, SingleChildExpressionNode):
     """
     Constructs the coefficient matrix Q corresponding to the quadratic form of the polynomial.
     Given a vector of variables and, optionally, a vector of monomials, this class generates the coefficient

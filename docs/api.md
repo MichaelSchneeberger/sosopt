@@ -21,12 +21,18 @@
 ### ::: sosopt.semialgebraicset.set_
 
 
-## Defining Constraints
+## Defining Polynomial Constraints
 
 ### ::: sosopt.polynomialconstraints.from_.zero_polynomial_constraint
 ### ::: sosopt.polynomialconstraints.from_.sos_constraint
 ### ::: sosopt.polynomialconstraints.from_.sos_matrix_constraint
 ### ::: sosopt.polynomialconstraints.from_.quadratic_module_constraint
+
+
+## Defining SDP constraints
+
+### ::: sosopt.coneconstraints.from_.semi_definite_constraint
+### ::: sosopt.coneconstraints.from_.equality_constraint
 
 
 ## Defining the SOS Optimization Problem

@@ -9,8 +9,8 @@ class DecisionVariableVectorSymbolExpression[_](VariableExpression):
     reduced further.
     """
 
-    def iterate_symbols(self):
-        yield self.symbol
+    # def iterate_symbols(self):
+    #     yield self.symbol
 
 
 class DecisionVariableExpression[_](DecisionVariableVectorSymbolExpression):

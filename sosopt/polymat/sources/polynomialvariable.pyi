@@ -1,5 +1,7 @@
 from typing import Iterable
 
+from statemonad.typing import StateMonad
+
 from polymat.typing import (
     State as BaseState,
     MatrixExpression,
@@ -23,9 +25,10 @@ class PolynomialVariable[State: BaseState](MatrixExpression):
 
     def iterate_coefficients(
         self,
-    ) -> Iterable[DecisionVariableVectorSymbolExpression[State]]: ...
+    ) -> Iterable[tuple[tuple[int, int], DecisionVariableVectorSymbolExpression[State]]]: ...
     def iterate_symbols(self) -> Iterable[DecisionVariableSymbol]: ...
     def to_coefficient_vector(self) -> VariableVectorExpression[State]: ...
+    # def to_symbol_values(self, value: MatrixExpression) -> StateMonad[State, dict[DecisionVariableSymbol, tuple[float, ...]]]: ...
 
 class PolynomialMatrixVariable[State: BaseState](PolynomialVariable):
     coefficients: tuple[tuple[DecisionVariableVectorSymbolExpression[State]]]

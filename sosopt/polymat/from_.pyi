@@ -24,34 +24,25 @@ from sosopt.polymat.sources.decisionvariableexpression import (
     DecisionVariableExpression,
 )
 
-def square_matricial_representation[State: BaseState](
+def gram_matrix[State: BaseState](
     expression: ScalarPolynomialExpression[State],
     variables: VariableVectorExpression[State],
     monomials: MonomialVectorExpression[State] | None = None,
     auxilliary_variable_symbol: AuxiliaryVariableSymbol | None = None,
-) -> SymmetricMatrixExpression[State]: ...
-
-def square_matricial_representation_sparse[State: BaseState](
-    expression: ScalarPolynomialExpression[State],
-    variables: VariableVectorExpression[State],
-    monomials: MonomialVectorExpression[State] | None = None,
+    sparse_smr: bool | None = None,
 ) -> SymmetricMatrixExpression[State]: ...
 
 def sos_monomial_basis[State: BaseState](
     expression: MatrixExpression[State],
     variables: VariableVectorExpression[State],
-) -> MonomialVectorExpression[State]: ...
-
-def sos_monomial_basis_sparse[State: BaseState](
-    expression: MatrixExpression[State],
-    variables: VariableVectorExpression[State],
+    sparse_smr: bool | None = None,
 ) -> MonomialVectorExpression[State]: ...
 
 class define_multiplier[State: BaseState]:
     def __new__(
         _,
         name: str,
-        degree: int,
+        degree: int | MatrixExpression[State],
         multiplicand: MatrixExpression[State],
         variables: VariableVectorExpression[State] | tuple[int, ...],
     ) -> StateMonad[State, PolynomialMatrixVariable[State]]: ...

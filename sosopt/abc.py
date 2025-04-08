@@ -10,9 +10,6 @@ from sosopt.solvers.solverdata import (
     SolutionNotFound as _SolutionNotFound,
     SolverData as _SolverData,
 )
-from sosopt.polynomialconstraints.polynomialconstraint import (
-    PolynomialConstraint as _PolynomialConstraint,
-)
 
 PolynomialVariable = _PolynomialVariable
 PolynomialMatrixVariable = _PolynomialMatrixVariable
@@ -23,5 +20,3 @@ ScalarPolynomialVariable = _ScalarPolynomialVariable
 SolverData = _SolverData
 SolutionFound = _SolutionFound
 SolutionNotFound = _SolutionNotFound
-
-PolynomialConstraint = _PolynomialConstraint

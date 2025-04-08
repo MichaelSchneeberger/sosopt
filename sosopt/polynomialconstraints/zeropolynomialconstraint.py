@@ -9,7 +9,7 @@ import polymat
 from polymat.typing import MatrixExpression, State
 
 from sosopt.polynomialconstraints.constraintprimitives.polynomialconstraintprimitive import PolynomialConstraintPrimitive
-from sosopt.polynomialconstraints.constraintprimitives.zeropolynomialprimitive import init_zero_polynomial_primitive
+from sosopt.polynomialconstraints.constraintprimitives.zeropolynomialprimitive import ZeroPolynomialPrimitive, init_zero_polynomial_primitive
 from sosopt.polynomialconstraints.constraintprimitives.decisionvariablesmixin import to_decision_variable_symbols
 from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
 from sosopt.polynomialconstraints.polynomialvariablesmixin import PolynomialVariablesMixin, to_polynomial_variable_indices
@@ -18,7 +18,7 @@ from sosopt.polynomialconstraints.polynomialvariablesmixin import PolynomialVari
 @dataclassabc(frozen=True, slots=True)
 class ZeroPolynomialConstraint(PolynomialVariablesMixin, PolynomialConstraint):
     name: str | None
-    primitives: tuple[PolynomialConstraintPrimitive, ...]
+    primitives: tuple[ZeroPolynomialPrimitive]
     polynomial_variable_indices: tuple[int, ...]
 
     # the parametrized polynomial matrix that is required to be zero in each entry

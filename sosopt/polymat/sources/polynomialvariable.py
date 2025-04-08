@@ -31,7 +31,7 @@ class PolynomialVariable[_](MatrixExpression):
 
     def to_coefficient_vector(self) -> VariableVectorExpression:
         return polymat.v_stack(v for _, v in self.iterate_coefficients())
-
+    
 
 class PolynomialMatrixVariable[_](PolynomialVariable):
     @property

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+from functools import cached_property
 
 from sosopt.coneconstraints.coneconstraint import ConeConstraint
 import statemonad
@@ -20,13 +21,22 @@ class SOSProblem:
     This problem contains expression objects.
     """
 
-    lin_cost: ScalarPolynomialExpression
+    lin_cost: ScalarPolynomialExpression | None
     quad_cost: VectorExpression | None
     constraints: tuple[PolynomialConstraint | ConeConstraint, ...]
     solver: SolverMixin
 
     def copy(self, /, **others):
         return replace(self, **others)
+
+    @cached_property
+    def decision_variable_symbols(self):
+        def gen_decision_variable_symbols():
+            for constraint in self.constraints:
+                yield from constraint.decision_variable_symbols
+
+        return tuple(sorted(set(gen_decision_variable_symbols())))
+    
 
     def eval(self, substitutions: dict[DecisionVariableSymbol, tuple[float, ...]]):
         def gen_evaluated_constraints():
@@ -38,7 +48,7 @@ class SOSProblem:
 
         evaluated_constraints = tuple(gen_evaluated_constraints())
         return init_sos_problem(
-            lin_cost=self.lin_cost.eval(substitutions),
+            lin_cost=self.lin_cost.eval(substitutions) if self.lin_cost is not None else None,
             quad_cost=self.quad_cost.eval(substitutions) if self.quad_cost is not None else None,
             solver=self.solver,
             constraints=evaluated_constraints,
@@ -77,9 +87,9 @@ class SOSProblem:
 
 
 def init_sos_problem(
-    lin_cost: ScalarPolynomialExpression,
     constraints: tuple[PolynomialConstraint | ConeConstraint, ...],
     solver: SolverMixin,
+    lin_cost: ScalarPolynomialExpression | None = None,
     quad_cost: VectorExpression | None = None,
 ):
     """

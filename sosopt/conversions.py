@@ -3,7 +3,7 @@ import numpy as np
 import statemonad
 
 import polymat
-from polymat.typing import ScalarPolynomialExpression, VectorExpression
+from polymat.typing import ScalarPolynomialExpression, VectorExpression, MatrixExpression
 
 from sosopt.polymat.from_ import define_variable
 from sosopt.polynomialconstraints.from_ import sos_matrix_constraint
@@ -11,8 +11,8 @@ from sosopt.polynomialconstraints.from_ import sos_matrix_constraint
 
 def to_linear_cost(
     name: str, 
-    lin_cost: ScalarPolynomialExpression, 
     quad_cost: VectorExpression,
+    lin_cost: ScalarPolynomialExpression | None = None, 
 ):
     # https://math.stackexchange.com/questions/2256241/writing-a-convex-quadratic-program-qp-as-a-semidefinite-program-sdp
     
@@ -22,11 +22,17 @@ def to_linear_cost(
 
         t = define_variable(name=f't_{name}')
 
+        match lin_cost:
+            case None:
+                d = t
+            case MatrixExpression():
+                d = t - lin_cost
+
         state, constraint = sos_matrix_constraint(
             name=name,
             greater_than_zero=polymat.concat((
                 (polymat.from_(np.eye(n_rows)), quad_cost),
-                (quad_cost.T, t - lin_cost)
+                (quad_cost.T, d)
             ))
         ).apply(state)
 

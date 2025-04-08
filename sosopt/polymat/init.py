@@ -24,11 +24,11 @@ from sosopt.polymat.operations.sosmonomialbasis import (
 from sosopt.polymat.operations.sosmonomialbasissparse import (
     SOSMonomialBasisSparse,
 )
-from sosopt.polymat.operations.squarematricialrepresentation import (
-    SquareMatricialRepresentation,
+from sosopt.polymat.operations.grammatrix import (
+    GramMatrix,
 )
-from sosopt.polymat.operations.squarematricialrepresentationsparse import (
-    SquareMatricialRepresentationSparse,
+from sosopt.polymat.operations.grammatrixsparse import (
+    GramMatrixSparse,
 )
 
 
@@ -101,55 +101,53 @@ def init_polynomial_variable(
 
 
 @dataclassabc(frozen=True, slots=True, repr=False)
-class SquareMatricialRepresentationImpl(SquareMatricialRepresentation):
+class GramMatrixImpl(GramMatrix):
     child: ExpressionNode
     monomials: ExpressionNode
-    variables: SquareMatricialRepresentation.VariableType
+    variables: GramMatrix.VariableType
     auxilliary_variable_symbol: AuxiliaryVariableSymbol | None
     stack: tuple[FrameSummary, ...]
 
 
-def init_square_matricial_representation(
+def init_gram_matrix(
     child: ExpressionNode,
-    variables: SquareMatricialRepresentation.VariableType,
+    variables: GramMatrix.VariableType,
     monomials: ExpressionNode | None = None,
     auxilliary_variable_symbol: AuxiliaryVariableSymbol | None = None,
 ):
     if monomials is None:
         monomials = init_sos_monomial_basis(child=child, variables=variables)
 
-    return SquareMatricialRepresentationImpl(
+    return GramMatrixImpl(
         child=child,
         variables=variables,
         monomials=monomials,
         auxilliary_variable_symbol=auxilliary_variable_symbol,
-        stack=SquareMatricialRepresentation.get_frame_summary(),
+        stack=GramMatrix.get_frame_summary(),
     )
 
 
 @dataclassabc(frozen=True, slots=True, repr=False)
-class SquareMatricialRepresentationSparseImpl(SquareMatricialRepresentationSparse):
+class GramMatrixSparseImpl(GramMatrixSparse):
     child: ExpressionNode
     monomials: ExpressionNode
     variables: ExpressionNode.VariableType
     stack: tuple[FrameSummary, ...]
 
 
-def init_square_matricial_representation_sparse(
+def init_gram_matrix_sparse(
     child: ExpressionNode,
     variables: ExpressionNode.VariableType,
     monomials: ExpressionNode | None = None,
 ):
     if monomials is None:
-        monomials = init_sos_monomial_basis_sparse(
-            child=child, variables=variables
-        )
+        monomials = init_sos_monomial_basis_sparse(child=child, variables=variables)
 
-    return SquareMatricialRepresentationSparseImpl(
+    return GramMatrixSparseImpl(
         child=child,
         variables=variables,
         monomials=monomials,
-        stack=SquareMatricialRepresentationSparse.get_frame_summary(),
+        stack=GramMatrixSparse.get_frame_summary(),
     )
 
 

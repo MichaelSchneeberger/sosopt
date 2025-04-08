@@ -26,7 +26,7 @@ class ConicProblemResult:
 
 @dataclass(frozen=True)
 class ConicProblem:
-    lin_cost: ScalarPolynomialExpression
+    lin_cost: ScalarPolynomialExpression | None
     quad_cost: VectorExpression | None
     constraints: tuple[ConeConstraint, ...]
     solver: SolverMixin

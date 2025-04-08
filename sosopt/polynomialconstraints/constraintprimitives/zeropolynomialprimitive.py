@@ -30,7 +30,7 @@ class ZeroPolynomialPrimitive(PolynomialVariablesMixin, PolynomialConstraintPrim
         return init_equality_constraint(
             name=self.name,
             expression=self.expression.to_linear_coefficients(self.polynomial_variable).T,
-            # decision_variable_symbols=self.decision_variable_symbols,
+            decision_variable_symbols=self.decision_variable_symbols,
         )
 
 

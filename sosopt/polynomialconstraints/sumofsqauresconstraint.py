@@ -11,10 +11,8 @@ from polymat.typing import MatrixExpression
 
 from sosopt.polynomialconstraints.constraintprimitives.decisionvariablesmixin import to_decision_variable_symbols
 from sosopt.polynomialconstraints.constraintprimitives.sumofsquaresprimitive import (
+    SumOfSquaresPrimitive,
     init_sum_of_squares_primitive,
-)
-from sosopt.polynomialconstraints.constraintprimitives.polynomialconstraintprimitive import (
-    PolynomialConstraintPrimitive,
 )
 from sosopt.polynomialconstraints.polynomialconstraint import PolynomialConstraint
 from sosopt.polynomialconstraints.polynomialvariablesmixin import (
@@ -26,7 +24,7 @@ from sosopt.polynomialconstraints.polynomialvariablesmixin import (
 @dataclassabc(frozen=True, slots=True)
 class SumOfSqauresConstraint(PolynomialVariablesMixin, PolynomialConstraint):
     name: str  # override
-    primitives: tuple[PolynomialConstraintPrimitive, ...]  # override
+    primitives: tuple[SumOfSquaresPrimitive]  # override
     polynomial_variable_indices: tuple[int, ...]  # override
 
     # the parametrized polynomial matrix that is required to be SOS in each entry
@@ -37,6 +35,18 @@ class SumOfSqauresConstraint(PolynomialVariablesMixin, PolynomialConstraint):
 
     def copy(self, /, **others):
         return replace(self, **others)
+    
+    @property
+    def auxilliary_variable_symbol(self):
+        return self.primitives[0].auxilliary_variable_symbol
+
+    @property
+    def sos_monomial_basis(self):
+        return self.primitives[0].sos_monomial_basis
+    
+    @property
+    def gram_matrix(self):
+        return self.primitives[0].gram_matrix
 
 
 def init_sum_of_squares_constraint(

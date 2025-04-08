@@ -14,9 +14,7 @@ from sosopt.coneconstraints.semidefiniteconstraint import init_semi_definite_con
 from sosopt.polymat.symbols.auxiliaryvariablesymbol import AuxiliaryVariableSymbol
 from sosopt.polymat.from_ import (
     sos_monomial_basis,
-    sos_monomial_basis_sparse,
-    square_matricial_representation,
-    square_matricial_representation_sparse,
+    gram_matrix,
 )
 from sosopt.polynomialconstraints.constraintprimitives.polynomialconstraintprimitive import (
     PolynomialConstraintPrimitive,
@@ -40,42 +38,32 @@ class SumOfSquaresPrimitive(PolynomialVariablesMixin, PolynomialConstraintPrimit
         return AuxiliaryVariableSymbol(self.name)
 
     @functools.cached_property
-    def monomial_basis(self):
-        if self.sparse_smr:
-            return sos_monomial_basis_sparse(
-                expression=self.expression,
-                variables=self.polynomial_variable,
-            ).cache()
-        else:
-            return sos_monomial_basis(
-                expression=self.expression,
-                variables=self.polynomial_variable,
-            ).cache()
+    def sos_monomial_basis(self):
+        return sos_monomial_basis(
+            expression=self.expression,
+            variables=self.polynomial_variable,
+            sparse_smr=self.sparse_smr,
+        ).cache()
 
     @functools.cached_property
-    def smr(self):
-        if self.sparse_smr:
-            return square_matricial_representation_sparse(
-                expression=self.expression,
-                monomials=self.monomial_basis,
-                variables=self.polynomial_variable,
-            ).cache()
-        else:
-            return square_matricial_representation(
-                expression=self.expression,
-                variables=self.polynomial_variable,
-                monomials=self.monomial_basis,
-                auxilliary_variable_symbol=self.auxilliary_variable_symbol,
-            ).cache()
+    def gram_matrix(self):
+        return gram_matrix(
+            expression=self.expression,
+            variables=self.polynomial_variable,
+            monomials=self.sos_monomial_basis,
+            auxilliary_variable_symbol=self.auxilliary_variable_symbol,
+            sparse_smr=self.sparse_smr,
+        ).cache()
 
     def copy(self, /, **others):
         return replace(self, **others)
 
     @override
     def to_cone_constraint(self):
-        return init_semi_definite_constraint(
+        return init_semi_definite_constraint( 
             name=self.name,
-            expression=self.smr,
+            expression=self.gram_matrix,
+            decision_variable_symbols=None,     # enforce reevaluation of decision variables
         )
 
 
