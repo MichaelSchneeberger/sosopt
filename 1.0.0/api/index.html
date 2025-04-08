@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://github.com/MichaelSchneeberger/sosopt/1.0.0/api/">
       
       
-        <link rel="prev" href="../examples/boxconstraints/">
+        <link rel="prev" href="../examples/bilinearproblem/">
       
       
       
@@ -361,12 +361,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/bilinearproblem/" class="md-nav__link">
+      <a href="../tutorials/sosdecomposition/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Bilinear Problem
+    SOS Decomposition and SDP Conversion
     
   </span>
   
@@ -384,12 +384,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../tutorials/sosdecomposition/" class="md-nav__link">
+      <a href="../tutorials/bilinearproblem/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    SOS Decomposition and SDP Conversion
+    Bilinear Problem
     
   </span>
   
@@ -460,7 +460,53 @@
   
   
   <span class="md-ellipsis">
-    Box Constraint
+    Envelope for Box Constraints
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/sosdecomposition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SOS Decomposition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/bilinearproblem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bilinear SOS Problem
     
   </span>
   
@@ -605,27 +651,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#sosopt.polymat.from_.sos_monomial_basis_sparse" class="md-nav__link">
+  <a href="#sosopt.polymat.from_.gram_matrix" class="md-nav__link">
     <span class="md-ellipsis">
-      sos_monomial_basis_sparse
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sosopt.polymat.from_.square_matricial_representation" class="md-nav__link">
-    <span class="md-ellipsis">
-      square_matricial_representation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sosopt.polymat.from_.square_matricial_representation_sparse" class="md-nav__link">
-    <span class="md-ellipsis">
-      square_matricial_representation_sparse
+      gram_matrix
     </span>
   </a>
   
@@ -895,7 +923,17 @@ x = sosopt.define_variable('x', size=like)
 
             <details class="quote">
               <summary>Source code in <code>sosopt\polymat\from_.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
 <span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
@@ -914,17 +952,7 @@ x = sosopt.define_variable('x', size=like)
 <span class="normal">122</span>
 <span class="normal">123</span>
 <span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">define_variable</span><span class="p">(</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">define_variable</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">DecisionVariableSymbol</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">MatrixExpression</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
@@ -971,7 +999,7 @@ x = sosopt.define_variable('x', size=like)
 
     <div class="doc doc-contents first">
 
-        <p>Defines of a fully parametrized polynomial -- involving the specification of a decision variable 
+        <p>Defines of a fully parametrized polynomial -- involving the specification of a decision variable
 for each coefficient of the polynomial.</p>
 
 
@@ -995,7 +1023,7 @@ for each coefficient of the polynomial.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The name assigned to the parametrized polynomial. This defines the name of the 
+                <p>The name assigned to the parametrized polynomial. This defines the name of the
 decision variable for each coefficient of the polynomial.</p>
               </div>
             </td>
@@ -1112,7 +1140,17 @@ r.coefficient
 
             <details class="quote">
               <summary>Source code in <code>sosopt\polymat\from_.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
 <span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span>
@@ -1206,19 +1244,7 @@ r.coefficient
 <span class="normal">229</span>
 <span class="normal">230</span>
 <span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">define_polynomial</span><span class="p">(</span>
+<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">define_polynomial</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">monomials</span><span class="p">:</span> <span class="n">MonomialVectorExpression</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">n_rows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1226,11 +1252,11 @@ r.coefficient
     <span class="n">like</span><span class="p">:</span> <span class="n">MatrixExpression</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Defines of a fully parametrized polynomial -- involving the specification of a decision variable </span>
+<span class="sd">    Defines of a fully parametrized polynomial -- involving the specification of a decision variable</span>
 <span class="sd">    for each coefficient of the polynomial.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        name: The name assigned to the parametrized polynomial. This defines the name of the </span>
+<span class="sd">        name: The name assigned to the parametrized polynomial. This defines the name of the</span>
 <span class="sd">            decision variable for each coefficient of the polynomial.</span>
 <span class="sd">        monomials: Optional monomial vector that determines the structure of the polynomial matrix. If None,</span>
 <span class="sd">            monomials are assumed to be a single element 1.</span>
@@ -1260,7 +1286,6 @@ r.coefficient
         <span class="n">monomials</span> <span class="o">=</span> <span class="n">polymat</span><span class="o">.</span><span class="n">from_</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_monomial_vector</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_define_polynomial</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
-
         <span class="k">match</span> <span class="p">(</span><span class="n">n_rows</span><span class="p">,</span> <span class="n">n_cols</span><span class="p">,</span> <span class="n">like</span><span class="p">):</span>
             <span class="k">case</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">shape</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
@@ -1290,7 +1315,6 @@ r.coefficient
 
                 <span class="k">def</span> <span class="nf">gen_cols</span><span class="p">():</span>
                     <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-
                         <span class="n">param</span> <span class="o">=</span> <span class="n">define_variable</span><span class="p">(</span>
                             <span class="n">name</span><span class="o">=</span><span class="n">get_name</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">),</span>
                             <span class="n">size</span><span class="o">=</span><span class="n">monomials</span><span class="p">,</span>
@@ -1365,7 +1389,7 @@ r.coefficient
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The name assigned to the parametrized polynomial. This defines the name of the 
+                <p>The name assigned to the parametrized polynomial. This defines the name of the
 decision variable for each coefficient of the polynomial.</p>
               </div>
             </td>
@@ -1395,7 +1419,7 @@ monomials are assumed to be a single element 1.</p>
                 <code>size</code>
             </td>
             <td>
-                  <code><span title="int">int</span></code>
+                  <code><span title="int">int</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1403,7 +1427,7 @@ monomials are assumed to be a single element 1.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -1435,7 +1459,19 @@ monomials are assumed to be a single element 1.</p>
 
             <details class="quote">
               <summary>Source code in <code>sosopt\polymat\from_.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">329</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
 <span class="normal">330</span>
 <span class="normal">331</span>
 <span class="normal">332</span>
@@ -1488,21 +1524,17 @@ monomials are assumed to be a single element 1.</p>
 <span class="normal">379</span>
 <span class="normal">380</span>
 <span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span>
-<span class="normal">386</span>
-<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">define_symmetric_matrix</span><span class="p">(</span>
+<span class="normal">382</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">define_symmetric_matrix</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">monomials</span><span class="p">:</span> <span class="n">MonomialVectorExpression</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">like</span><span class="p">:</span> <span class="n">MatrixExpression</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defines of a symmetric n x n matrix.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        name: The name assigned to the parametrized polynomial. This defines the name of the </span>
+<span class="sd">        name: The name assigned to the parametrized polynomial. This defines the name of the</span>
 <span class="sd">            decision variable for each coefficient of the polynomial.</span>
 <span class="sd">        monomials: Optional monomial vector that determines the structure of the polynomial matrix. If None,</span>
 <span class="sd">            monomials are assumed to be a single element 1.</span>
@@ -1516,13 +1548,19 @@ monomials are assumed to be a single element 1.</p>
         <span class="n">monomials</span> <span class="o">=</span> <span class="n">polymat</span><span class="o">.</span><span class="n">from_</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_monomial_vector</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_define_symmetric_matrix</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">monomials</span><span class="o">=</span><span class="n">monomials</span><span class="p">):</span>
+        <span class="k">match</span> <span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">like</span><span class="p">):</span>
+            <span class="k">case</span> <span class="kc">None</span><span class="p">,</span> <span class="n">MatrixExpression</span><span class="p">():</span>
+                <span class="n">state</span><span class="p">,</span> <span class="p">(</span><span class="n">size_</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">polymat</span><span class="o">.</span><span class="n">to_shape</span><span class="p">(</span><span class="n">like</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="k">case</span><span class="w"> </span><span class="n">size</span><span class="k">_</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span>
+                <span class="k">pass</span>
+
         <span class="n">entries</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">def</span> <span class="nf">gen_rows</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size_</span><span class="p">):</span>
 
                 <span class="k">def</span> <span class="nf">gen_cols</span><span class="p">():</span>
-                    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size_</span><span class="p">):</span>
                         <span class="k">if</span> <span class="n">row</span> <span class="o">&lt;=</span> <span class="n">col</span><span class="p">:</span>
                             <span class="n">param</span> <span class="o">=</span> <span class="n">define_variable</span><span class="p">(</span>
                                 <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">row</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">col</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -1548,7 +1586,7 @@ monomials are assumed to be a single element 1.</p>
             <span class="n">monomials</span><span class="o">=</span><span class="n">monomials</span><span class="p">,</span>
             <span class="n">coefficients</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
             <span class="n">child</span><span class="o">=</span><span class="n">expr</span><span class="o">.</span><span class="n">child</span><span class="p">,</span>
-            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">size_</span><span class="p">,</span> <span class="n">size_</span><span class="p">),</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">statemonad</span><span class="o">.</span><span class="n">get_map_put</span><span class="p">(</span><span class="n">_define_symmetric_matrix</span><span class="p">)</span>
@@ -1593,7 +1631,7 @@ monomials are assumed to be a single element 1.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The name assigned to the multiplier polynomial variable. This defines the name of the 
+                <p>The name assigned to the multiplier polynomial variable. This defines the name of the
 decision variable for each coefficient of the multiplier.</p>
               </div>
             </td>
@@ -1668,7 +1706,7 @@ decision variable for each coefficient of the multiplier.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>A polynomial expression parameterized as a decision variable, 
+                <p>A polynomial expression parameterized as a decision variable,
 representing the multiplier constrained by the specified degree.</p>
               </div>
             </td>
@@ -1695,7 +1733,19 @@ state, m = sosopt.define_multiplier(
 
             <details class="quote">
               <summary>Source code in <code>sosopt\polymat\from_.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
 <span class="normal">250</span>
@@ -1762,19 +1812,7 @@ state, m = sosopt.define_multiplier(
 <span class="normal">311</span>
 <span class="normal">312</span>
 <span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">define_multiplier</span><span class="p">(</span>
+<span class="normal">314</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">define_multiplier</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">degree</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">MatrixExpression</span><span class="p">,</span>
     <span class="n">variables</span><span class="p">:</span> <span class="n">VariableVectorExpression</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
@@ -1785,14 +1823,14 @@ state, m = sosopt.define_multiplier(
 <span class="sd">    (the multiplicand), ensuring that the resulting product does not exceed a specified degree.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        name: The name assigned to the multiplier polynomial variable. This defines the name of the </span>
+<span class="sd">        name: The name assigned to the multiplier polynomial variable. This defines the name of the</span>
 <span class="sd">            decision variable for each coefficient of the multiplier.</span>
 <span class="sd">        degree: The maximum allowed degree for the product of the multiplicand and multiplier.</span>
 <span class="sd">        multiplicand: The polynomial to be multiplied with the multiplier.</span>
 <span class="sd">        variables: The polynomial variables used to determine the degree of the resulting polynomial.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        (StateMonad[ScalarPolynomialExpression]): A polynomial expression parameterized as a decision variable, </span>
+<span class="sd">        (StateMonad[ScalarPolynomialExpression]): A polynomial expression parameterized as a decision variable,</span>
 <span class="sd">            representing the multiplier constrained by the specified degree.</span>
 
 <span class="sd">    Example:</span>
@@ -1814,8 +1852,8 @@ state, m = sosopt.define_multiplier(
     <span class="k">def</span> <span class="nf">_define_multiplier</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">degree</span><span class="p">,</span> <span class="n">MatrixExpression</span><span class="p">):</span>
             <span class="c1"># Compute the degree of the denominator s(x)</span>
-            <span class="n">state</span><span class="p">,</span> <span class="n">degrees</span> <span class="o">=</span> <span class="n">polymat</span><span class="o">.</span><span class="n">to_degree</span><span class="p">(</span><span class="n">degree</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-            <span class="n">degree</span> <span class="o">=</span> <span class="n">degrees</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">state</span><span class="p">,</span> <span class="n">max_degree_multiplier</span> <span class="o">=</span> <span class="n">polymat</span><span class="o">.</span><span class="n">to_degree</span><span class="p">(</span><span class="n">degree</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="n">degree</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">max_degree_multiplier</span><span class="p">))</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">degree</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Degree </span><span class="si">{</span><span class="n">degree</span><span class="si">}</span><span class="s2"> must be of type Int.&quot;</span>
@@ -1837,8 +1875,8 @@ state, m = sosopt.define_multiplier(
             <span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
             <span class="n">max_degree_multiplicand</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">multiplicand_degrees</span><span class="p">))</span>
 
-        <span class="n">degrees</span> <span class="o">=</span> <span class="n">max_degree</span> <span class="o">-</span> <span class="n">max_degree_multiplicand</span>
-        <span class="n">degree_range</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">degrees</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">max_degree_multiplier</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_degree</span> <span class="o">-</span> <span class="n">max_degree_multiplicand</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">degree_range_multiplier</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">max_degree_multiplier</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
 
         <span class="k">match</span> <span class="n">variables</span><span class="p">:</span>
             <span class="k">case</span> <span class="n">MatrixExpression</span><span class="p">():</span>
@@ -1848,7 +1886,7 @@ state, m = sosopt.define_multiplier(
 
         <span class="n">state</span><span class="p">,</span> <span class="n">expr</span> <span class="o">=</span> <span class="n">define_polynomial</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">monomials</span><span class="o">=</span><span class="n">variable</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">degree_range</span><span class="p">)</span><span class="o">.</span><span class="n">cache</span><span class="p">(),</span>
+            <span class="n">monomials</span><span class="o">=</span><span class="n">variable</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">degree_range_multiplier</span><span class="p">)</span><span class="o">.</span><span class="n">cache</span><span class="p">(),</span>
         <span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">state</span><span class="p">,</span> <span class="n">expr</span>
@@ -1919,13 +1957,33 @@ as <span class="arithmatex">\(p(x) = Z(x)^T Q Z(x)\)</span> for some a monomial 
                 <em>required</em>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sparse_smr</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, no SOS decomposition variables are defined</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
 
             <details class="quote">
               <summary>Source code in <code>sosopt\polymat\from_.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
@@ -1943,9 +2001,19 @@ as <span class="arithmatex">\(p(x) = Z(x)^T Q Z(x)\)</span> for some a monomial 
 <span class="normal">80</span>
 <span class="normal">81</span>
 <span class="normal">82</span>
-<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">sos_monomial_basis</span><span class="p">(</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">sos_monomial_basis</span><span class="p">(</span>
     <span class="n">expression</span><span class="p">:</span> <span class="n">MatrixExpression</span><span class="p">,</span>
     <span class="n">variables</span><span class="p">:</span> <span class="n">MatrixExpression</span><span class="p">,</span>
+    <span class="n">sparse_smr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defines an SOS monomial basis $Z(x)$ used for SOS decomposition.</span>
@@ -1954,14 +2022,26 @@ as <span class="arithmatex">\(p(x) = Z(x)^T Q Z(x)\)</span> for some a monomial 
 <span class="sd">        expression: Defines the expression $p(x)$ that can be written</span>
 <span class="sd">            as $p(x) = Z(x)^T Q Z(x)$ for some a monomial vector $Z(x)$.</span>
 <span class="sd">        variables: Defines the polynomial variables.</span>
+<span class="sd">        sparse_smr: If True, no SOS decomposition variables are defined</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">polymat</span><span class="o">.</span><span class="n">from_</span><span class="p">(</span>
-        <span class="n">init_sos_monomial_basis</span><span class="p">(</span>
+    <span class="k">if</span> <span class="n">sparse_smr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sparse_smr</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">sparse_smr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sparse_smr</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">init_sos_monomial_basis_sparse</span><span class="p">(</span>
             <span class="n">child</span><span class="o">=</span><span class="n">expression</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">init_sos_monomial_basis</span><span class="p">(</span>
+            <span class="n">child</span><span class="o">=</span><span class="n">expression</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">polymat</span><span class="o">.</span><span class="n">from_</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1971,15 +2051,15 @@ as <span class="arithmatex">\(p(x) = Z(x)^T Q Z(x)\)</span> for some a monomial 
 <div class="doc doc-object doc-function">
 
 
-<h3 id="sosopt.polymat.from_.sos_monomial_basis_sparse" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">sosopt</span><span class="o">.</span><span class="n">polymat</span><span class="o">.</span><span class="n">from_</span><span class="o">.</span><span class="n">sos_monomial_basis_sparse</span></code>
+<h3 id="sosopt.polymat.from_.gram_matrix" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">sosopt</span><span class="o">.</span><span class="n">polymat</span><span class="o">.</span><span class="n">from_</span><span class="o">.</span><span class="n">gram_matrix</span></code>
 
 </h3>
 
 
     <div class="doc doc-contents first">
 
-        <p>Defines a SOS monomial basis <span class="arithmatex">\(Z(x)\)</span> used for the sparse SOS decomposition.</p>
+        <p>Performs an SOS decomposition to retrieve the SMR from a polynomial expression.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -1998,7 +2078,7 @@ as <span class="arithmatex">\(p(x) = Z(x)^T Q Z(x)\)</span> for some a monomial 
                 <code>expression</code>
             </td>
             <td>
-                  <code><span title="polymat.typing.MatrixExpression">MatrixExpression</span>[<span title="State">State</span>]</code>
+                  <code><span title="polymat.typing.ScalarPolynomialExpression">ScalarPolynomialExpression</span>[<span title="State">State</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2026,70 +2106,50 @@ as <span class="arithmatex">\(p(x) = Z(x)^T Q Z(x)\)</span> for some a monomial 
                 <em>required</em>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>monomials</code>
+            </td>
+            <td>
+                  <code><span title="polymat.typing.MonomialVectorExpression">MonomialVectorExpression</span>[<span title="State">State</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Defines the monomial vector <span class="arithmatex">\(Z(x)\)</span>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>sparse_smr</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, no SOS decomposition variables are defined.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
 
             <details class="quote">
               <summary>Source code in <code>sosopt\polymat\from_.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">sos_monomial_basis_sparse</span><span class="p">(</span>
-    <span class="n">expression</span><span class="p">:</span> <span class="n">MatrixExpression</span><span class="p">,</span>
-    <span class="n">variables</span><span class="p">:</span> <span class="n">MatrixExpression</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Defines a SOS monomial basis $Z(x)$ used for the sparse SOS decomposition.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        expression: Defines the expression $p(x)$ that can be written</span>
-<span class="sd">            as $p(x) = Z(x)^T Q Z(x)$ for some a monomial vector $Z(x)$.</span>
-<span class="sd">        variables: Defines the polynomial variables.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">polymat</span><span class="o">.</span><span class="n">from_</span><span class="p">(</span>
-        <span class="n">init_sos_monomial_basis_sparse</span><span class="p">(</span>
-            <span class="n">child</span><span class="o">=</span><span class="n">expression</span><span class="p">,</span>
-            <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
-        <span class="p">),</span>
-    <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="sosopt.polymat.from_.square_matricial_representation" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">sosopt</span><span class="o">.</span><span class="n">polymat</span><span class="o">.</span><span class="n">from_</span><span class="o">.</span><span class="n">square_matricial_representation</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents first">
-
-        <p>Performs an SOS decomposition to retrieve the SMR from a polynomial expression.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>sosopt\polymat\from_.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
@@ -2106,47 +2166,10 @@ as <span class="arithmatex">\(p(x) = Z(x)^T Q Z(x)\)</span> for some a monomial 
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span>
-<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">square_matricial_representation</span><span class="p">(</span>
-    <span class="n">expression</span><span class="p">:</span> <span class="n">MatrixExpression</span><span class="p">,</span>
-    <span class="n">variables</span><span class="p">:</span> <span class="n">MatrixExpression</span><span class="p">,</span>
-    <span class="n">monomials</span><span class="p">:</span> <span class="n">MatrixExpression</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">auxilliary_variable_symbol</span><span class="p">:</span> <span class="n">AuxiliaryVariableSymbol</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Performs an SOS decomposition to retrieve the SMR from a polynomial expression.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">polymat</span><span class="o">.</span><span class="n">from_</span><span class="p">(</span>
-        <span class="n">init_square_matricial_representation</span><span class="p">(</span>
-            <span class="n">child</span><span class="o">=</span><span class="n">expression</span><span class="p">,</span>
-            <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
-            <span class="n">monomials</span><span class="o">=</span><span class="n">monomials</span><span class="p">,</span>
-            <span class="n">auxilliary_variable_symbol</span><span class="o">=</span><span class="n">auxilliary_variable_symbol</span><span class="p">,</span>
-        <span class="p">),</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">symmetric</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="sosopt.polymat.from_.square_matricial_representation_sparse" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">sosopt</span><span class="o">.</span><span class="n">polymat</span><span class="o">.</span><span class="n">from_</span><span class="o">.</span><span class="n">square_matricial_representation_sparse</span></code>
-
-</h3>
-
-
-    <div class="doc doc-contents first">
-
-        <p>Performs a sparse SOS decomposition to retrieve the SMR from a polynomial expression.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>sosopt\polymat\from_.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">48</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
@@ -2156,25 +2179,42 @@ as <span class="arithmatex">\(p(x) = Z(x)^T Q Z(x)\)</span> for some a monomial 
 <span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">square_matricial_representation_sparse</span><span class="p">(</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">gram_matrix</span><span class="p">(</span>
     <span class="n">expression</span><span class="p">:</span> <span class="n">MatrixExpression</span><span class="p">,</span>
     <span class="n">variables</span><span class="p">:</span> <span class="n">MatrixExpression</span><span class="p">,</span>
     <span class="n">monomials</span><span class="p">:</span> <span class="n">MatrixExpression</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">auxilliary_variable_symbol</span><span class="p">:</span> <span class="n">AuxiliaryVariableSymbol</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sparse_smr</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Performs a sparse SOS decomposition to retrieve the SMR from a polynomial expression.</span>
+<span class="sd">    Performs an SOS decomposition to retrieve the SMR from a polynomial expression.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        expression: Defines the expression $p(x)$ that can be written</span>
+<span class="sd">            as $p(x) = Z(x)^T Q Z(x)$ for some a monomial vector $Z(x)$.</span>
+<span class="sd">        variables: Defines the polynomial variables.</span>
+<span class="sd">        monomials: Defines the monomial vector $Z(x)$.</span>
+<span class="sd">        sparse_smr: If True, no SOS decomposition variables are defined.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">polymat</span><span class="o">.</span><span class="n">from_</span><span class="p">(</span>
-        <span class="n">init_square_matricial_representation_sparse</span><span class="p">(</span>
+
+    <span class="k">if</span> <span class="n">sparse_smr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sparse_smr</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">sparse_smr</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">init_gram_matrix_sparse</span><span class="p">(</span>
             <span class="n">child</span><span class="o">=</span><span class="n">expression</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
             <span class="n">monomials</span><span class="o">=</span><span class="n">monomials</span><span class="p">,</span>
-        <span class="p">),</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">symmetric</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">init_gram_matrix</span><span class="p">(</span>
+            <span class="n">child</span><span class="o">=</span><span class="n">expression</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span>
+            <span class="n">monomials</span><span class="o">=</span><span class="n">monomials</span><span class="p">,</span>
+            <span class="n">auxilliary_variable_symbol</span><span class="o">=</span><span class="n">auxilliary_variable_symbol</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">polymat</span><span class="o">.</span><span class="n">from_</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="o">.</span><span class="n">symmetric</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3506,7 +3546,7 @@ This argument is ignore if greater_than_zero is not None.</p>
                 <code>lin_cost</code>
             </td>
             <td>
-                  <code><span title="polymat.typing.ScalarPolynomialExpression">ScalarPolynomialExpression</span></code>
+                  <code><span title="polymat.typing.ScalarPolynomialExpression">ScalarPolynomialExpression</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3514,7 +3554,7 @@ This argument is ignore if greater_than_zero is not None.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -3608,17 +3648,7 @@ state, result = problem.solve().apply(state)
 
             <details class="quote">
               <summary>Source code in <code>sosopt\sosproblem.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
 <span class="normal"> 90</span>
 <span class="normal"> 91</span>
 <span class="normal"> 92</span>
@@ -3645,10 +3675,20 @@ state, result = problem.solve().apply(state)
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
-<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">init_sos_problem</span><span class="p">(</span>
-    <span class="n">lin_cost</span><span class="p">:</span> <span class="n">ScalarPolynomialExpression</span><span class="p">,</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">init_sos_problem</span><span class="p">(</span>
     <span class="n">constraints</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">PolynomialConstraint</span> <span class="o">|</span> <span class="n">ConeConstraint</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
     <span class="n">solver</span><span class="p">:</span> <span class="n">SolverMixin</span><span class="p">,</span>
+    <span class="n">lin_cost</span><span class="p">:</span> <span class="n">ScalarPolynomialExpression</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">quad_cost</span><span class="p">:</span> <span class="n">VectorExpression</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>

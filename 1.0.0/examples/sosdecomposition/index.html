@@ -8,19 +8,25 @@
       
       
       
+        <link rel="canonical" href="https://github.com/MichaelSchneeberger/sosopt/1.0.0/examples/sosdecomposition/">
       
       
+        <link rel="prev" href="../boxconstraints/">
       
-      <link rel="icon" href="/MichaelSchneeberger/sosopt/1.0.0/assets/images/favicon.png">
+      
+        <link rel="next" href="../bilinearproblem/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.10">
     
     
       
-        <title>SOSOpt</title>
+        <title>SOS Decomposition - SOSOpt</title>
       
     
     
-      <link rel="stylesheet" href="/MichaelSchneeberger/sosopt/1.0.0/assets/stylesheets/main.4af4bdda.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4af4bdda.min.css">
       
       
 
@@ -39,9 +45,9 @@
       
     
     
-      <link rel="stylesheet" href="/MichaelSchneeberger/sosopt/1.0.0/assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("/MichaelSchneeberger/sosopt/1.0.0",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -59,6 +65,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#sos-decomposition" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -73,7 +84,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/MichaelSchneeberger/sosopt/1.0.0/." title="SOSOpt" class="md-header__button md-logo" aria-label="SOSOpt" data-md-component="logo">
+    <a href="../.." title="SOSOpt" class="md-header__button md-logo" aria-label="SOSOpt" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -93,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              SOS Decomposition
             
           </span>
         </div>
@@ -138,7 +149,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/MichaelSchneeberger/sosopt/1.0.0/." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -159,7 +170,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/MichaelSchneeberger/sosopt/1.0.0/tutorials/gettingstarted/" class="md-tabs__link">
+        <a href="../../tutorials/gettingstarted/" class="md-tabs__link">
           
   
   
@@ -175,11 +186,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="/MichaelSchneeberger/sosopt/1.0.0/examples/boxconstraints/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../boxconstraints/" class="md-tabs__link">
           
   
   
@@ -197,7 +210,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/MichaelSchneeberger/sosopt/1.0.0/api/" class="md-tabs__link">
+      <a href="../../api/" class="md-tabs__link">
         
   
   
@@ -234,7 +247,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/MichaelSchneeberger/sosopt/1.0.0/." title="SOSOpt" class="md-nav__button md-logo" aria-label="SOSOpt" data-md-component="logo">
+    <a href="../.." title="SOSOpt" class="md-nav__button md-logo" aria-label="SOSOpt" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -264,7 +277,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/MichaelSchneeberger/sosopt/1.0.0/." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -327,7 +340,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/MichaelSchneeberger/sosopt/1.0.0/tutorials/gettingstarted/" class="md-nav__link">
+      <a href="../../tutorials/gettingstarted/" class="md-nav__link">
         
   
   
@@ -350,7 +363,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/MichaelSchneeberger/sosopt/1.0.0/tutorials/sosdecomposition/" class="md-nav__link">
+      <a href="../../tutorials/sosdecomposition/" class="md-nav__link">
         
   
   
@@ -373,7 +386,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/MichaelSchneeberger/sosopt/1.0.0/tutorials/bilinearproblem/" class="md-nav__link">
+      <a href="../../tutorials/bilinearproblem/" class="md-nav__link">
         
   
   
@@ -400,24 +413,29 @@
       
   
   
+    
   
   
+  
     
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -430,7 +448,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Examples
@@ -444,7 +462,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/MichaelSchneeberger/sosopt/1.0.0/examples/boxconstraints/" class="md-nav__link">
+      <a href="../boxconstraints/" class="md-nav__link">
         
   
   
@@ -464,10 +482,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/MichaelSchneeberger/sosopt/1.0.0/examples/sosdecomposition/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -478,6 +505,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -490,7 +518,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/MichaelSchneeberger/sosopt/1.0.0/examples/bilinearproblem/" class="md-nav__link">
+      <a href="../bilinearproblem/" class="md-nav__link">
         
   
   
@@ -520,7 +548,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/MichaelSchneeberger/sosopt/1.0.0/api/" class="md-nav__link">
+      <a href="../../api/" class="md-nav__link">
         
   
   
@@ -547,8 +575,108 @@
             <div class="md-content" data-md-component="content">
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+  
+  
+
+
+<h1 id="sos-decomposition">SOS Decomposition</h1>
+<p>This example finds the SOS decomposition of the polynomial</p>
+<div class="arithmatex">\[
+p(x) = 1 + x_1^2 - x_1 x_2^2 + x_2^4.
+\]</div>
+<p>This includes finding a sequence of polynomials <span class="arithmatex">\(q_k(x)\)</span> such that <span class="arithmatex">\(p(x) = \sum_k q_k(x)\)</span>.
+This conversion involves decomposing SOS polynomials into their Square Matricial Representation (SMR):</p>
+<div class="arithmatex">\[
+p(x) = Z(x)^\top Q_p Z(x), \quad Q_p≽0,
+\]</div>
+<p>where the monomial basis is given by monomial vector <span class="arithmatex">\(Z(x) = [1 \quad x_1 \quad x_2 \quad x_1 x_2 \quad x_2^2]^\top\)</span>, and the Gram matrix is a symmetric matrix <span class="arithmatex">\(Q_p \in \mathbb R^{5 \times 5}\)</span>.
+Once such a Gram matrix is found, we can decompose using Cholesky decomposition, that is <span class="arithmatex">\(Q_p = L L^\top\)</span>.
+The sequence of polynomials <span class="arithmatex">\(q_k(x)\)</span> can be derived by:</p>
+<div class="arithmatex">\[
+q(x) = \begin{bmatrix} q_1(x) \\ \vdots \\ q_5(x) \end{bmatrix} = L^\top Z(x)
+\]</div>
+<p>The resulting SOS problem to find the SOS decomposition is defined as:</p>
+<div class="arithmatex">\[\begin{array}{ll}
+    \text{find} &amp; Q_p \in \mathbb R^{5 \times 5} \\
+    % \text{minimize} &amp; \text{tr}( Q_p ) \\
+    \text{subject to} &amp; p(x) &gt; 0 \quad \forall x \in \mathbb R^n \\
+\end{array}\]</div>
+<pre><code class="language-python">import numpy as np
+import polymat
+import sosopt
+
+state = sosopt.init_state(sparse_smr=False)
+
+# Define polynomial variables
+state_variables = tuple(polymat.define_variable(name) for name in ('x1', 'x2'))
+x1, x2 = state_variables
+x = polymat.v_stack(state_variables)
+
+# Create polynomial and SOS constraint
+p = x1**2 - x1*x2**2 + x2**4 + 1
+
+state, constraint = sosopt.sos_constraint(
+    name=&quot;p&quot;,
+    greater_than_zero=p,
+).apply(state)
+
+# Formulate SOS problem (feasibility formulation)
+sos_problem = sosopt.sos_problem(
+    constraints=(constraint,),
+    solver=sosopt.cvxopt_solver,
+)
+
+# No decision variables are defined so far
+# Output: empty tuple
+print(sos_problem.decision_variable_symbols)
+
+# Solve SOS problem
+state, sos_result = sos_problem.solve().apply(state)
+
+# Retrieve monomial basis and SMR from the SOS constraint
+Z = constraint.sos_monomial_basis
+Qp = constraint.gram_matrix
+
+# Evaluate the decomposition variables with the results of the SOS problem
+Qp_eval = Qp.eval(sos_result.symbol_values)
+
+# Output matrix as nested tuples
+state, Qp_np = polymat.to_tuple(Qp_eval).map(np.array).apply(state)
+
+# Use SVD decomposition instead of Cholesky decomposition
+_, S, V = np.linalg.svd(Qp_np)
+
+# Vector of polynomials
+q = polymat.from_(np.diag(np.sqrt(S)) @ V) @ Z
+
+state, q_sympy = polymat.to_sympy(q).apply(state)
+print(q_sympy)
+
+state, p_sympy = polymat.to_sympy(q.T @ q).apply(state)
+print(p_sympy)
+
+</code></pre>
+<!-- The sequence of polynomials $q_k(x)$ are given by:
+
+$$
+q(x) = \left[\begin{matrix}- 0.842703953878416 x_{1} + 0.870844362622798 x_{2}^{2} - 0.21959041424796\\0.967734447386914 - 0.252170655193548 x_{1}\\- 0.475773062264921 x_{1} - 0.491660549656053 x_{2}^{2} - 0.123976164286335\\0.000107491873298444 x_{1} x_{2} - 0.510538706180748 x_{2}\\0.00999942225816946 x_{1} x_{2} + 2.10533817988768 \cdot 10^{-6} x_{2}\end{matrix}\right].
+$$ -->
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -584,12 +712,12 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "/MichaelSchneeberger/sosopt/1.0.0", "features": ["navigation.tabs", "toc.integrate"], "search": "/MichaelSchneeberger/sosopt/1.0.0/assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "toc.integrate"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="/MichaelSchneeberger/sosopt/1.0.0/assets/javascripts/bundle.c8b220af.min.js"></script>
+      <script src="../../assets/javascripts/bundle.c8b220af.min.js"></script>
       
-        <script src="/MichaelSchneeberger/sosopt/1.0.0/javascripts/mathjax.js"></script>
+        <script src="../../javascripts/mathjax.js"></script>
       
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       

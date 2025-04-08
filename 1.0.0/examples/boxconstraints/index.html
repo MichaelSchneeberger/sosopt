@@ -11,10 +11,10 @@
         <link rel="canonical" href="https://github.com/MichaelSchneeberger/sosopt/1.0.0/examples/boxconstraints/">
       
       
-        <link rel="prev" href="../../tutorials/sosdecomposition/">
+        <link rel="prev" href="../../tutorials/bilinearproblem/">
       
       
-        <link rel="next" href="../../api/">
+        <link rel="next" href="../sosdecomposition/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Box Constraint - SOSOpt</title>
+        <title>Envelope for Box Constraints - SOSOpt</title>
       
     
     
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#box-constraint" class="md-skip">
+        <a href="#envelope-for-box-constraints" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Box Constraint
+              Envelope for Box Constraints
             
           </span>
         </div>
@@ -363,12 +363,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/bilinearproblem/" class="md-nav__link">
+      <a href="../../tutorials/sosdecomposition/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Bilinear Problem
+    SOS Decomposition and SDP Conversion
     
   </span>
   
@@ -386,12 +386,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/sosdecomposition/" class="md-nav__link">
+      <a href="../../tutorials/bilinearproblem/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    SOS Decomposition and SDP Conversion
+    Bilinear Problem
     
   </span>
   
@@ -476,13 +476,59 @@
   
   
   <span class="md-ellipsis">
-    Box Constraint
+    Envelope for Box Constraints
     
   </span>
   
 
       </a>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sosdecomposition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SOS Decomposition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bilinearproblem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bilinear SOS Problem
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -536,7 +582,7 @@
   
 
 
-<h1 id="box-constraint">Box Constraint</h1>
+<h1 id="envelope-for-box-constraints">Envelope for Box Constraints</h1>
 <p>This example illustrates how to define and solve a simple SOS optimization problem using <strong>SOSOpt</strong>.</p>
 <p>In this example, we aim to compute the coefficients of a polynomial <span class="arithmatex">\(r(x)\)</span> whose zero-sublevel set contains the box-like set defined by the intersection of the zero-sublevel sets of polynomials <span class="arithmatex">\(w_1(x)\)</span> and <span class="arithmatex">\(w_2(x)\)</span>:</p>
 <div class="arithmatex">\[\mathcal X_\text{Box} := \lbrace x \mid w_1(x) \leq 0, w_2(x) \leq 0 \rbrace\]</div>
@@ -551,38 +597,32 @@ The resulting SOS problem is defined as:</p>
     \text{subject to} &amp; r(x) &lt; 0 \quad \forall x \in \mathcal X_\text{Box} \\
 \end{array}\]</div>
 <p>This formulation seeks to minimize the trace of <span class="arithmatex">\(Q_r\)</span> while ensuring that <span class="arithmatex">\(r(x)\)</span> is negative within the box-like set <span class="arithmatex">\(\mathcal X_\text{Box}\)</span>.</p>
-<pre><code class="language-python">import polymat
+<pre><code class="language-python">import numpy as np
+import numpy.matlib
+from matplotlib import pyplot
+
+import polymat
+
 import sosopt
 
-# Initialize the state object, which is passed through all operations related to solving
-# the SOS problem
 state = sosopt.init_state()
 
-# Define polynomial variables and stack them into a vector
 variable_names = (&quot;x_1&quot;, &quot;x_2&quot;, &quot;x_3&quot;)
 x1, x2, x3 = tuple(polymat.define_variable(name) for name in variable_names)
 x = polymat.v_stack((x1, x2, x3))
 
-# Define the box-like set as the intersection of the zero-sublevel sets of two
-# polynomials w1 and w2.
-w1 = ((x1 + 0.3) / 0.5) ** 2 + (x2 / 20) ** 2 + (x3 / 20) ** 2 - 1
-w2 = ((x1 + 0.3) / 20) ** 2 + (x2 / 1.3) ** 2 + (x3 / 1.3) ** 2 - 1
+w1 = ((x1 + 0.3) / 0.5) ** 2 - 1
+w2 = (x2 / 1.3) ** 2 + (x3 / 1.3) ** 2 - 1
 
-# Define a polynomial where the coefficients are decision variables in the SOS problem
-r_var = sosopt.define_polynomial(
-    name='r',
+state, r_var = sosopt.define_polynomial(
+    name=&quot;r&quot;,
     monomials=x.combinations(degrees=(1, 2)),
-)
-# Fix the constant part of the polynomial to -1 to ensure numerical stability
+).apply(state)
 r = r_var - 1
 
-# Prints the symbol representation of the polynomial:
-# r(x) = r_0*x_1 + r_1*x_2 + ... + r_8*x_3**2 - 1
 state, sympy_repr = polymat.to_sympy(r).apply(state)
-print(f'r={sympy_repr}')
+print(f&quot;r={sympy_repr}&quot;)
 
-# Apply Putinar's Positivstellensatz to ensure the box-like set, encoded by w1 and w2, 
-# is contained within the zero sublevel set of r(x).
 state, constraint = sosopt.quadratic_module_constraint(
     name=&quot;rpos&quot;,
     smaller_than_zero=r,
@@ -594,30 +634,73 @@ state, constraint = sosopt.quadratic_module_constraint(
     ),
 ).apply(state)
 
-# Minimize the volume surrogate of the zero-sublevel set of r(x)
 Qr_diag = sosopt.gram_matrix(r, x).diag()
 
-# Define the SOS problem
 problem = sosopt.sos_problem(
     lin_cost=-Qr_diag.sum(),
     quad_cost=Qr_diag,
     constraints=(constraint,),
-    solver=sosopt.cvxopt_solver,   # choose solver
-    # solver=sosopt.mosek_solver,
+    solver=sosopt.cvxopt_solver,
 )
 
-# Solve the SOS problem
 state, sos_result = problem.solve().apply(state)
 
-# Output the result
-# Prints the mapping of symbols to their correspoindg vlaues found by the solver
-print(f'{sos_result.symbol_values=}')
+# Plot Preparations
+###################
 
-# Display solver data such as status, iterations, and final cost.
-print(f'{sos_result.solver_data.status}')      # Expected output: 'optimal'
-print(f'{sos_result.solver_data.iterations}')  # Expected output: 6
-print(f'{sos_result.solver_data.cost}')        # Expected output: -1.2523582776230828
-print(f'{sos_result.solver_data.solution}')    # Expected output: array([ 5.44293046e-01, ...])
+# materialize polynomials w1(x), w2(x), and r(x), allowing to evaluate these
+# polynomials for specified vectors
+state, w1_array = polymat.to_array(w1, x).apply(state)
+state, w2_array = polymat.to_array(w2, x).apply(state)
+state, r_array = polymat.to_array(r.eval(sos_result.symbol_values), x).apply(state)
+
+def select_max(arrays):
+    def func(x, y):
+        def evaluate_arrays():
+            for array in arrays:
+                yield array(proj(x, y))
+        return max(evaluate_arrays())
+    return func
+
+# define 2D projection for plotting
+def proj(x, y):
+    return np.array((x, y, 0)).reshape(-1, 1)
+
+# create mesh (i_d, i_q)
+ticksX = np.arange(-2, 1, 0.04)
+ticksY = np.arange(-2, 2, 0.04)
+n_row, n_col = len(ticksY), len(ticksX)
+X = np.matlib.repmat(ticksX, n_row, 1)
+Y = np.matlib.repmat(ticksY.reshape(-1, 1), 1, n_col)
+
+Z_w1 = np.vectorize(lambda x, y: w1_array(proj(x, y)))(X, Y)
+Z_w2 = np.vectorize(lambda x, y: w2_array(proj(x, y)))(X, Y)
+Z_box = np.vectorize(select_max((w1_array, w2_array)))(X, Y)
+Z_r = np.vectorize(lambda x, y: r_array(proj(x, y)))(X, Y)
+
+# Plot results
+##############
+
+pyplot.close()
+fig = pyplot.figure(figsize=(6, 6))
+ax = fig.subplots()
+
+# plot contour of zero-sublevel sets {x | w1(x) &lt;= 0}, {x | w2(x) &lt;= 0}, and {x | r(x) &lt;= 0}
+ax.contour(X, Y, Z_w1, [0], linewidths=0.5, colors=[&quot;#A0B1BA&quot;])
+ax.contour(X, Y, Z_w2, [0], linewidths=0.5, colors=[&quot;#A0B1BA&quot;])
+ax.contour(X, Y, Z_box, [0], linewidths=2, colors=['r'], linestyles=['dashed'])
+ax.contour(X, Y, Z_r, [0], linewidths=2, colors=[&quot;#A0B1BA&quot;])
+
+ax.text(-0.77, 1.7, r'$\{x \mid w_1(x) = 0 \}$')
+ax.text(-1.9, 1.37, r'$\{x \mid w_2(x) = 0 \}$')
+ax.text(-1.9, -0.7, r'$\{x \mid r(x) = 0 \}$')
+ax.text(-0.7, 0.9, r'$\mathcal{X}_\text{Box}$', fontsize=16, color=&quot;#FF1F5B&quot;)
+
+ax.set_xlabel('$x_1$')
+ax.set_ylabel('$x_2$')
+
+pyplot.show()
+
 </code></pre>
 <p>This figure illustrates the contour of the zero-sublevel sets of the resulting polynomial <span class="arithmatex">\(r(x)\)</span>:</p>
 <p><img alt="sos problem result" src="../../images/readmeexample_plot.png" /></p>

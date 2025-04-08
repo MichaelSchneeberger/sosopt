@@ -11,10 +11,10 @@
         <link rel="canonical" href="https://github.com/MichaelSchneeberger/sosopt/1.0.0/tutorials/sosdecomposition/">
       
       
-        <link rel="prev" href="../bilinearproblem/">
+        <link rel="prev" href="../gettingstarted/">
       
       
-        <link rel="next" href="../../examples/boxconstraints/">
+        <link rel="next" href="../bilinearproblem/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -66,7 +66,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#sos-decomposition-and-sdp-conversion" class="md-skip">
+        <a href="#sos-decomposition-and-conic-problem-conversion" class="md-skip">
           Skip to content
         </a>
       
@@ -365,6 +365,89 @@
                 
   
   
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    SOS Decomposition and SDP Conversion
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    SOS Decomposition and SDP Conversion
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#sos-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      SOS Decomposition
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conic-problem-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conic Problem Conversion
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
   
   
     <li class="md-nav__item">
@@ -379,39 +462,6 @@
   
 
       </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    SOS Decomposition and SDP Conversion
-    
-  </span>
-  
-
-      </a>
-      
     </li>
   
 
@@ -477,7 +527,53 @@
   
   
   <span class="md-ellipsis">
-    Box Constraint
+    Envelope for Box Constraints
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sosdecomposition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SOS Decomposition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bilinearproblem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bilinear SOS Problem
     
   </span>
   
@@ -536,31 +632,149 @@
   
 
 
-<h1 id="sos-decomposition-and-sdp-conversion">SOS Decomposition and SDP Conversion</h1>
-<p>An SOS problem is solved by converting it to a Semi-definite Program (SDP).
-This involves decomposing the SOS polynomials <span class="arithmatex">\(p(x; \theta)\)</span> into the Square Matricial Representation (SMR):</p>
+<h1 id="sos-decomposition-and-conic-problem-conversion">SOS Decomposition and Conic Problem Conversion</h1>
+<h2 id="sos-decomposition">SOS Decomposition</h2>
+<p>SOS problems are solved by converting them into conic optimization problems.
+This conversion involves decomposing SOS polynomials into their Square Matricial Representation (SMR).
+For a given polynomial <span class="arithmatex">\(p(x)\)</span>, the SMR is defined as:</p>
 <div class="arithmatex">\[
-p(x; \theta) = Z(x)^\top Q_p(\theta) Z(x),
+p(x) = Z(x)^\top Q_p Z(x), \quad Q_p≽0,
 \]</div>
-<p>where the monomial vector <span class="arithmatex">\(Z(x)\)</span> are selected to contain all monomial up the degree <span class="arithmatex">\(\lceil \text{deg}(p)/2 \rceil\)</span>.
-Because multiple entries of <span class="arithmatex">\(Q(\theta)\)</span> can correspond to the same monomial, this decomposition is not unique.
-To see this, consider the polynomial <span class="arithmatex">\(p(x) = x_1^4 + x_1^2 x_2^2 + x_2^4\)</span>, which has -- given the monomial vector <span class="arithmatex">\(Z(x) = [x_1^2 \quad x_1 x_2 \quad x_2^2]^\top\)</span> -- a family of decompositions</p>
+<p>where the monomial vector <span class="arithmatex">\(Z(x)\)</span> includes all monomials up to degree <span class="arithmatex">\(\lceil \text{deg}(p)/2 \rceil\)</span>, and <span class="arithmatex">\(Q_p\)</span> is the <em>Gram matrix</em>.</p>
+<p>This representation is not unqiue, as different entries in <span class="arithmatex">\(Q_p\)</span> may correspond to identical monomial products.
+To illustrate this, consider the polynomial <span class="arithmatex">\(p(x) = 1 + x_1^2 - x_1 x_2^2 + x_2^4\)</span>.
+Given the monomial vector <span class="arithmatex">\(Z(x) = [1 \quad x_1 \quad x_2 \quad x_1 x_2 \quad x_2^2]^\top\)</span>, the corresponding Gram matrix is parametrized by <span class="arithmatex">\(\alpha_1\)</span>, <span class="arithmatex">\(\alpha_2\)</span>, and <span class="arithmatex">\(\alpha_3\)</span>:</p>
 <div class="arithmatex">\[
 Q_p = \begin{bmatrix}
-1 &amp; 0 &amp; -\alpha/2 \\ 
-0 &amp; 1 + \alpha &amp; 0 \\ 
--\alpha/2 &amp; 0 &amp; 1
-\end{bmatrix}
+1 &amp; 0 &amp; 0 &amp; \alpha_1 &amp; \alpha_2 \\ 
+0 &amp; 1 &amp; -\alpha_1 &amp; 0 &amp; \alpha_3 \\ 
+0 &amp; -\alpha_1 &amp; -2\alpha_2 &amp; -0.5 -\alpha_3 &amp; 0 \\
+\alpha_1 &amp; 0 &amp; -0.5 - \alpha_3 &amp; 0 &amp; 0 \\
+\alpha_2 &amp; \alpha_3 &amp; 0 &amp; 0 &amp; 1 \\
+\end{bmatrix}.
 \]</div>
-<p>parametrized by <span class="arithmatex">\(\alpha\)</span>.
-To account for this, <span class="arithmatex">\(\alpha\)</span> can be selected as a decision variable of the optimization problem.
-However, for a large matrix <span class="arithmatex">\(Q_p\)</span> many additional variables need to be introduced, resulting in a higher computational effort.
-To account for this, a heuristic can be enabled that preselect a specific value for <span class="arithmatex">\(\alpha\)</span>.
-This heursitic constructs a gram matrix in a way that prioritizes nonzero entries corresponding to monomial in <span class="arithmatex">\(Z(x)\)</span> that involve multiple variables.
-In the above example, <span class="arithmatex">\(\alpha=0\)</span> is selected for <span class="arithmatex">\(Q_p\)</span>.
-This heuristic is enabled by default and can be disabled when initializing the state object:</p>
+<p>To account for this non-uniqueness, the parameters <span class="arithmatex">\(\alpha_k\)</span> can be introduces as a decision variables of the resulting conic problem, thereby parametrizing the entire family of decompositions.
+If there exists a parametrization <span class="arithmatex">\(\alpha_1\)</span>, <span class="arithmatex">\(\alpha_2\)</span>, and <span class="arithmatex">\(\alpha_3\)</span> such that <span class="arithmatex">\(Q_p ≽ 0\)</span>, then <span class="arithmatex">\(p(x)\)</span> is proven to be an SOS polynomial.</p>
+<p>For a large Gram matrix <span class="arithmatex">\(Q_p\)</span> many additional decision variables <span class="arithmatex">\(\alpha_k\)</span> can significantly increase computational effort.
+To mitigate this, a heuristic can be applied to preselect specific values for <span class="arithmatex">\(\alpha_k\)</span>, converting the problem without introducing new decision variables.</p>
+<p>In the above example, this heuristic selects <span class="arithmatex">\(\alpha_1=0\)</span>, <span class="arithmatex">\(\alpha_2=0\)</span>, and <span class="arithmatex">\(\alpha_3=0\)</span>.
+However, this selection can make the SOS problem infeasible.
+To disable this heuristic (enabled by default) set <code>sparse_smr</code> argument to <code>False</code> when initializing the state object:</p>
+<!-- This heuristic is enabled by default and can be disabled when initializing the state object: -->
+
 <pre><code class="language-python">state = sosopt.init_state(sparse_smr=False)
 </code></pre>
+<p>An SOS decomposition of <span class="arithmatex">\(p(x)\)</span> can be computed by solving the following feasibility problem, which involves a single SOS constraint.
+The following code snipped also prints the symbol of the decision variables associated with the SOS problem.
+Since the polynomial <span class="arithmatex">\(p(x)\)</span> does not contain any decision variables, and the SOS decomposition introduces new decision variables only during the conversion to a conic problem, the resulting SOS problem does not define any decision variables.  </p>
+<pre><code class="language-python"># Define polynomial variables
+state_variables = tuple(polymat.define_variable(name) for name in ('x1', 'x2'))
+x1, x2 = state_variables
+x = polymat.v_stack(state_variables)
+
+# Create polynomial and SOS constraint
+p = x1**2 - x1*x2**2 + x2**4 + 1
+
+state, sos_constraint = sosopt.sos_constraint(
+    name=&quot;p&quot;,
+    greater_than_zero=p,
+).apply(state)
+
+# Formulate SOS problem (feasibility formulation)
+sos_problem = sosopt.sos_problem(
+    constraints=(sos_constraint,),
+    solver=sosopt.cvxopt_solver,
+)
+
+# No decision variables are defined so far
+# Output: empty tuple
+print(sos_problem.decision_variable_symbols)
+
+# Solve SOS problem
+context, sos_result = sos_problem.solve().apply(context)
+</code></pre>
+<p>The parametrized Gram matrix can be accessed through a field <code>gram_matrix</code> of the SOS constraint object <code>sos_constraint</code>.
+Once the feasibility problem is solved, the Gram matrix can be extracted by evaluating its parameters with the solution of the SOS problem.</p>
+<pre><code class="language-python"># Evaluate the decomposition variables with the results of the SOS problem
+q = sos_constraint.gram_matrix.eval(sos_result.symbol_values)
+
+# Convert the polynomial expression to sympy for printing
+state, q_sympy = polymat.to_sympy(q).apply(state)
+</code></pre>
+<p>The resulting Gram matrix is given as:</p>
+<div class="arithmatex">\[
+Q_p = \left[\begin{matrix}1 &amp; 0 &amp; 0 &amp; 7.41873902278933 \cdot 10^{-18} &amp; -0.130274885256573\\0 &amp; 1 &amp; -7.41873902278933 \cdot 10^{-18} &amp; 0 &amp; -0.499945142290247\\0 &amp; -7.41873902278933 \cdot 10^{-18} &amp; 0.260549770513145 &amp; -5.48577097532754 \cdot 10^{-5} &amp; 0\\7.41873902278933 \cdot 10^{-18} &amp; 0 &amp; -5.48577097532754 \cdot 10^{-5} &amp; 0 &amp; 0\\-0.130274885256573 &amp; -0.499945142290247 &amp; 0 &amp; 0 &amp; 1\end{matrix}\right]
+\]</div>
+<p>See <a href="../../examples/sosdecomposition/">examples/sosdecomposition</a> for a full example on how to recover the SOS decomposition of a polynomial <span class="arithmatex">\(p(x)\)</span>.</p>
+<h2 id="conic-problem-conversion">Conic Problem Conversion</h2>
+<p>Solving the SOS problem using <code>sos_problem.solve()</code> involves two transformations:</p>
+<ol>
+<li>Conversion of the SOS problem to a conic optimization problem</li>
+<li>Representation of the conic problem in solver-specific array form</li>
+</ol>
+<p>We can perform just the first conversion using <code>sos_problem.to_conic_problem()</code> method.
+This step introduces decomposition variables associated with the SOS constraints.</p>
+<pre><code class="language-python"># Convert to conic problem (introduces decomposition variables)
+state, conic_problem = sos_problem.to_conic_problem().apply(state)
+
+# SOS decomposition decision variables are defined
+# Output: ('p')
+print(conic_problem.decision_variable_symbols)
+</code></pre>
+<p>The conic problem defines a symbol <em>p</em>, which corresponds to the three decision variables <span class="arithmatex">\(\alpha_1\)</span>, <span class="arithmatex">\(\alpha_2\)</span>, and <span class="arithmatex">\(\alpha_3\)</span> introduced during the conversion.</p>
+<p>The second transformation can be partially performed using the <code>cone_problem.to_solver_args()</code> method.</p>
+<pre><code class="language-python"># Convert to argument provided to the conic solver
+state, solver_args = conic_problem.to_solver_args().apply(state)
+
+# Inspect conic problem after SOS decomposition
+# Output:
+# Number of decision variables: 3
+# Quadratic cost: False
+# Semidefinite constraints: 1
+#   1. 5x5
+# Equality constraints: 0
+# Variables: {'p_0': 5, 'p_1': 6, 'p_2': 7}
+print(solver_args.to_summary())
+
+# Inspect semidefinite cone and equality arrays used by the conic solvers
+print(solver_args.semidef_cone)
+print(solver_args.equality)
+</code></pre>
+<p>The <code>to_summary()</code> method provides a high-level overview of the conic problem.
+Additionally, the arrays corresponding to semidefinite and equality constraints can be accessed via the <code>semidef_cone</code> and <code>equality</code> attributes.</p>
+<p>Finally, the conic problem can be solve, and the result printed:</p>
+<pre><code class="language-python"># Solving the conic problem yields the same results
+state, conic_result = conic_problem.solve().apply(state)
+
+# Print the result
+# Outputs: {'p': (1.483747804557867e-17, -0.26054977051314515, -0.9998902845804934)}
+print(conic_result.symbol_values)
+</code></pre>
+<!-- Finally, we can compute the SOS decomposition non-uniquely through the following procedure:
+
+<!-- ``` python
+# Retrieve monomial basis and SMR from the SOS constraint
+Z = constraint.primitives[0].sos_monomial_basis
+Qp = constraint.primitives[0].sos_smr
+
+# Evaluate the decomposition variables with the results of the SOS problem
+Qp_eval = Qp.eval(sos_result.symbol_values)
+
+# Output matrix as nested tuples
+state, Qp_np = polymat.to_tuple(Qp_eval).map(np.array).apply(state)
+
+# Use SVD decomposition instead of Cholesky decomposition
+_, S, V = np.linalg.svd(Qp_np)
+
+# Vector of polynomials
+q = polymat.from_(np.diag(np.sqrt(S)) @ V) @ Z
+```
+
+$$
+\left[\begin{matrix}- 0.842676173311175 x_{1} + 0.87081565437922 x_{2}^{2} - 0.219583175233309\\0.967686064293247 - 0.252158047606349 x_{1}\\- 0.475723854731912 x_{1} - 0.491609698936151 x_{2}^{2} - 0.123963341868085\\- 0.00010747125133889 x_{1} x_{2} + 0.510440761022419 x_{2}\\0.000107471251338855 x_{1} x_{2} + 2.26276401618244 \cdot 10^{-8} x_{2}\end{matrix}\right]
+$$
+
+The original polynomial can be recoverd by $p(x) = q(x)^\top q(x)$. -->
 
 
 

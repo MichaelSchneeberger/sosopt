@@ -14,7 +14,7 @@
         <link rel="prev" href="../..">
       
       
-        <link rel="next" href="../bilinearproblem/">
+        <link rel="next" href="../sosdecomposition/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -479,12 +479,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../bilinearproblem/" class="md-nav__link">
+      <a href="../sosdecomposition/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Bilinear Problem
+    SOS Decomposition and SDP Conversion
     
   </span>
   
@@ -502,12 +502,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../sosdecomposition/" class="md-nav__link">
+      <a href="../bilinearproblem/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    SOS Decomposition and SDP Conversion
+    Bilinear Problem
     
   </span>
   
@@ -578,7 +578,53 @@
   
   
   <span class="md-ellipsis">
-    Box Constraint
+    Envelope for Box Constraints
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sosdecomposition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SOS Decomposition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bilinearproblem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bilinear SOS Problem
     
   </span>
   
@@ -651,12 +697,24 @@ The SOS optimization problem under consideration is formulated as:</p>
 \]</div>
 <p>where <span class="arithmatex">\(c(\theta)\)</span>, <span class="arithmatex">\(q(\theta)\)</span>, <span class="arithmatex">\(p_k(x; \theta)\)</span>, and <span class="arithmatex">\(l(\theta)\)</span> are polynomial expression in polynomial variable <span class="arithmatex">\(x\)</span> and decision variable <span class="arithmatex">\(\theta\)</span>.
 When solving the SOS problem, an exception is raised when one of these polynomial expression does not depend linearly on the decision variable <span class="arithmatex">\(\theta\)</span>.</p>
+<p>Compared to other SOS libraries, <strong>SOSOpt</strong> defines standalone constraints, not requiring a link to a concrete SOS problem.
+In <em>SOSTOOLS</em>, a <code>Program</code> object is used to define the SOS constraint <code>sosineq(Program, r);</code>.
+In <em>SumOfSqaures.jl</em>, a <code>model</code> object is used to define the SOS constraint <code>@constraint(model, r &gt;= 0)</code>.
+The <code>state</code> object takes a comparable role of such an object as a container of shared data.
+However, in <strong>SOSOpt</strong>, the usage of an SOS constraint returned by the function <code>sosopt.sos_constraint</code> is not restricted to a single SOS program, making this approach more modular when working with different SOS problems.
+The state object is created as follows.</p>
+<pre><code class="language-python">state = sosopt.init_state()
+</code></pre>
 <h2 id="variables">Variables</h2>
 <p>The polynomial variable <span class="arithmatex">\(x\)</span> and decision variable <span class="arithmatex">\(\theta\)</span> are both build within the <em>PolyMat</em> ecosystem.
 By convention, native <em>PolyMat</em> variables -- created via <code>polymat.define_variable</code> -- are interpretated as polynomial variables.
 In contrast, decision variables are introduced by extending the <em>PolyMat</em> framework with a new variable type.
-The following example defines a decision variable <span class="arithmatex">\(\theta\)</span> consisting of three components and uses it to construct a polynomial expression in the previously defined polynomial variable <span class="arithmatex">\(x\)</span>.</p>
+The following example defines a polynomial variable <span class="arithmatex">\(x\)</span> and a decision variable <span class="arithmatex">\(\theta\)</span> consisting of three components and uses them to construct a polynomial expression.</p>
 <pre><code class="language-python">import sosopt
+import polymat
+
+# define a polynomial variable
+x = polymat.define_variable('x')
 
 # define three decision variables
 theta_0 = sosopt.define_variable('theta_0')
@@ -671,7 +729,7 @@ r = theta_0 + theta_1 * x + theta_2 * x**2
 monomials = x.combinations(degrees=range(3))
 
 # creates a parametrized polynomial r = r_0 + r_1 x + r_2 x^2
-r = sosopt.define_polynomial(name='r', monomials=monomials)
+state, r = sosopt.define_polynomial(name='r', monomials=monomials).apply(state)
 
 # returns a polymat vector [r_0, r_1, r_2] containing the coefficients
 r.coefficient
@@ -684,14 +742,6 @@ r.coefficient
 )
 </code></pre>
 <h2 id="polynomial-constraints">Polynomial Constraints</h2>
-<p>Compared to other SOS libraries, <strong>SOSOpt</strong> defines standalone constraints, not requiring a link to a concrete SOS problem.
-In <em>SOSTOOLS</em>, a <code>Program</code> object is used to define the SOS constraint <code>sosineq(Program, r);</code>.
-In <em>SumOfSqaures.jl</em>, a <code>model</code> object is used to define the SOS constraint <code>@constraint(model, r &gt;= 0)</code>.
-The <code>state</code> object takes a comparable role of such an object as a container of shared data.
-However, in <strong>SOSOpt</strong>, the usage of an SOS constraint returned by the function <code>sosopt.sos_constraint</code> is not restricted to a single SOS program, making this approach more modular when working with different SOS problems.
-The state object is created as follows.</p>
-<pre><code class="language-python">state = sosopt.init_state()
-</code></pre>
 <p>The polynomial constraints in the SOS problem can be defined in <strong>SOSOpt</strong> as follows:</p>
 <h3 id="zero-polynomial-constraint"><strong>Zero Polynomial Constraint</strong></h3>
 <p>This polynomial constraint ensures that a polynomial expression is zero as a polynomial: All coefficients of the polynomials must be zero.</p>
@@ -790,6 +840,7 @@ $$q ≽ 0.$$ -->
 state, result = problem.solve().apply(state)
 </code></pre>
 <p>The <code>solve</code> method converts the SOS problem to an SDP, solves the SDP using the provided solver, and maps the result to a dictionary <code>result.symbol_values</code>.</p>
+<p>See <a href="../../examples/boxconstraints/">examples/boxconstraints</a> for a full example on how to define and solve an SOS problem.</p>
 <!-- ## Handling bilinear SOS Problems
 
 The SOS problem returned by `sosopt.sos_problem` may include a cost function and constraints that do not depend linearly on the decision variables.

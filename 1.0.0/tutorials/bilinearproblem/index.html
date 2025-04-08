@@ -11,10 +11,10 @@
         <link rel="canonical" href="https://github.com/MichaelSchneeberger/sosopt/1.0.0/tutorials/bilinearproblem/">
       
       
-        <link rel="prev" href="../gettingstarted/">
+        <link rel="prev" href="../sosdecomposition/">
       
       
-        <link rel="next" href="../sosdecomposition/">
+        <link rel="next" href="../../examples/boxconstraints/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -365,6 +365,29 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../sosdecomposition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SOS Decomposition and SDP Conversion
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -389,29 +412,6 @@
 
       </a>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../sosdecomposition/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    SOS Decomposition and SDP Conversion
-    
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -477,7 +477,53 @@
   
   
   <span class="md-ellipsis">
-    Box Constraint
+    Envelope for Box Constraints
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/sosdecomposition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SOS Decomposition
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/bilinearproblem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Bilinear SOS Problem
     
   </span>
   
@@ -543,13 +589,14 @@ To solve a bilinear SOS Problem using the alternating algorithm, a set of decisi
 This transformation is performed by calling the <code>eval</code> method on the SOS problem:</p>
 <pre><code class="language-python"># defines decision variable substitutions
 symbol_values = {
-    r.symbol: (1, 0, 1)
+    u.symbol: (0, -1, -1),
 }
 
 # create an SOS problem that is linear in its decision variable
 # by substituting a group of decision variables
 problem = problem.eval(symbol_values)
 </code></pre>
+<p>See <a href="../../examples/bilinearproblem/">examples/bilinearproblem</a> for a full example on how to evaluate a bilinear SOS problem.</p>
 
 
 
