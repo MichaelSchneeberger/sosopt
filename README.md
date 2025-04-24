@@ -128,7 +128,7 @@ print(f'{sos_result.solver_data.solution}')    # Expected output: array([ 5.4429
 
 This figure illustrates the contour of the zero-sublevel sets of the resulting polynomial $r(x)$:
 
-![sos problem result](docs/images/readmeexample_plot.png)
+![sos problem result](docs/images/boxconstraint_plot.jpg)
 
 
 

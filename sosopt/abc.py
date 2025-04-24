@@ -1,8 +1,6 @@
 from sosopt.polymat.sources.polynomialvariable import (
     PolynomialVariable as _PolynomialVariable,
     PolynomialMatrixVariable as _PolynomialMatrixVariable,
-    PolynomialVectorVariable as _PolynomialVectorVariable,
-    PolynomialRowVectorVariable as _PolynomialRowVectorVariable,
     ScalarPolynomialVariable as _ScalarPolynomialVariable,
 )
 from sosopt.solvers.solverdata import (
@@ -11,10 +9,9 @@ from sosopt.solvers.solverdata import (
     SolverData as _SolverData,
 )
 
+# used for structural pattern matching
 PolynomialVariable = _PolynomialVariable
 PolynomialMatrixVariable = _PolynomialMatrixVariable
-PolynomialVectorVariable = _PolynomialVectorVariable
-PolynomialRowVectorVariable = _PolynomialRowVectorVariable
 ScalarPolynomialVariable = _ScalarPolynomialVariable
 
 SolverData = _SolverData

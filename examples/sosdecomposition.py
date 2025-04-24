@@ -31,14 +31,12 @@ print(sos_problem.decision_variable_symbols)
 state, sos_result = sos_problem.solve().apply(state)
 
 # Retrieve monomial basis and SMR from the SOS constraint
-Z = constraint.sos_monomial_basis
-Qp = constraint.gram_matrix
-
 # Evaluate the decomposition variables with the results of the SOS problem
-Qp_eval = Qp.eval(sos_result.symbol_values)
+Z = constraint.sos_monomial_basis
+Qp = constraint.gram_matrix.eval(sos_result.symbol_values)
 
 # Output matrix as nested tuples
-state, Qp_np = polymat.to_tuple(Qp_eval).map(np.array).apply(state)
+state, Qp_np = polymat.to_tuple(Qp).map(np.array).apply(state)
 
 # Use SVD decomposition instead of Cholesky decomposition
 _, S, V = np.linalg.svd(Qp_np)

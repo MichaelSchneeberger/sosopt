@@ -50,7 +50,6 @@ Since the polynomial $p(x)$ does not contain any decision variables, and the SOS
 # Define polynomial variables
 state_variables = tuple(polymat.define_variable(name) for name in ('x1', 'x2'))
 x1, x2 = state_variables
-x = polymat.v_stack(state_variables)
 
 # Create polynomial and SOS constraint
 p = x1**2 - x1*x2**2 + x2**4 + 1
@@ -79,17 +78,11 @@ Once the feasibility problem is solved, the Gram matrix can be extracted by eval
 
 ``` python
 # Evaluate the decomposition variables with the results of the SOS problem
-q = sos_constraint.gram_matrix.eval(sos_result.symbol_values)
+Qp = sos_constraint.gram_matrix.eval(sos_result.symbol_values)
 
 # Convert the polynomial expression to sympy for printing
-state, q_sympy = polymat.to_sympy(q).apply(state)
+state, Qp_sympy = polymat.to_sympy(Qp).apply(state)
 ```
-
-The resulting Gram matrix is given as:
-
-$$
-Q_p = \left[\begin{matrix}1 & 0 & 0 & 7.41873902278933 \cdot 10^{-18} & -0.130274885256573\\0 & 1 & -7.41873902278933 \cdot 10^{-18} & 0 & -0.499945142290247\\0 & -7.41873902278933 \cdot 10^{-18} & 0.260549770513145 & -5.48577097532754 \cdot 10^{-5} & 0\\7.41873902278933 \cdot 10^{-18} & 0 & -5.48577097532754 \cdot 10^{-5} & 0 & 0\\-0.130274885256573 & -0.499945142290247 & 0 & 0 & 1\end{matrix}\right]
-$$
 
 See [examples/sosdecomposition](../examples/sosdecomposition.md) for a full example on how to recover the SOS decomposition of a polynomial $p(x)$.
 

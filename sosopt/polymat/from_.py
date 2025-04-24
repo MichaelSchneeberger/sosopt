@@ -76,8 +76,6 @@ def sos_monomial_basis(
     if sparse_smr is None:
         sparse_smr = True
 
-        print(sparse_smr)
-
     if sparse_smr:
         node = init_sos_monomial_basis_sparse(
             child=expression,

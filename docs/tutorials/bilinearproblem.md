@@ -16,4 +16,6 @@ symbol_values = {
 problem = problem.eval(symbol_values)
 ```
 
+Performing this substitution at the SOS problem level is crucial, as different substitution choices lead to different SDP formulations, affecting computational efficiency and numerical stability.
+
 See [examples/bilinearproblem](../examples/bilinearproblem.md) for a full example on how to evaluate a bilinear SOS problem.

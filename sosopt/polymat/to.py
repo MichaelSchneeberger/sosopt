@@ -10,7 +10,10 @@ from polymat.typing import (
 from sosopt.state.state import State as BaseState
 
 
-def to_symbol_values[State: BaseState](variable: PolynomialVariable[State], value: MatrixExpression[State]):
+def to_symbol_values[State: BaseState](
+    variable: PolynomialVariable[State], 
+    value: MatrixExpression[State]
+):
     def _to_symbol_values(state: State):
         symbol_values: dict[DecisionVariableSymbol, tuple[float, ...]] = {}
 
@@ -20,7 +23,7 @@ def to_symbol_values[State: BaseState](variable: PolynomialVariable[State], valu
             ).apply(state)
 
             symbol_values[param.symbol] = data
-        
+
         return state, symbol_values
 
     return statemonad.get_map_put(_to_symbol_values)
