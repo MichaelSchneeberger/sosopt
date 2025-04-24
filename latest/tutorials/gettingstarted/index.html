@@ -703,88 +703,88 @@ In <em>SumOfSqaures.jl</em>, a <code>model</code> object is used to define the S
 The <code>state</code> object takes a comparable role of such an object as a container of shared data.
 However, in <strong>SOSOpt</strong>, the usage of an SOS constraint returned by the function <code>sosopt.sos_constraint</code> is not restricted to a single SOS program, making this approach more modular when working with different SOS problems.
 The state object is created as follows.</p>
-<pre><code class="language-python">state = sosopt.init_state()
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">state</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">init_state</span><span class="p">()</span>
+</span></code></pre></div>
 <h2 id="variables">Variables</h2>
 <p>The polynomial variable <span class="arithmatex">\(x\)</span> and decision variable <span class="arithmatex">\(\theta\)</span> are both build within the <em>PolyMat</em> ecosystem.
 By convention, native <em>PolyMat</em> variables -- created via <code>polymat.define_variable</code> -- are interpretated as polynomial variables.
 In contrast, decision variables are introduced by extending the <em>PolyMat</em> framework with a new variable type.
 The following example defines a polynomial variable <span class="arithmatex">\(x\)</span> and a decision variable <span class="arithmatex">\(\theta\)</span> consisting of three components and uses them to construct a polynomial expression.</p>
-<pre><code class="language-python">import sosopt
-import polymat
-
-# define a polynomial variable
-x = polymat.define_variable('x')
-
-# define three decision variables
-theta_0 = sosopt.define_variable('theta_0')
-theta_1 = sosopt.define_variable('theta_1')
-theta_2 = sosopt.define_variable('theta_2')
-
-# parametrized polynomial containing both polynomial and decision variable
-r = theta_0 + theta_1 * x + theta_2 * x**2
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span> <span class="nn">sosopt</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">import</span> <span class="nn">polymat</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># define a polynomial variable</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">x</span> <span class="o">=</span> <span class="n">polymat</span><span class="o">.</span><span class="n">define_variable</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># define three decision variables</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">theta_0</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">define_variable</span><span class="p">(</span><span class="s1">&#39;theta_0&#39;</span><span class="p">)</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">theta_1</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">define_variable</span><span class="p">(</span><span class="s1">&#39;theta_1&#39;</span><span class="p">)</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">theta_2</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">define_variable</span><span class="p">(</span><span class="s1">&#39;theta_2&#39;</span><span class="p">)</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="c1"># parametrized polynomial containing both polynomial and decision variable</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="n">r</span> <span class="o">=</span> <span class="n">theta_0</span> <span class="o">+</span> <span class="n">theta_1</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">theta_2</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+</span></code></pre></div>
 <p>Alternatively, the construction of a fully parametrized polynomial -- involving the specification of a decision variable for each coefficient of the polynomial -- is automated using the <code>sosopt.define_polynomial</code> function:</p>
-<pre><code class="language-python"># creates a monomial vector [1 x x^2]
-monomials = x.combinations(degrees=range(3))
-
-# creates a parametrized polynomial r = r_0 + r_1 x + r_2 x^2
-state, r = sosopt.define_polynomial(name='r', monomials=monomials).apply(state)
-
-# returns a polymat vector [r_0, r_1, r_2] containing the coefficients
-r.coefficient
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># creates a monomial vector [1 x x^2]</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">monomials</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">degrees</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># creates a parametrized polynomial r = r_0 + r_1 x + r_2 x^2</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">state</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">define_polynomial</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">monomials</span><span class="o">=</span><span class="n">monomials</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1"># returns a polymat vector [r_0, r_1, r_2] containing the coefficients</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="n">r</span><span class="o">.</span><span class="n">coefficient</span>
+</span></code></pre></div>
 <p>Furthermore, a parametrized polynomial matrix can be created by additionally specifying the <code>row</code> and <code>col</code> arguments:</p>
-<pre><code class="language-python">Q = sosopt.define_polynomial(
-    name='Q', 
-    monomials=monomials,
-    n_rows=n, n_cols=m,
-)
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">Q</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">define_polynomial</span><span class="p">(</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Q&#39;</span><span class="p">,</span> 
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">monomials</span><span class="o">=</span><span class="n">monomials</span><span class="p">,</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">n_rows</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">n_cols</span><span class="o">=</span><span class="n">m</span><span class="p">,</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">)</span>
+</span></code></pre></div>
 <h2 id="polynomial-constraints">Polynomial Constraints</h2>
 <p>The polynomial constraints in the SOS problem can be defined in <strong>SOSOpt</strong> as follows:</p>
 <h3 id="zero-polynomial-constraint"><strong>Zero Polynomial Constraint</strong></h3>
 <p>This polynomial constraint ensures that a polynomial expression is zero as a polynomial: All coefficients of the polynomials must be zero.</p>
 <p>The following constraint:</p>
-<pre><code class="language-python">state, r_zero_constraint = sosopt.zero_polynomial_constraint(
-    name='r_zero',
-    equal_to_zero=r,
-).apply(state)
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">state</span><span class="p">,</span> <span class="n">r_zero_constraint</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">zero_polynomial_constraint</span><span class="p">(</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;r_zero&#39;</span><span class="p">,</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">equal_to_zero</span><span class="o">=</span><span class="n">r</span><span class="p">,</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span></code></pre></div>
 <p>enforces the coefficients of <span class="arithmatex">\(r(x)\)</span> to be zero:</p>
 <div class="arithmatex">\[\text{Coeff}(r(x)) = 0.\]</div>
 <h3 id="sos-constraint"><strong>SOS Constraint</strong></h3>
 <p>This polynomial constraint ensures that a scalar polynomial expression belongs to the SOS Cone.</p>
-<p>The following constraint:</p>
-<pre><code class="language-python">state, r_sos_constraint = sosopt.sos_constraint(
-    name='r_sos',
-    greater_than_zero=r,
-).apply(state)
-</code></pre>
-<p>enforces the SOS constraint:</p>
+<p>The following constraint:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">state</span><span class="p">,</span> <span class="n">r_sos_constraint</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">sos_constraint</span><span class="p">(</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;r_sos&#39;</span><span class="p">,</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">greater_than_zero</span><span class="o">=</span><span class="n">r</span><span class="p">,</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span></code></pre></div>
+enforces the SOS constraint:</p>
 <div class="arithmatex">\[r(x) \in \Sigma[x].\]</div>
 <h3 id="sos-matrix-constraint"><strong>SOS Matrix Constraint</strong></h3>
 <p>This polynomial constraint ensures a polynomial matrix expression belongs to the SOS Matrix Cone.</p>
-<p>The following constraint:</p>
-<pre><code class="language-python">state, q_sos_constraint = sosopt.sos_matrix_constraint(
-    name='q_sos',
-    greater_than_zero=q,
-).apply(state)
-</code></pre>
-<p>enforces the SOS constraint:</p>
+<p>The following constraint:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">state</span><span class="p">,</span> <span class="n">q_sos_constraint</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">sos_matrix_constraint</span><span class="p">(</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;q_sos&#39;</span><span class="p">,</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">greater_than_zero</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span></code></pre></div>
+enforces the SOS constraint:</p>
 <div class="arithmatex">\[v^\top q(x) v \in \Sigma[x, v].\]</div>
 <h3 id="quadratic-module-constraint"><strong>Quadratic Module Constraint</strong></h3>
 <p>This polynomial constraint defines a non-negativity condition on a subset of the states space using a quadratic module construction following Putinar's Positivstellensatz.</p>
-<p>The following constraint:</p>
-<pre><code class="language-python">state, r_qm_constraint = sosopt.quadratic_module_constraint(
-    name='r_qm',
-    greater_than_zero=r,
-    domain=sosopt.set_(
-        smaller_than_zero={'w': w},
-    )
-).apply(state)
-</code></pre>
-<p>enforces the SOS constraints:</p>
+<p>The following constraint:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">state</span><span class="p">,</span> <span class="n">r_qm_constraint</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">quadratic_module_constraint</span><span class="p">(</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;r_qm&#39;</span><span class="p">,</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="n">greater_than_zero</span><span class="o">=</span><span class="n">r</span><span class="p">,</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">domain</span><span class="o">=</span><span class="n">sosopt</span><span class="o">.</span><span class="n">set_</span><span class="p">(</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>        <span class="n">smaller_than_zero</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="n">w</span><span class="p">},</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="p">)</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span></code></pre></div>
+enforces the SOS constraints:</p>
 <div class="arithmatex">\[\gamma_w(x) \in \Sigma[x]\]</div>
 <div class="arithmatex">\[r(x) + \gamma_w(x) w(x) \in \Sigma[x].\]</div>
 <!-- ### **Equality Constraint**
@@ -793,13 +793,11 @@ This constraint enforces a polynomial expression to be equal to zero.
 
 The following constraint:
 
-
-<pre><code class="language-python">state, e_eq_constraint = sosopt.equality_constraint(
-    name='e_eq',
-    equal_to_zero=e,
-).apply(state)
-</code></pre>
-
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">state</span><span class="p">,</span> <span class="n">e_eq_constraint</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">equality_constraint</span><span class="p">(</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;e_eq&#39;</span><span class="p">,</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="n">equal_to_zero</span><span class="o">=</span><span class="n">e</span><span class="p">,</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span></code></pre></div>
 
 enforces the expression $e$ to be zero:
 
@@ -811,13 +809,11 @@ This constraint enforces a symmetric matrix expression to be positive semidefini
 
 The following constraint:
 
-
-<pre><code class="language-python">state, q_psd_constraint = sosopt.semidefinite_constraint(
-    name='q_psd',
-    greater_than_zero=q,
-).apply(state)
-</code></pre>
-
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">state</span><span class="p">,</span> <span class="n">q_psd_constraint</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">semidefinite_constraint</span><span class="p">(</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;q_psd&#39;</span><span class="p">,</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="n">greater_than_zero</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span></code></pre></div>
 
 enforces the expression $q$ to be positive semidefinite:
 
@@ -829,16 +825,16 @@ $$q ≽ 0.$$ -->
 - <code>quad_cost</code>: Vector expression <span class="arithmatex">\(q(\theta)\)</span> defining the quadratic cost <span class="arithmatex">\(q(\theta)^\top q(\theta)\)</span>.
 - <code>constraints</code>: SOS and equality constraints
 - <code>solver</code>: SDP solver selection (<em>CVXOPT</em> or <em>MOSEK</em>)</p>
-<pre><code class="language-python">problem = sosopt.sos_problem(
-    lin_cost=Q.trace(),
-    quad_cost=Q.diag(),
-    constraints=(r_sos_constraint,),
-    solver=polymat.cvxopt_solver,
-)
-
-# solve SOS problem
-state, result = problem.solve().apply(state)
-</code></pre>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">problem</span> <span class="o">=</span> <span class="n">sosopt</span><span class="o">.</span><span class="n">sos_problem</span><span class="p">(</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>    <span class="n">lin_cost</span><span class="o">=</span><span class="n">Q</span><span class="o">.</span><span class="n">trace</span><span class="p">(),</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="n">quad_cost</span><span class="o">=</span><span class="n">Q</span><span class="o">.</span><span class="n">diag</span><span class="p">(),</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="n">constraints</span><span class="o">=</span><span class="p">(</span><span class="n">r_sos_constraint</span><span class="p">,),</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="n">solver</span><span class="o">=</span><span class="n">polymat</span><span class="o">.</span><span class="n">cvxopt_solver</span><span class="p">,</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="p">)</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="c1"># solve SOS problem</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="n">state</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span></code></pre></div>
 <p>The <code>solve</code> method converts the SOS problem to an SDP, solves the SDP using the provided solver, and maps the result to a dictionary <code>result.symbol_values</code>.</p>
 <p>See <a href="../../examples/boxconstraints/">examples/boxconstraints</a> for a full example on how to define and solve an SOS problem.</p>
 <!-- ## Handling bilinear SOS Problems

@@ -2,38 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://github.com/MichaelSchneeberger/sosopt/latest/</loc>
-         <lastmod>2025-04-08</lastmod>
+         <lastmod>2025-04-24</lastmod>
     </url>
     <url>
          <loc>https://github.com/MichaelSchneeberger/sosopt/latest/api/</loc>
-         <lastmod>2025-04-08</lastmod>
+         <lastmod>2025-04-24</lastmod>
     </url>
     <url>
          <loc>https://github.com/MichaelSchneeberger/sosopt/latest/changelog/</loc>
-         <lastmod>2025-04-08</lastmod>
+         <lastmod>2025-04-24</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/MichaelSchneeberger/sosopt/latest/readme/</loc>
+         <lastmod>2025-04-24</lastmod>
     </url>
     <url>
          <loc>https://github.com/MichaelSchneeberger/sosopt/latest/examples/bilinearproblem/</loc>
-         <lastmod>2025-04-08</lastmod>
+         <lastmod>2025-04-24</lastmod>
     </url>
     <url>
          <loc>https://github.com/MichaelSchneeberger/sosopt/latest/examples/boxconstraints/</loc>
-         <lastmod>2025-04-08</lastmod>
+         <lastmod>2025-04-24</lastmod>
     </url>
     <url>
          <loc>https://github.com/MichaelSchneeberger/sosopt/latest/examples/sosdecomposition/</loc>
-         <lastmod>2025-04-08</lastmod>
+         <lastmod>2025-04-24</lastmod>
     </url>
     <url>
          <loc>https://github.com/MichaelSchneeberger/sosopt/latest/tutorials/bilinearproblem/</loc>
-         <lastmod>2025-04-08</lastmod>
+         <lastmod>2025-04-24</lastmod>
     </url>
     <url>
          <loc>https://github.com/MichaelSchneeberger/sosopt/latest/tutorials/gettingstarted/</loc>
-         <lastmod>2025-04-08</lastmod>
+         <lastmod>2025-04-24</lastmod>
     </url>
     <url>
          <loc>https://github.com/MichaelSchneeberger/sosopt/latest/tutorials/sosdecomposition/</loc>
-         <lastmod>2025-04-08</lastmod>
+         <lastmod>2025-04-24</lastmod>
     </url>
 </urlset>
