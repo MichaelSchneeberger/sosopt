@@ -595,7 +595,7 @@ where <span class="arithmatex">\(u(x)\)</span> is a polynomial controller. The g
 <p>This condition is bilinear in the coefficients of <span class="arithmatex">\(V(x)\)</span> and <span class="arithmatex">\(u(x)\)</span>, and therefore cannot be directly formulated as an SOS Problem.
 To address this, we fix the coefficients of <span class="arithmatex">\(u(x)\)</span> using an initial guess, converting the problem into a linear SOS problem that can be solved efficiently.</p>
 <p>To ensure feasibility, we restrict the analysis to an operating region defined by a ball of radius <span class="arithmatex">\(r\)</span>:</p>
-<div class="arithmatex">\[\mathcal X_\text{op} = \{ x \mid x^\top x &lt;= r^2 \}.\]</div>
+<div class="arithmatex">\[\mathcal X_\text{op} = \{ x \mid x^\top x \leq r^2 \}.\]</div>
 <!-- Given the Square Matricial Representation (SMR)
 
 $$
